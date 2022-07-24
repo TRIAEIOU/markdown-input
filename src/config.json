@@ -1,0 +1,63 @@
+{
+	"Field input": {
+		"Shortcut": "Ctrl+M",
+		"Default field state": "rich text",
+		"Restore state on toggle": false,
+		"Hide plain text on toggle": true,
+		"Hide rich text on toggle": true,
+		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }"
+	},
+	"Dialog input": {
+		"Shortcut": "Ctrl+Alt+M",
+		"Shortcut accept": "Ctrl+Return",
+		"Shortcut reject": "Shift+Escape",
+		"Size mode": "parent",
+		"Selection only": false,
+		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }",
+		"Last geometry": ""
+	},
+	"Showdown": {
+		"table_newline": "¨"
+	},
+	"CodeMirror": {
+		"keymap": [{
+				"key": "Mod-f",
+				"run": "openSearchPanel",
+				"scope": "editor search-panel",
+				"preventDefault": true
+			},{
+				"key": "Mod-n",
+				"run": "findNext",
+				"shift": "findPrevious",
+				"scope": "editor search-panel",
+				"preventDefault": true
+			},{
+				"key": "Mod-d",
+				"run": "selectNextOccurrence",
+				"preventDefault": true
+			},{
+				"key": "Mod-Shift-l",
+				"run": "selectSelectionMatches",
+				"preventDefault": true
+			},{
+				"key": "Mod-g",
+				"run": "gotoLine",
+				"preventDefault": true
+			},{
+				"key": "Escape",
+				"run": "closeSearchPanel",
+				"scope": "editor search-panel",
+				"preventDefault": true
+			},{
+				"key": "Mod-Alt-c",
+				"run": "clozeCurrent",
+				"preventDefault": true
+			},{
+				"key": "Mod-Shift-c",
+				"run": "clozeNext",
+				"preventDefault": true
+			}
+		]
+	}
+
+}

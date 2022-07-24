@@ -1,0 +1,15 @@
+div.markdown-input.hidden {
+    display: none;
+}
+
+div.cm-editor {
+    height: 100%;
+}
+
+.cm-scroller {
+    overflow: auto;
+}
+
+div.markdown-input {
+    border: 1px solid var(--faint-border);
+}

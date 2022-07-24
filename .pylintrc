@@ -1,0 +1,2 @@
+[Master]
+init-hook='import sys; sys.path.append("${env:CODEPATH}\\Anki\\anki-src\\qt"); sys.path.append("${env:CODEPATH}\\Anki\\anki-src\\pylib")'

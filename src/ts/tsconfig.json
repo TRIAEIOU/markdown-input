@@ -1,0 +1,24 @@
+{
+    "compilerOptions": { // Credit: https://github.com/kleinerpirat
+        "module": "esnext",
+        "target": "es2018",
+        "moduleResolution": "node",
+        "isolatedModules": true,
+        "skipLibCheck": true,
+        "typeRoots": ["node_modules/@types", "@anki/ts/typings"],
+        "baseUrl": ".",
+        "paths": {
+            "@anki/*": ["${env:CODEPATH}/Anki/anki-src/*"], // Only for typing
+        },
+        "allowSyntheticDefaultImports": true,
+        "allowJs": false,
+        "types": ["svelte", "node"],
+        "plugins": [],
+    },
+    "exclude": [
+      "node_modules",
+      "bower_components",
+      "jspm_packages",
+      "dist",
+    ]
+}

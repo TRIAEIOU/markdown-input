@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "module": "esnext",
+        "target": "es2018",
+        "moduleResolution": "node",
+//        "isolatedModules": true,
+//        "skipLibCheck": true,
+        "baseUrl": "..",
+        "allowSyntheticDefaultImports": true,
+        "allowJs": false,
+        "types": ["node"],
+        "plugins": [],
+        "typeRoots": ["./node_modules/@types"],
+        "esModuleInterop": true,
+    },
+    "include": [
+        "./test.ts"
+    ]
+
+}
