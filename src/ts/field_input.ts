@@ -8,8 +8,10 @@ declare var NoteEditor: {
 };
 // @ts-ignore FIXME: how to import correctly?
 import type { EditorFieldAPI } from "@anki/ts/editor/EditorField.svelte";
-import type { PlainTextInputAPI } from "@anki/ts/editor/plain-text-input"; // Sub-imports generate warnings
-import type { RichTextInputAPI } from "@anki/ts/editor/rich-text-input"; // Sub-imports generate warnings
+// @ts-ignore FIXME: how to import correctly?
+import type { PlainTextInputAPI } from "@anki/ts/editor/plain-text-input";
+// @ts-ignore FIXME: how to import correctly?
+import type { RichTextInputAPI } from "@anki/ts/editor/rich-text-input";
 import { create, set_doc } from "./editor"
 import { html_to_markdown, markdown_to_html } from "./converter";
 import { EditorView } from "@codemirror/view";
