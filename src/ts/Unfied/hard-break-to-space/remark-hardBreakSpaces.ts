@@ -3,7 +3,7 @@
  * @typedef {import('mdast').Break} Break
  */
 
-import {patternInScope} from 'node_modules/mdast-util-to-markdown/lib/util/pattern-in-scope.js'
+import {patternInScope} from '../../node_modules/mdast-util-to-markdown/lib/util/pattern-in-scope.js'
 
 /**
  * @type {Handle}

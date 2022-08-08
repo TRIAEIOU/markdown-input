@@ -1,0 +1,35 @@
+{
+"version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build TS",
+            "type": "shell",
+            "command": "node_modules/.bin/rollup -c",
+            "options": {
+                "cwd": "${workspaceFolder}/src/ts"
+            }
+        },
+        {
+            "label": "Build test",
+            "type": "shell",
+            "command": "node_modules/.bin/rollup -c",
+            "options": {
+                "cwd": "${workspaceFolder}/src/ts"
+            }
+        },
+        {
+            "label": "Build Showdown.next",
+            "type": "shell",
+            "command": "node_modules/.bin/grunt --force build-without-test",
+            "options": {
+                "cwd": "${env:CODEPATH}/Showdown.next"
+            }
+        },
+        {
+            "label": "Build all",
+            "dependsOn": [
+                "Build TS"
+            ]
+        }
+    ]
+}

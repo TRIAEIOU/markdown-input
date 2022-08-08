@@ -22,11 +22,11 @@
     "allowUnreachableCode": true,
   },
   "include": [
-    "index.ts",
-    "custom_span/**/*.ts"
+    "**/*.ts",
   ],
   "exclude": [
     "../node_modules",
     "<node_internals>/**",
+    "**/.archive"
   ]
 }

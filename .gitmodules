@@ -13,3 +13,4 @@
 [submodule "src/ts/Unfied/micromark"]
 	path = src/ts/Unfied/micromark
 	url = https://github.com/TRIAEIOU/micromark
+	branch = noNonRenderedNewlines
