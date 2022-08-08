@@ -1,0 +1,10 @@
+[submodule "src/ts/Unified/micromark"]
+	path = src/ts/Unified/micromark
+	url = https://github.com/TRIAEIOU/micromark
+	branch = noNonRenderedNewlines
+[submodule "src/ts/Unified/mdast-hast-extension-extended-table"]
+	path = src/ts/Unified/mdast-hast-extension-extended-table
+	url = https://github.com/TRIAEIOU/mdast-hast-extension-extended-table
+[submodule "src/ts/Unified/mdast-hast-extension-emphasis-factory"]
+	path = src/ts/Unified/mdast-hast-extension-emphasis-factory
+	url = https://github.com/TRIAEIOU/mdast-hast-extension-emphasis-factory

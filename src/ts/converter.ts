@@ -1,10 +1,10 @@
 import {FrozenProcessor, unified} from 'unified';
-import { micromark } from 'Unfied/micromark/packages/micromark/dev';
+import { micromark } from 'Unified/micromark/packages/micromark/dev';
 import {fromHtml as hastFromHtml} from 'hast-util-from-html';
 import {toMdast as hastToMdast} from 'hast-util-to-mdast';
 import {toMarkdown as mdastToMarkdown} from 'mdast-util-to-markdown';
-import { extendedTableSyntax, extendedTableHtml, extendedTableToMarkdown, extendedTable as extendedTableHandler } from 'Unfied/mdast-hast-extension-extended-table/src';
-import {createEmphasis} from 'Unfied/mdast-hast-extension-emphasis-factory/src';
+import { extendedTableSyntax, extendedTableHtml, extendedTableToMarkdown, extendedTable as extendedTableHandler } from 'Unified/mdast-hast-extension-extended-table/src';
+import {createEmphasis} from 'Unified/mdast-hast-extension-emphasis-factory/src';
 
 const underline = createEmphasis({
     markdownSymbol: '_',
