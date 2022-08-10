@@ -1,5 +1,7 @@
-import {FrozenProcessor, unified} from 'unified';
 import { micromark } from 'Unified/micromark/packages/micromark/dev';
+import {defList, defListHtml} from 'micromark-extension-definition-list';
+import {defListToMarkdown} from 'Unified/mdast-util-definition-list';
+import {definitionListHastToMdast} from 'Unified/hast-util-definition-list';
 import {fromHtml as hastFromHtml} from 'hast-util-from-html';
 import {toMdast as hastToMdast} from 'hast-util-to-mdast';
 import {toMarkdown as mdastToMarkdown} from 'mdast-util-to-markdown';
@@ -70,13 +72,19 @@ async function html_to_markdown(html:string): Promise<[string, number]> {
     const hast = hastFromHtml(html, {
         fragment: true
     });
+/*
+    console.log('>>>>>>>>>>>>>>>>')
+    console.log(JSON.stringify(hast, null, 1))
+    console.log('>>>>>>>>>>>>>>>>')
+*/
     const mdast = hastToMdast(hast, {
         handlers: {
             table: extendedTableHandler,
             ...underline.hastHandler,
             ...superscript.hastHandler,
             ...subscript.hastHandler,
-            ...strikethrough.hastHandler
+            ...strikethrough.hastHandler,
+            ...definitionListHastToMdast
         }    
     });
     const md = mdastToMarkdown(mdast, {
@@ -85,7 +93,8 @@ async function html_to_markdown(html:string): Promise<[string, number]> {
             underline.mdastSerialization,
             superscript.mdastSerialization,
             subscript.mdastSerialization,
-            strikethrough.mdastSerialization
+            strikethrough.mdastSerialization,
+            defListToMarkdown
         ],
         bullet: '-',
         listItemIndent: 'one',
@@ -110,14 +119,16 @@ async function markdown_to_html(md: string): Promise<string> {
             underline.markdownSyntax,
             superscript.markdownSyntax,
             subscript.markdownSyntax,
-            strikethrough.markdownSyntax
+            strikethrough.markdownSyntax,
+            defList
         ],
         htmlExtensions: [
             extendedTableHtml,
             underline.micromarkHtml,
             superscript.micromarkHtml,
             subscript.micromarkHtml,
-            strikethrough.micromarkHtml
+            strikethrough.micromarkHtml,
+            defListHtml
         ],
         allowDangerousHtml: true,
         noNonRenderedNewline: true

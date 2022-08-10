@@ -28927,7 +28927,7 @@ var MarkdownInput = (function (exports) {
     * @param {T[]} items
     * @returns {void}
     */
-   function splice(list, start, remove, items) {
+   function splice$1(list, start, remove, items) {
      const end = list.length;
      let chunkStart = 0;
      /** @type {unknown[]} */
@@ -28974,7 +28974,7 @@ var MarkdownInput = (function (exports) {
 
    function push(list, items) {
      if (list.length > 0) {
-       splice(list, list.length, 0, items);
+       splice$1(list, list.length, 0, items);
        return list
      }
 
@@ -29055,7 +29055,7 @@ var MarkdownInput = (function (exports) {
    (list[index].add === 'after' ? existing : before).push(list[index]);
      }
 
-     splice(existing, 0, 0, before);
+     splice$1(existing, 0, 0, before);
    }
 
    /**
@@ -29307,7 +29307,7 @@ var MarkdownInput = (function (exports) {
     * @returns {code is number}
     */
 
-   function markdownLineEnding(code) {
+   function markdownLineEnding$1(code) {
      return code !== null && code < -2
    }
    /**
@@ -29324,7 +29324,7 @@ var MarkdownInput = (function (exports) {
     * @returns {code is number}
     */
 
-   function markdownSpace(code) {
+   function markdownSpace$1(code) {
      return code === -2 || code === -1 || code === 32
    }
    /**
@@ -31121,14 +31121,14 @@ var MarkdownInput = (function (exports) {
     * @returns {State}
     */
 
-   function factorySpace(effects, ok, type, max) {
+   function factorySpace$1(effects, ok, type, max) {
      const limit = max ? max - 1 : Number.POSITIVE_INFINITY;
      let size = 0;
      return start
      /** @type {State} */
 
      function start(code) {
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.enter(type);
          return prefix(code)
        }
@@ -31138,7 +31138,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function prefix(code) {
-       if (markdownSpace(code) && size++ < limit) {
+       if (markdownSpace$1(code) && size++ < limit) {
          effects.consume(code);
          return prefix
        }
@@ -31173,7 +31173,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
      function afterContentStartConstruct(code) {
        ok$1(
-         code === codes.eof || markdownLineEnding(code),
+         code === codes.eof || markdownLineEnding$1(code),
          'expected eol or eof'
        );
 
@@ -31185,13 +31185,13 @@ var MarkdownInput = (function (exports) {
        effects.enter(types$1.lineEnding);
        effects.consume(code);
        effects.exit(types$1.lineEnding);
-       return factorySpace(effects, contentStart, types$1.linePrefix)
+       return factorySpace$1(effects, contentStart, types$1.linePrefix)
      }
 
      /** @type {State} */
      function paragraphInitial(code) {
        ok$1(
-         code !== codes.eof && !markdownLineEnding(code),
+         code !== codes.eof && !markdownLineEnding$1(code),
          'expected anything other than a line ending or EOF'
        );
        effects.enter(types$1.paragraph);
@@ -31223,7 +31223,7 @@ var MarkdownInput = (function (exports) {
          return
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.consume(code);
          effects.exit(types$1.chunkText);
          return lineStart
@@ -31347,7 +31347,7 @@ var MarkdownInput = (function (exports) {
          }
 
          // Inject the exits earlier (they’re still also at the end).
-         splice(
+         splice$1(
            self.events,
            indexBeforeFlow + 1,
            0,
@@ -31471,7 +31471,7 @@ var MarkdownInput = (function (exports) {
          return
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.consume(code);
          writeToChild(effects.exit(types$1.chunkFlow));
          // Get ready for the next line.
@@ -31587,7 +31587,7 @@ var MarkdownInput = (function (exports) {
          }
 
          // Inject the exits earlier (they’re still also at the end).
-         splice(
+         splice$1(
            self.events,
            indexBeforeFlow + 1,
            0,
@@ -31635,7 +31635,7 @@ var MarkdownInput = (function (exports) {
 
    /** @type {Tokenizer} */
    function tokenizeContainer(effects, ok, nok) {
-     return factorySpace(
+     return factorySpace$1(
        effects,
        effects.attempt(this.parser.constructs.document, ok, nok),
        types$1.linePrefix,
@@ -31868,7 +31868,7 @@ var MarkdownInput = (function (exports) {
                offset = 0;
              }
 
-             splice(events, open - 1, index - open + 3, nextEvents);
+             splice$1(events, open - 1, index - open + 3, nextEvents);
              index = open + nextEvents.length - offset - 2;
              break
            }
@@ -32081,18 +32081,18 @@ var MarkdownInput = (function (exports) {
     */
 
    /** @type {Construct} */
-   const blankLine = {
-     tokenize: tokenizeBlankLine,
+   const blankLine$1 = {
+     tokenize: tokenizeBlankLine$1,
      partial: true
    };
    /** @type {Tokenizer} */
 
-   function tokenizeBlankLine(effects, ok, nok) {
-     return factorySpace(effects, afterWhitespace, 'linePrefix')
+   function tokenizeBlankLine$1(effects, ok, nok) {
+     return factorySpace$1(effects, afterWhitespace, 'linePrefix')
      /** @type {State} */
 
      function afterWhitespace(code) {
-       return code === null || markdownLineEnding(code) ? ok(code) : nok(code)
+       return code === null || markdownLineEnding$1(code) ? ok(code) : nok(code)
      }
    }
 
@@ -32142,7 +32142,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function after(code) {
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.enter('blockQuotePrefixWhitespace');
          effects.consume(code);
          effects.exit('blockQuotePrefixWhitespace');
@@ -32157,7 +32157,7 @@ var MarkdownInput = (function (exports) {
    /** @type {Tokenizer} */
 
    function tokenizeBlockQuoteContinuation(effects, ok, nok) {
-     return factorySpace(
+     return factorySpace$1(
        effects,
        effects.attempt(blockQuote, ok, nok),
        'linePrefix',
@@ -32368,12 +32368,12 @@ var MarkdownInput = (function (exports) {
        effects.exit('codeFencedFenceSequence');
        return sizeOpen < 3
          ? nok(code)
-         : factorySpace(effects, infoOpen, 'whitespace')(code)
+         : factorySpace$1(effects, infoOpen, 'whitespace')(code)
      }
      /** @type {State} */
 
      function infoOpen(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          return openAfter(code)
        }
 
@@ -32389,7 +32389,7 @@ var MarkdownInput = (function (exports) {
        if (code === null || markdownLineEndingOrSpace(code)) {
          effects.exit('chunkString');
          effects.exit('codeFencedFenceInfo');
-         return factorySpace(effects, infoAfter, 'whitespace')(code)
+         return factorySpace$1(effects, infoAfter, 'whitespace')(code)
        }
 
        if (code === 96 && code === marker) return nok(code)
@@ -32399,7 +32399,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function infoAfter(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          return openAfter(code)
        }
 
@@ -32412,7 +32412,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function meta(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('chunkString');
          effects.exit('codeFencedFenceMeta');
          return openAfter(code)
@@ -32435,14 +32435,14 @@ var MarkdownInput = (function (exports) {
          return after(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          return effects.attempt(
            nonLazyLine,
            effects.attempt(
              closingFenceConstruct,
              after,
              initialPrefix
-               ? factorySpace(
+               ? factorySpace$1(
                    effects,
                    contentStart,
                    'linePrefix',
@@ -32460,7 +32460,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function contentContinue(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('codeFlowValue');
          return contentStart(code)
        }
@@ -32497,7 +32497,7 @@ var MarkdownInput = (function (exports) {
 
      function tokenizeClosingFence(effects, ok, nok) {
        let size = 0;
-       return factorySpace(
+       return factorySpace$1(
          effects,
          closingSequenceStart,
          'linePrefix',
@@ -32523,12 +32523,12 @@ var MarkdownInput = (function (exports) {
 
          if (size < sizeOpen) return nok(code)
          effects.exit('codeFencedFenceSequence');
-         return factorySpace(effects, closingSequenceEnd, 'whitespace')(code)
+         return factorySpace$1(effects, closingSequenceEnd, 'whitespace')(code)
        }
        /** @type {State} */
 
        function closingSequenceEnd(code) {
-         if (code === null || markdownLineEnding(code)) {
+         if (code === null || markdownLineEnding$1(code)) {
            effects.exit('codeFencedFence');
            return ok(code)
          }
@@ -32566,7 +32566,7 @@ var MarkdownInput = (function (exports) {
 
      function start(code) {
        effects.enter('codeIndented');
-       return factorySpace(effects, afterStartPrefix, 'linePrefix', 4 + 1)(code)
+       return factorySpace$1(effects, afterStartPrefix, 'linePrefix', 4 + 1)(code)
      }
      /** @type {State} */
 
@@ -32585,7 +32585,7 @@ var MarkdownInput = (function (exports) {
          return after(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          return effects.attempt(indentedContent, afterPrefix, after)(code)
        }
 
@@ -32595,7 +32595,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function content(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('codeFlowValue');
          return afterPrefix(code)
        }
@@ -32623,14 +32623,14 @@ var MarkdownInput = (function (exports) {
          return nok(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.enter('lineEnding');
          effects.consume(code);
          effects.exit('lineEnding');
          return start
        }
 
-       return factorySpace(effects, afterPrefix, 'linePrefix', 4 + 1)(code)
+       return factorySpace$1(effects, afterPrefix, 'linePrefix', 4 + 1)(code)
      }
      /** @type {State} */
 
@@ -32640,7 +32640,7 @@ var MarkdownInput = (function (exports) {
          tail[1].type === 'linePrefix' &&
          tail[2].sliceSerialize(tail[1], true).length >= 4
          ? ok(code)
-         : markdownLineEnding(code)
+         : markdownLineEnding$1(code)
          ? start(code)
          : nok(code)
      }
@@ -32782,7 +32782,7 @@ var MarkdownInput = (function (exports) {
          return gap
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.enter('lineEnding');
          effects.consume(code);
          effects.exit('lineEnding');
@@ -32800,7 +32800,7 @@ var MarkdownInput = (function (exports) {
          code === null ||
          code === 32 ||
          code === 96 ||
-         markdownLineEnding(code)
+         markdownLineEnding$1(code)
        ) {
          effects.exit('codeTextData');
          return gap(code)
@@ -32946,7 +32946,7 @@ var MarkdownInput = (function (exports) {
 
            parameters = events.slice(lineIndex, index);
            parameters.unshift(event);
-           splice(events, lineIndex, index - lineIndex + 1, parameters);
+           splice$1(events, lineIndex, index - lineIndex + 1, parameters);
          }
        }
      }
@@ -33065,7 +33065,7 @@ var MarkdownInput = (function (exports) {
        const slice = childEvents.slice(breaks[index], breaks[index + 1]);
        const start = startPositions.pop();
        jumps.unshift([start, start + slice.length - 1]);
-       splice(events, start, 2, slice);
+       splice$1(events, start, 2, slice);
      }
 
      index = -1;
@@ -33133,7 +33133,7 @@ var MarkdownInput = (function (exports) {
          return contentEnd(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          return effects.check(
            continuationConstruct,
            contentContinue,
@@ -33176,12 +33176,12 @@ var MarkdownInput = (function (exports) {
        effects.enter('lineEnding');
        effects.consume(code);
        effects.exit('lineEnding');
-       return factorySpace(effects, prefixed, 'linePrefix')
+       return factorySpace$1(effects, prefixed, 'linePrefix')
      }
      /** @type {State} */
 
      function prefixed(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          return nok(code)
        }
 
@@ -33283,7 +33283,7 @@ var MarkdownInput = (function (exports) {
          return destinationEnclosedBefore(code)
        }
 
-       if (code === null || code === 60 || markdownLineEnding(code)) {
+       if (code === null || code === 60 || markdownLineEnding$1(code)) {
          return nok(code)
        }
 
@@ -33412,7 +33412,7 @@ var MarkdownInput = (function (exports) {
          return ok
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.enter('lineEnding');
          effects.consume(code);
          effects.exit('lineEnding');
@@ -33431,7 +33431,7 @@ var MarkdownInput = (function (exports) {
          code === null ||
          code === 91 ||
          code === 93 ||
-         markdownLineEnding(code) ||
+         markdownLineEnding$1(code) ||
          size++ > 999
        ) {
          effects.exit('chunkString');
@@ -33439,7 +33439,7 @@ var MarkdownInput = (function (exports) {
        }
 
        effects.consume(code);
-       data = data || !markdownSpace(code);
+       data = data || !markdownSpace$1(code);
        return code === 92 ? labelEscape : label
      }
      /** @type {State} */
@@ -33511,11 +33511,11 @@ var MarkdownInput = (function (exports) {
          return nok(code)
        } // Note: blank lines can’t exist in content.
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.enter('lineEnding');
          effects.consume(code);
          effects.exit('lineEnding');
-         return factorySpace(effects, atTitleBreak, 'linePrefix')
+         return factorySpace$1(effects, atTitleBreak, 'linePrefix')
        }
 
        effects.enter('chunkString', {
@@ -33526,7 +33526,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function title(code) {
-       if (code === marker || code === null || markdownLineEnding(code)) {
+       if (code === marker || code === null || markdownLineEnding$1(code)) {
          effects.exit('chunkString');
          return atTitleBreak(code)
        }
@@ -33562,7 +33562,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function start(code) {
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.enter('lineEnding');
          effects.consume(code);
          effects.exit('lineEnding');
@@ -33570,8 +33570,8 @@ var MarkdownInput = (function (exports) {
          return start
        }
 
-       if (markdownSpace(code)) {
-         return factorySpace(
+       if (markdownSpace$1(code)) {
+         return factorySpace$1(
            effects,
            start,
            seen ? 'linePrefix' : 'lineSuffix'
@@ -33639,8 +33639,8 @@ var MarkdownInput = (function (exports) {
              effects,
              effects.attempt(
                titleConstruct,
-               factorySpace(effects, after, 'whitespace'),
-               factorySpace(effects, after, 'whitespace')
+               factorySpace$1(effects, after, 'whitespace'),
+               factorySpace$1(effects, after, 'whitespace')
              ),
              nok,
              'definitionDestination',
@@ -33657,7 +33657,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function after(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('definition');
 
          if (!self.parser.defined.includes(identifier)) {
@@ -33687,7 +33687,7 @@ var MarkdownInput = (function (exports) {
        if (code === 34 || code === 39 || code === 40) {
          return factoryTitle(
            effects,
-           factorySpace(effects, after, 'whitespace'),
+           factorySpace$1(effects, after, 'whitespace'),
            nok,
            'definitionTitle',
            'definitionTitleMarker',
@@ -33700,7 +33700,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function after(code) {
-       return code === null || markdownLineEnding(code) ? ok(code) : nok(code)
+       return code === null || markdownLineEnding$1(code) ? ok(code) : nok(code)
      }
    }
 
@@ -33730,7 +33730,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function open(code) {
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          effects.exit('escapeMarker');
          effects.exit('hardBreakEscape');
          return ok(code)
@@ -33799,7 +33799,7 @@ var MarkdownInput = (function (exports) {
          // @ts-expect-error Constants are fine to assign.
          contentType: 'text'
        };
-       splice(events, contentStart, contentEnd - contentStart + 1, [
+       splice$1(events, contentStart, contentEnd - contentStart + 1, [
          ['enter', content, context],
          ['enter', text, context],
          ['exit', text, context],
@@ -33845,13 +33845,13 @@ var MarkdownInput = (function (exports) {
          return sequence(code)
        }
 
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('atxHeading');
          return ok(code)
        }
 
-       if (markdownSpace(code)) {
-         return factorySpace(effects, headingBreak, 'whitespace')(code)
+       if (markdownSpace$1(code)) {
+         return factorySpace$1(effects, headingBreak, 'whitespace')(code)
        }
 
        effects.enter('atxHeadingText');
@@ -34187,7 +34187,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function completeClosingTagAfter(code) {
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return completeClosingTagAfter
        }
@@ -34207,7 +34207,7 @@ var MarkdownInput = (function (exports) {
          return completeAttributeName
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return completeAttributeNameBefore
        }
@@ -34238,7 +34238,7 @@ var MarkdownInput = (function (exports) {
          return completeAttributeValueBefore
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return completeAttributeNameAfter
        }
@@ -34264,7 +34264,7 @@ var MarkdownInput = (function (exports) {
          return completeAttributeValueQuoted
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return completeAttributeValueBefore
        }
@@ -34275,7 +34275,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function completeAttributeValueQuoted(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          return nok(code)
        }
 
@@ -34309,7 +34309,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function completeAttributeValueQuotedAfter(code) {
-       if (code === 47 || code === 62 || markdownSpace(code)) {
+       if (code === 47 || code === 62 || markdownSpace$1(code)) {
          return completeAttributeNameBefore(code)
        }
 
@@ -34328,12 +34328,12 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function completeAfter(code) {
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return completeAfter
        }
 
-       return code === null || markdownLineEnding(code)
+       return code === null || markdownLineEnding$1(code)
          ? continuation(code)
          : nok(code)
      }
@@ -34365,7 +34365,7 @@ var MarkdownInput = (function (exports) {
          return continuationCharacterDataInside
        }
 
-       if (markdownLineEnding(code) && (kind === 6 || kind === 7)) {
+       if (markdownLineEnding$1(code) && (kind === 6 || kind === 7)) {
          return effects.check(
            nextBlankConstruct,
            continuationClose,
@@ -34373,7 +34373,7 @@ var MarkdownInput = (function (exports) {
          )(code)
        }
 
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          return continuationAtLineEnding(code)
        }
 
@@ -34393,7 +34393,7 @@ var MarkdownInput = (function (exports) {
          return done(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          return effects.attempt(
            {
              tokenize: htmlLineEnd,
@@ -34490,7 +34490,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function continuationClose(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('htmlFlowData');
          return done(code)
        }
@@ -34516,7 +34516,7 @@ var MarkdownInput = (function (exports) {
        effects.enter('lineEndingBlank');
        effects.consume(code);
        effects.exit('lineEndingBlank');
-       return effects.attempt(blankLine, ok, nok)
+       return effects.attempt(blankLine$1, ok, nok)
      }
    }
 
@@ -34649,7 +34649,7 @@ var MarkdownInput = (function (exports) {
          return commentClose
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = comment;
          return atLineEnding(code)
        }
@@ -34689,7 +34689,7 @@ var MarkdownInput = (function (exports) {
          return cdataClose
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = cdata;
          return atLineEnding(code)
        }
@@ -34728,7 +34728,7 @@ var MarkdownInput = (function (exports) {
          return end(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = declaration;
          return atLineEnding(code)
        }
@@ -34748,7 +34748,7 @@ var MarkdownInput = (function (exports) {
          return instructionClose
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = instruction;
          return atLineEnding(code)
        }
@@ -34784,12 +34784,12 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function tagCloseBetween(code) {
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = tagCloseBetween;
          return atLineEnding(code)
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return tagCloseBetween
        }
@@ -34823,12 +34823,12 @@ var MarkdownInput = (function (exports) {
          return tagOpenAttributeName
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = tagOpenBetween;
          return atLineEnding(code)
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return tagOpenBetween
        }
@@ -34859,12 +34859,12 @@ var MarkdownInput = (function (exports) {
          return tagOpenAttributeValueBefore
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = tagOpenAttributeNameAfter;
          return atLineEnding(code)
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return tagOpenAttributeNameAfter
        }
@@ -34890,12 +34890,12 @@ var MarkdownInput = (function (exports) {
          return tagOpenAttributeValueQuoted
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = tagOpenAttributeValueBefore;
          return atLineEnding(code)
        }
 
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.consume(code);
          return tagOpenAttributeValueBefore
        }
@@ -34916,7 +34916,7 @@ var MarkdownInput = (function (exports) {
          return nok(code)
        }
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          returnState = tagOpenAttributeValueQuoted;
          return atLineEnding(code)
        }
@@ -34963,7 +34963,7 @@ var MarkdownInput = (function (exports) {
        effects.enter('lineEnding');
        effects.consume(code);
        effects.exit('lineEnding');
-       return factorySpace(
+       return factorySpace$1(
          effects,
          afterPrefix,
          'linePrefix',
@@ -35144,7 +35144,7 @@ var MarkdownInput = (function (exports) {
      media = push(media, events.slice(close + 1)); // Media close.
 
      media = push(media, [['exit', group, context]]);
-     splice(events, open, events.length, media);
+     splice$1(events, open, events.length, media);
      return events
    }
    /** @type {Tokenizer} */
@@ -35471,7 +35471,7 @@ var MarkdownInput = (function (exports) {
        effects.enter('lineEnding');
        effects.consume(code);
        effects.exit('lineEnding');
-       return factorySpace(effects, ok, 'linePrefix')
+       return factorySpace$1(effects, ok, 'linePrefix')
      }
    }
 
@@ -35510,11 +35510,11 @@ var MarkdownInput = (function (exports) {
          return sequence(code)
        }
 
-       if (markdownSpace(code)) {
-         return factorySpace(effects, atBreak, 'whitespace')(code)
+       if (markdownSpace$1(code)) {
+         return factorySpace$1(effects, atBreak, 'whitespace')(code)
        }
 
-       if (size < 3 || (code !== null && !markdownLineEnding(code))) {
+       if (size < 3 || (code !== null && !markdownLineEnding$1(code))) {
          return nok(code)
        }
 
@@ -35561,8 +35561,8 @@ var MarkdownInput = (function (exports) {
    };
    /** @type {Construct} */
 
-   const indentConstruct = {
-     tokenize: tokenizeIndent,
+   const indentConstruct$1 = {
+     tokenize: tokenizeIndent$1,
      partial: true
    };
    /**
@@ -35646,7 +35646,7 @@ var MarkdownInput = (function (exports) {
        effects.exit('listItemMarker');
        self.containerState.marker = self.containerState.marker || code;
        return effects.check(
-         blankLine, // Can’t be empty when interrupting.
+         blankLine$1, // Can’t be empty when interrupting.
          self.interrupt ? nok : onBlank,
          effects.attempt(
            listItemPrefixWhitespaceConstruct,
@@ -35665,7 +35665,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function otherPrefix(code) {
-       if (markdownSpace(code)) {
+       if (markdownSpace$1(code)) {
          effects.enter('listItemPrefixWhitespace');
          effects.consume(code);
          effects.exit('listItemPrefixWhitespace');
@@ -35691,7 +35691,7 @@ var MarkdownInput = (function (exports) {
    function tokenizeListContinuation(effects, ok, nok) {
      const self = this;
      self.containerState._closeFlow = undefined;
-     return effects.check(blankLine, onBlank, notBlank)
+     return effects.check(blankLine$1, onBlank, notBlank)
      /** @type {State} */
 
      function onBlank(code) {
@@ -35700,7 +35700,7 @@ var MarkdownInput = (function (exports) {
          self.containerState.initialBlankLine; // We have a blank line.
        // Still, try to consume at most the items size.
 
-       return factorySpace(
+       return factorySpace$1(
          effects,
          ok,
          'listItemIndent',
@@ -35710,7 +35710,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
 
      function notBlank(code) {
-       if (self.containerState.furtherBlankLines || !markdownSpace(code)) {
+       if (self.containerState.furtherBlankLines || !markdownSpace$1(code)) {
          self.containerState.furtherBlankLines = undefined;
          self.containerState.initialBlankLine = undefined;
          return notInCurrentItem(code)
@@ -35718,7 +35718,7 @@ var MarkdownInput = (function (exports) {
 
        self.containerState.furtherBlankLines = undefined;
        self.containerState.initialBlankLine = undefined;
-       return effects.attempt(indentConstruct, ok, notInCurrentItem)(code)
+       return effects.attempt(indentConstruct$1, ok, notInCurrentItem)(code)
      }
      /** @type {State} */
 
@@ -35727,7 +35727,7 @@ var MarkdownInput = (function (exports) {
        self.containerState._closeFlow = true; // As we’re closing flow, we’re no longer interrupting.
 
        self.interrupt = undefined;
-       return factorySpace(
+       return factorySpace$1(
          effects,
          effects.attempt(list$2, ok, nok),
          'linePrefix',
@@ -35742,9 +35742,9 @@ var MarkdownInput = (function (exports) {
     * @this {TokenizeContextWithState}
     */
 
-   function tokenizeIndent(effects, ok, nok) {
+   function tokenizeIndent$1(effects, ok, nok) {
      const self = this;
-     return factorySpace(
+     return factorySpace$1(
        effects,
        afterPrefix,
        'listItemIndent',
@@ -35776,7 +35776,7 @@ var MarkdownInput = (function (exports) {
 
    function tokenizeListItemPrefixWhitespace(effects, ok, nok) {
      const self = this;
-     return factorySpace(
+     return factorySpace$1(
        effects,
        afterPrefix,
        'listItemPrefixWhitespace',
@@ -35788,7 +35788,7 @@ var MarkdownInput = (function (exports) {
 
      function afterPrefix(code) {
        const tail = self.events[self.events.length - 1];
-       return !markdownSpace(code) &&
+       return !markdownSpace$1(code) &&
          tail &&
          tail[1].type === 'listItemPrefixWhitespace'
          ? ok(code)
@@ -35915,12 +35915,12 @@ var MarkdownInput = (function (exports) {
        }
 
        effects.exit('setextHeadingLineSequence');
-       return factorySpace(effects, closingSequenceEnd, 'lineSuffix')(code)
+       return factorySpace$1(effects, closingSequenceEnd, 'lineSuffix')(code)
      }
      /** @type {State} */
 
      function closingSequenceEnd(code) {
-       if (code === null || markdownLineEnding(code)) {
+       if (code === null || markdownLineEnding$1(code)) {
          effects.exit('setextHeadingLine');
          return ok(code)
        }
@@ -35943,13 +35943,13 @@ var MarkdownInput = (function (exports) {
      const self = this;
      const initial = effects.attempt(
        // Try to parse a blank line.
-       blankLine,
+       blankLine$1,
        atBlankEnding,
        // Try to parse initial flow (essentially, only code).
        effects.attempt(
          this.parser.constructs.flowInitial,
          afterConstruct,
-         factorySpace(
+         factorySpace$1(
            effects,
            effects.attempt(
              this.parser.constructs.flow,
@@ -35966,7 +35966,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
      function atBlankEnding(code) {
        ok$1(
-         code === codes.eof || markdownLineEnding(code),
+         code === codes.eof || markdownLineEnding$1(code),
          'expected eol or eof'
        );
 
@@ -35985,7 +35985,7 @@ var MarkdownInput = (function (exports) {
      /** @type {State} */
      function afterConstruct(code) {
        ok$1(
-         code === codes.eof || markdownLineEnding(code),
+         code === codes.eof || markdownLineEnding$1(code),
          'expected eol or eof'
        );
 
@@ -37269,7 +37269,7 @@ var MarkdownInput = (function (exports) {
          'expected last token to be open'
        );
 
-       if (markdownLineEnding(code)) {
+       if (markdownLineEnding$1(code)) {
          point.line++;
          point.column = 1;
          point.offset += code === codes.carriageReturnLineFeed ? 2 : 1;
@@ -37517,7 +37517,7 @@ var MarkdownInput = (function (exports) {
        }
 
        if (construct.resolve) {
-         splice(
+         splice$1(
            context.events,
            from,
            context.events.length - from,
@@ -37997,6 +37997,5042 @@ var MarkdownInput = (function (exports) {
          )
        }
      );
+
+   /**
+    * @typedef {import('micromark-util-types').Code} Code
+    */
+   /**
+    * Check whether a character code is a markdown line ending.
+    *
+    * A **markdown line ending** is the virtual characters M-0003 CARRIAGE RETURN
+    * LINE FEED (CRLF), M-0004 LINE FEED (LF) and M-0005 CARRIAGE RETURN (CR).
+    *
+    * In micromark, the actual character U+000A LINE FEED (LF) and U+000D CARRIAGE
+    * RETURN (CR) are replaced by these virtual characters depending on whether
+    * they occurred together.
+    *
+    * @param {Code} code
+    * @returns {code is number}
+    */
+
+   function markdownLineEnding(code) {
+     return code !== null && code < -2
+   }
+   /**
+    * Check whether a character code is a markdown space.
+    *
+    * A **markdown space** is the concrete character U+0020 SPACE (SP) and the
+    * virtual characters M-0001 VIRTUAL SPACE (VS) and M-0002 HORIZONTAL TAB (HT).
+    *
+    * In micromark, the actual character U+0009 CHARACTER TABULATION (HT) is
+    * replaced by one M-0002 HORIZONTAL TAB (HT) and between 0 and 3 M-0001 VIRTUAL
+    * SPACE (VS) characters, depending on the column at which the tab occurred.
+    *
+    * @param {Code} code
+    * @returns {code is number}
+    */
+
+   function markdownSpace(code) {
+     return code === -2 || code === -1 || code === 32
+   }
+
+   /**
+    * @typedef {import('micromark-util-types').Effects} Effects
+    * @typedef {import('micromark-util-types').State} State
+    */
+   /**
+    * @param {Effects} effects
+    * @param {State} ok
+    * @param {string} type
+    * @param {number} [max=Infinity]
+    * @returns {State}
+    */
+
+   function factorySpace(effects, ok, type, max) {
+     const limit = max ? max - 1 : Number.POSITIVE_INFINITY;
+     let size = 0;
+     return start
+     /** @type {State} */
+
+     function start(code) {
+       if (markdownSpace(code)) {
+         effects.enter(type);
+         return prefix(code)
+       }
+
+       return ok(code)
+     }
+     /** @type {State} */
+
+     function prefix(code) {
+       if (markdownSpace(code) && size++ < limit) {
+         effects.consume(code);
+         return prefix
+       }
+
+       effects.exit(type);
+       return ok(code)
+     }
+   }
+
+   /**
+    * Like `Array#splice`, but smarter for giant arrays.
+    *
+    * `Array#splice` takes all items to be inserted as individual argument which
+    * causes a stack overflow in V8 when trying to insert 100k items for instance.
+    *
+    * Otherwise, this does not return the removed items, and takes `items` as an
+    * array instead of rest parameters.
+    *
+    * @template {unknown} T
+    * @param {T[]} list
+    * @param {number} start
+    * @param {number} remove
+    * @param {T[]} items
+    * @returns {void}
+    */
+   function splice(list, start, remove, items) {
+     const end = list.length;
+     let chunkStart = 0;
+     /** @type {unknown[]} */
+
+     let parameters; // Make start between zero and `end` (included).
+
+     if (start < 0) {
+       start = -start > end ? 0 : end + start;
+     } else {
+       start = start > end ? end : start;
+     }
+
+     remove = remove > 0 ? remove : 0; // No need to chunk the items if there’s only a couple (10k) items.
+
+     if (items.length < 10000) {
+       parameters = Array.from(items);
+       parameters.unshift(start, remove) // @ts-expect-error Hush, it’s fine.
+       ;[].splice.apply(list, parameters);
+     } else {
+       // Delete `remove` items starting from `start`
+       if (remove) [].splice.apply(list, [start, remove]); // Insert the items in chunks to not cause stack overflows.
+
+       while (chunkStart < items.length) {
+         parameters = items.slice(chunkStart, chunkStart + 10000);
+         parameters.unshift(start, 0) // @ts-expect-error Hush, it’s fine.
+         ;[].splice.apply(list, parameters);
+         chunkStart += 10000;
+         start += 10000;
+       }
+     }
+   }
+
+   /**
+    * @typedef {import('micromark-util-types').Construct} Construct
+    * @typedef {import('micromark-util-types').Tokenizer} Tokenizer
+    * @typedef {import('micromark-util-types').State} State
+    */
+
+   /** @type {Construct} */
+   const blankLine = {
+     tokenize: tokenizeBlankLine,
+     partial: true
+   };
+   /** @type {Tokenizer} */
+
+   function tokenizeBlankLine(effects, ok, nok) {
+     return factorySpace(effects, afterWhitespace, 'linePrefix')
+     /** @type {State} */
+
+     function afterWhitespace(code) {
+       return code === null || markdownLineEnding(code) ? ok(code) : nok(code)
+     }
+   }
+
+   /// <reference lib="dom" />
+
+   /* eslint-env browser */
+
+   document.createElement('i');
+
+   const tokenTypes = {
+     defList: 'defList',
+     defListTerm: 'defListTerm',
+     defListDescriptionMarker: 'defListDescriptionMarker',
+     defListDescriptionPrefix: 'defListDescriptionPrefix',
+     defListDescriptionPrefixWhitespace: 'defListDescriptionPrefixWhitespace',
+     defListDescription: 'defListDescription'
+   };
+
+   function analyzeDefTermFlow(flowToken) {
+     const flowEvents = flowToken._tokenizer.events;
+     let paraEnterIndex;
+     let paraExitIndex;
+
+     for (let i = flowEvents.length - 1; i >= 0; i--) {
+       const tmpEvent = flowEvents[i];
+
+       if (tmpEvent[1].type === "paragraph") {
+         if (tmpEvent[0] === 'exit') paraExitIndex = i;else {
+           paraEnterIndex = i;
+           break;
+         }
+       }
+     }
+
+     return {
+       flowEvents,
+       paraEnterIndex,
+       paraExitIndex
+     };
+   }
+
+   function getSubtokensForDefTerm(termFlowToken) {
+     const flowEvents = termFlowToken._tokenizer.events;
+     const leadingChildEvents = [];
+     const trailingChildEvents = [];
+     const termChildEvents = [];
+     const removedEventIndexes = [];
+     let pEnterIndex;
+     let pExitIndex;
+     let contentEnterIndex;
+     let contentExitIndex;
+     const paragraphEvents = [];
+     const contentEvents = [];
+
+     for (let i = flowEvents.length - 1; i >= 0; i--) {
+       const tmpEvent = flowEvents[i];
+       const tmpToken = tmpEvent[1];
+
+       if (tmpToken.start.offset >= termFlowToken.end.offset) {
+         removedEventIndexes.push(i);
+         continue;
+       }
+
+       switch (tmpToken.type) {
+         case "paragraph":
+           if (pEnterIndex == null && tmpEvent[0] === 'enter') pEnterIndex = i;else if (pExitIndex == null && tmpEvent[0] === 'exit') pExitIndex = i;
+           break;
+
+         case "content":
+           if (tmpEvent[0] === 'enter') contentEnterIndex = i;else if (tmpEvent[0] === 'exit') contentExitIndex = i;
+           break;
+
+         default:
+           if (termFlowToken.start.offset <= tmpToken.start.offset && tmpToken.end.offset <= termFlowToken.end.offset) {
+             if (tmpToken.type === "chunkText") {
+               // unlink chunkText token
+               if (tmpToken.previous && tmpToken.previous.start.offset < termFlowToken.start.offset) {
+                 tmpToken.previous.next = undefined;
+                 tmpToken.previous = undefined;
+               }
+
+               if (tmpToken.next && termFlowToken.end.offset < tmpToken.next.end.offset) {
+                 tmpToken.next.previous = undefined;
+                 tmpToken.next = undefined;
+               }
+             }
+
+             if (pEnterIndex == null && pExitIndex == null) trailingChildEvents.unshift(tmpEvent);else if (pEnterIndex == null && pExitIndex != null) termChildEvents.unshift(tmpEvent);else leadingChildEvents.unshift(tmpEvent);
+             removedEventIndexes.push(i);
+           } else {
+             if (pEnterIndex == null && pExitIndex != null) paragraphEvents.unshift(tmpEvent);
+             if (contentEnterIndex == null && contentExitIndex != null) contentEvents.unshift(tmpEvent);
+           }
+
+       }
+
+       if (tmpToken.end.offset <= termFlowToken.start.offset) break;
+     } // modify paragraph and content
+
+
+     if (pExitIndex != null) {
+       if (paragraphEvents.length >= 1) {
+         // adjust end position
+         flowEvents[pExitIndex][1].end = Object.assign({}, paragraphEvents[paragraphEvents.length - 1][1].end);
+       } else if (pEnterIndex != null) {
+         // remove paragraph
+         removedEventIndexes.push(pEnterIndex, pExitIndex);
+       }
+     }
+
+     if (contentExitIndex != null) {
+       if (contentEvents.length >= 1) {
+         // adjust end position
+         flowEvents[contentExitIndex][1].end = Object.assign({}, contentEvents[contentEvents.length - 1][1].end);
+       } else if (contentEnterIndex != null) {
+         // remove content
+         removedEventIndexes.push(contentEnterIndex, contentExitIndex);
+       }
+     } // remove subtokens from original flowEvents
+
+
+     removedEventIndexes.sort((a, b) => b - a);
+
+     for (const i of removedEventIndexes) {
+       splice(flowEvents, i, 1, []);
+     }
+
+     return {
+       leadingChildEvents,
+       termChildEvents,
+       trailingChildEvents
+     };
+   }
+
+   function subtokenizeDefTerm(events, flowEnterIndex, flowExitIndex) {
+     /**
+      * Subtokenize chunkFlow events
+      */
+     const termFlowToken = events[flowEnterIndex][1];
+
+     // unlink
+     if (termFlowToken.previous != null) {
+       termFlowToken.previous.next = undefined;
+       termFlowToken.previous = undefined;
+     } // get subtokens
+
+
+     const subtokens = getSubtokensForDefTerm(termFlowToken); // subtokenize chunkFlow event with childEvents
+
+     const termToken = {
+       type: tokenTypes.defListTerm,
+       start: Object.assign({}, termFlowToken.start),
+       end: Object.assign({}, termFlowToken.end)
+     };
+     const context = events[flowExitIndex][2];
+     const childEvents = [];
+     childEvents.push(...subtokens.leadingChildEvents);
+
+     if (subtokens.termChildEvents.length >= 1) {
+       childEvents.push(['enter', termToken, context]);
+       childEvents.push(...subtokens.termChildEvents);
+       childEvents.push(['exit', termToken, context]);
+     }
+
+     childEvents.push(...subtokens.trailingChildEvents);
+     splice(events, flowExitIndex, 1, []);
+     splice(events, flowEnterIndex, 1, childEvents);
+     return events;
+   }
+
+   const ignorablePrefixTypes = new Set(["linePrefix", "blockQuotePrefix", "blockQuoteMarker", "blockQuotePrefixWhitespace"]);
+   const defListConstruct = {
+     name: 'defList',
+     tokenize: tokenizeDefListStart,
+     continuation: {
+       tokenize: tokenizeDefListContinuation
+     },
+     resolveAll: resolveAllDefinitionTerm,
+     exit: tokenizeDefListEnd
+   };
+   const defListDescriptionPrefixWhitespaceConstruct = {
+     tokenize: tokenizeDefListDescriptionPrefixWhitespace,
+     partial: true
+   };
+   const indentConstruct = {
+     tokenize: tokenizeIndent,
+     partial: true
+   };
+   const defList = {
+     document: {
+       [58]: defListConstruct,
+       null: []
+     }
+   };
+
+   function resolveAllDefinitionTerm(events, context) {
+     /**
+      * Resolves all detList events
+      *
+      * @remarks
+      * For each defList events, this does:
+      * - create defListTerm event
+      * - create defListDescription event
+      *
+      * And then merge adjacent lists
+      *
+      */
+     let index = 0;
+
+     while (index < events.length) {
+       const event = events[index];
+
+       if (event[0] === 'enter' && event[1].type === tokenTypes.defList) {
+         // create defListTerms and defListDescriptions inside defList
+         index += resolveDefList(index, events, context);
+       }
+
+       index++;
+     } // merge definition lists
+
+
+     const dlStack = [];
+     index = 0;
+
+     while (index < events.length) {
+       const event = events[index];
+
+       if (event[0] === 'enter' && event[1].type === tokenTypes.defList) {
+         dlStack.push(event[1]);
+       }
+
+       if (event[0] === 'exit' && event[1].type === tokenTypes.defList) {
+         let defListFound = false;
+         let i = 1;
+
+         while (index + i < events.length) {
+           const forwardEvent = events[index + i];
+
+           if (forwardEvent[0] === 'enter' && forwardEvent[1].type === tokenTypes.defList) {
+             defListFound = true;
+             break;
+           } else if (!ignorablePrefixTypes.has(forwardEvent[1].type)) {
+             break;
+           }
+
+           i++;
+         }
+
+         if (defListFound) {
+           event[1].end = Object.assign({}, events[index + i][1].end);
+           splice(events, index, i + 1, []);
+           index -= i;
+         } else {
+           const token = dlStack.pop();
+           event[1] = token;
+         }
+       }
+
+       index++;
+     }
+
+     return events;
+   }
+
+   function resolveDefList(defList_start, events, context) {
+     /**
+      * Create defListTerms and defListDescriptions
+      *
+      * @returns Index offset to the end of current defList
+      *
+      */
+     let indexOffset = 0;
+     let defListDescriptionToken;
+     let expectFirstDescription = true;
+     let index = defList_start + 1;
+     index += resolveDefinitionTermTo(defList_start, events);
+
+     while (index < events.length) {
+       const event = events[index];
+
+       if (event[0] === 'enter' && event[1].type === tokenTypes.defList) {
+         index += resolveDefList(index, events, context);
+       }
+
+       if (event[0] === 'exit' && event[1].type === tokenTypes.defList) {
+         index += addDescriptionExit(index, events);
+         defListDescriptionToken = undefined;
+         indexOffset = index - defList_start;
+         break;
+       }
+
+       if (event[0] === 'exit' && event[1].type === tokenTypes.defListDescriptionPrefix) {
+         if (!expectFirstDescription) {
+           index += addDescriptionExit(index, events);
+           defListDescriptionToken = undefined;
+         }
+
+         index += addDescriptionEnter(index, events, event[1]._loose);
+         expectFirstDescription = false;
+       }
+
+       if (event[0] === 'enter' && event[1].type === tokenTypes.defListDescriptionPrefix) {
+         // mark loose definition description
+         if (events[index - 1][1].type === "lineEndingBlank") {
+           event[1]._loose = true;
+         } else if (events[index - 1][1].type === "chunkFlow") {
+           const flowEvents = events[index - 1][1]._tokenizer.events;
+
+           if (flowEvents[flowEvents.length - 1][1].type === "lineEndingBlank") {
+             event[1]._loose = true;
+           }
+         }
+       }
+
+       index++;
+     }
+
+     return indexOffset;
+
+     function addDescriptionEnter(index, events, loose) {
+       const indexOffset = 1;
+       defListDescriptionToken = {
+         type: tokenTypes.defListDescription,
+         start: Object.assign({}, events[index + 1][1].start),
+         end: Object.assign({}, events[index + 1][1].end),
+         _loose: loose
+       };
+       splice(events, index + 1, 0, [['enter', defListDescriptionToken, context]]);
+       return indexOffset;
+     }
+
+     function addDescriptionExit(index, events) {
+       const indexOffset = 1;
+       defListDescriptionToken.end = Object.assign({}, events[index - 1][1].end);
+       splice(events, index, 0, [['exit', defListDescriptionToken, context]]);
+       return indexOffset;
+     }
+   }
+
+   function createDefTermEvent(events, chunkFlowIndex, defListStartIndex, flagBlockQuote) {
+     /**
+      * Insert defListTerm and chunkFlow subtokenized events
+      *
+      * @returns Index at which defList enter event should be placed
+      *
+      */
+     const flow = analyzeDefTermFlow(events[chunkFlowIndex][1]);
+     const context = events[chunkFlowIndex][2];
+     const lazyLines = events[chunkFlowIndex][2].parser.lazy;
+     let newDefListStartIndex = 0;
+
+     if (flow.paraEnterIndex != null && flow.paraExitIndex != null) {
+       const paraStart = flow.flowEvents[flow.paraEnterIndex][1].start;
+       let flowExitIndex;
+
+       for (let i = chunkFlowIndex; i >= 0; i--) {
+         if (events[i][1].type !== "chunkFlow" || events[i][1].start.offset < paraStart.offset) {
+           newDefListStartIndex = i + 1;
+           break;
+         }
+
+         if (events[i][0] === 'exit' && flagBlockQuote && !lazyLines[events[i][1].start.line]) {
+           newDefListStartIndex = i + 1;
+           break;
+         }
+
+         if (events[i][0] === 'enter') {
+           subtokenizeDefTerm(events, i, flowExitIndex);
+           flowExitIndex = undefined;
+         } else {
+           flowExitIndex = i;
+         }
+       }
+     } else {
+       // for some reason there's any paragraph, so create dummy term
+       newDefListStartIndex = defListStartIndex;
+       const defListEnterEvent = events[defListStartIndex];
+       const termToken = {
+         type: tokenTypes.defListTerm,
+         start: Object.assign({}, defListEnterEvent[1].start),
+         end: Object.assign({}, defListEnterEvent[1].start)
+       };
+       splice(events, newDefListStartIndex, 0, [['enter', termToken, context], ['exit', termToken, context]]);
+     }
+
+     return newDefListStartIndex;
+   }
+
+   function resolveDefinitionTermTo(defListStartIndex, events) {
+     /**
+      * Create defListTerm for current defList
+      *
+      * @returns Index offset added by new events
+      *
+      */
+     let flowIndex;
+     let blockQuoteExit;
+     let blockQuoteExitIndex;
+
+     for (let i = defListStartIndex - 1; i >= 0; i--) {
+       if (ignorablePrefixTypes.has(events[i][1].type)) continue;
+
+       if (i === defListStartIndex - 1 && events[i][1].type === "blockQuote" && events[i][0] === 'exit') {
+         blockQuoteExitIndex = i;
+         blockQuoteExit = events[i];
+         continue;
+       }
+
+       if (events[i][1].type === "chunkFlow") {
+         flowIndex = i;
+       }
+
+       break;
+     }
+
+     // temporarily remove defList enter
+     const defListEnterEvent = events[defListStartIndex];
+     splice(events, defListStartIndex, 1, []); // temporarily remove blockQuote exit
+
+     if (blockQuoteExitIndex != null) {
+       splice(events, blockQuoteExitIndex, 1, []);
+     } // create and insert defListTerm events
+
+
+     let newDefListStartIndex = createDefTermEvent(events, flowIndex, defListStartIndex, blockQuoteExit != null); // put blockQuote exit
+
+     if (blockQuoteExitIndex != null) {
+       blockQuoteExit[1].end = Object.assign({}, events[newDefListStartIndex - 1][1].end);
+       splice(events, newDefListStartIndex, 0, [blockQuoteExit]);
+       newDefListStartIndex += 1;
+     } // insert defList enter at right position
+
+
+     defListEnterEvent[1].start = Object.assign({}, events[newDefListStartIndex][1].start);
+     splice(events, newDefListStartIndex, 0, [defListEnterEvent]);
+     return newDefListStartIndex - defListStartIndex;
+   }
+
+   function checkPossibleDefTerm(events) {
+     var _a;
+
+     if (events.length <= 1) return false;
+     const lastEvent = events[events.length - 1];
+     const lazyLines = lastEvent[2].parser.lazy;
+     let flagBlockQuote = false;
+     let termFlowStart;
+     let flowEvents;
+
+     for (let i = events.length - 1; i >= 0; i--) {
+       if (ignorablePrefixTypes.has(events[i][1].type)) {
+         continue;
+       }
+
+       if (i === events.length - 1 && events[i][1].type === "blockQuote" && events[i][0] === 'exit') {
+         /**
+          * something like:
+          *
+          * ```
+          * > blockquote
+          * term
+          * : description
+          * ```
+          */
+         flagBlockQuote = true;
+         continue;
+       }
+
+       if (events[i][1].type === "chunkFlow") {
+         flowEvents !== null && flowEvents !== void 0 ? flowEvents : flowEvents = (_a = events[i][1]._tokenizer) === null || _a === void 0 ? void 0 : _a.events;
+         termFlowStart = events[i];
+       } else {
+         break;
+       }
+     }
+
+     if (flowEvents != null && termFlowStart != null) {
+       let blanklines = 0;
+
+       for (let i = flowEvents.length - 1; i >= 0; i--) {
+         const flowEvent = flowEvents[i];
+         const tmpToken = flowEvent[1];
+         if (tmpToken.start.offset < termFlowStart[1].start.offset) break;
+
+         if (flowEvent[0] === 'enter' && tmpToken.type === "lineEndingBlank") {
+           if (blanklines >= 1) break;
+           blanklines++;
+         }
+
+         if (tmpToken.type !== "lineEnding" && tmpToken.type !== "linePrefix" && tmpToken.type !== "lineEndingBlank" && tmpToken.type !== "content") {
+           if (flagBlockQuote && !lazyLines[tmpToken.end.line]) {
+             return false;
+           }
+
+           return tmpToken.type === "paragraph" || tmpToken.type === "chunkContent";
+         }
+       }
+     }
+
+     return false;
+   }
+
+   function tokenizeDefListStart(effects, ok, nok) {
+     const self = this; // eslint-disable-line @typescript-eslint/no-this-alias
+
+     if (self.containerState == null) {
+       self.containerState = {};
+     }
+
+     const tail = self.events[self.events.length - 1];
+     let initialSize = tail && tail[1].type === "linePrefix" ? tail[2].sliceSerialize(tail[1], true).length : 0;
+
+     if (self.containerState.type == null) {
+       // start defList only when definition term found.
+       if (checkPossibleDefTerm(self.events)) {
+         effects.enter(tokenTypes.defList, {
+           _container: true
+         });
+         self.containerState.type = tokenTypes.defList;
+       } else {
+         return nok;
+       }
+     }
+
+     return start;
+
+     function start(code) {
+       var _a;
+
+       if (code !== 58) {
+         return nok(code);
+       }
+
+       effects.enter(tokenTypes.defListDescriptionPrefix, {
+         _loose: (_a = self.containerState) === null || _a === void 0 ? void 0 : _a.lastBlankLine
+       });
+       self.containerState.lastBlankLinke = undefined;
+       effects.enter(tokenTypes.defListDescriptionMarker);
+       effects.consume(code);
+       effects.exit(tokenTypes.defListDescriptionMarker);
+       return effects.check(blankLine, onBlank, effects.attempt(defListDescriptionPrefixWhitespaceConstruct, prefixEnd, otherPrefix));
+     }
+
+     function onBlank(code) {
+       self.containerState.initialBlankLine = true;
+       initialSize++;
+       return prefixEnd(code);
+     }
+
+     function otherPrefix(code) {
+       if (markdownSpace(code)) {
+         effects.enter(tokenTypes.defListDescriptionPrefixWhitespace);
+         effects.consume(code);
+         effects.exit(tokenTypes.defListDescriptionPrefixWhitespace);
+         return prefixEnd;
+       }
+
+       return nok(code);
+     }
+
+     function prefixEnd(code) {
+       self.containerState.size = initialSize + self.sliceSerialize(effects.exit(tokenTypes.defListDescriptionPrefix), true).length;
+       return ok(code);
+     }
+   }
+
+   function tokenizeDefListContinuation(effects, ok, nok) {
+     const self = this; // eslint-disable-line @typescript-eslint/no-this-alias
+
+     self.containerState._closeFlow = undefined;
+     return effects.check(blankLine, onBlank, notBlank);
+
+     function onBlank(code) {
+       self.containerState.furtherBlankLines = self.containerState.furtherBlankLines || self.containerState.initialBlankLine;
+       self.containerState.lastBlankLine = true;
+       return factorySpace(effects, ok, "linePrefix", self.containerState.size + 1)(code);
+     }
+
+     function notBlank(code) {
+       if (self.containerState.furtherBlankLines || !markdownSpace(code)) {
+         self.containerState.furtherBlankLines = undefined;
+         self.containerState.initialBlankLine = undefined;
+         return notInCurrentItem(code);
+       }
+
+       self.containerState.furtherBlankLines = undefined;
+       self.containerState.initialBlankLine = undefined;
+       self.containerState.lastBlankLine = undefined;
+       return effects.attempt(indentConstruct, ok, notInCurrentItem)(code);
+     }
+
+     function notInCurrentItem(code) {
+       self.containerState._closeFlow = true;
+       self.interrupt = undefined;
+       return factorySpace(effects, effects.attempt(defListConstruct, ok, nok), "linePrefix", self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4)(code);
+     }
+   }
+
+   function tokenizeIndent(effects, ok, nok) {
+     const self = this; // eslint-disable-line @typescript-eslint/no-this-alias
+
+     return factorySpace(effects, afterPrefix, "linePrefix", self.containerState.size + 1);
+
+     function afterPrefix(code) {
+       const tail = self.events[self.events.length - 1];
+       return tail && tail[1].type === "linePrefix" && tail[2].sliceSerialize(tail[1], true).length === self.containerState.size ? ok(code) : nok(code);
+     }
+   }
+
+   function tokenizeDefListDescriptionPrefixWhitespace(effects, ok, nok) {
+     const self = this; // eslint-disable-line @typescript-eslint/no-this-alias
+
+     return factorySpace(effects, afterPrefix, tokenTypes.defListDescriptionPrefixWhitespace, self.parser.constructs.disable.null.includes('codeIndented') ? undefined : 4 + 1);
+
+     function afterPrefix(code) {
+       const tail = self.events[self.events.length - 1];
+       return !markdownSpace(code) && tail && tail[1].type === tokenTypes.defListDescriptionPrefixWhitespace ? ok(code) : nok(code);
+     }
+   }
+
+   function tokenizeDefListEnd(effects) {
+     effects.exit(tokenTypes.defList);
+   }
+
+   const defListHtml = {
+     enter: {
+       [tokenTypes.defList]() {
+         this.lineEndingIfNeeded();
+         this.tag('<dl>');
+       },
+
+       [tokenTypes.defListTerm]() {
+         this.lineEndingIfNeeded();
+         this.tag('<dt>');
+       },
+
+       [tokenTypes.defListDescription](token) {
+         this.lineEndingIfNeeded();
+         this.tag('<dd>');
+         this.getData('tightStack').push(!token._loose);
+       }
+
+     },
+     exit: {
+       [tokenTypes.defList]() {
+         this.lineEndingIfNeeded();
+         this.tag('</dl>');
+       },
+
+       [tokenTypes.defListTerm]() {
+         this.tag('</dt>');
+       },
+
+       [tokenTypes.defListDescription]() {
+         this.getData('tightStack').pop();
+         this.tag('</dd>');
+       }
+
+     }
+   };
+
+   /**
+    * @typedef {import('unist').Point} Point
+    * @typedef {import('../types.js').TrackFields} TrackFields
+    */
+
+   /**
+    * Functions to track output positions.
+    * This info isn’t used yet but suchs functionality allows line wrapping,
+    * and theoretically source maps (though, is there practical use in that?).
+    *
+    * @param {TrackFields} options_
+    */
+   function track(options_) {
+     // Defaults are used to prevent crashes when older utilities somehow activate
+     // this code.
+     /* c8 ignore next 5 */
+     const options = options_ || {};
+     const now = options.now || {};
+     let lineShift = options.lineShift || 0;
+     let line = now.line || 1;
+     let column = now.column || 1;
+
+     return {move, current, shift}
+
+     /**
+      * Get the current tracked info.
+      *
+      * @returns {{now: Point, lineShift: number}}
+      */
+     function current() {
+       return {now: {line, column}, lineShift}
+     }
+
+     /**
+      * Define an increased line shift (the typical indent for lines).
+      *
+      * @param {number} value
+      */
+     function shift(value) {
+       lineShift += value;
+     }
+
+     /**
+      * Move past a string.
+      *
+      * @param {string} value
+      * @returns {string}
+      */
+     function move(value = '') {
+       const chunks = value.split(/\r?\n|\r/g);
+       const tail = chunks[chunks.length - 1];
+       line += chunks.length - 1;
+       column =
+         chunks.length === 1 ? column + tail.length : 1 + tail.length + lineShift;
+       return value
+     }
+   }
+
+   /**
+    * @typedef {import('../types.js').Node} Node
+    * @typedef {import('../types.js').Parent} Parent
+    * @typedef {import('../types.js').SafeOptions} SafeOptions
+    * @typedef {import('../types.js').Context} Context
+    */
+
+   /**
+    * @param {Parent} parent
+    * @param {Context} context
+    * @param {SafeOptions} safeOptions
+    * @returns {string}
+    */
+   function containerPhrasing(parent, context, safeOptions) {
+     const indexStack = context.indexStack;
+     const children = parent.children || [];
+     /** @type {Array<string>} */
+     const results = [];
+     let index = -1;
+     let before = safeOptions.before;
+
+     indexStack.push(-1);
+     let tracker = track(safeOptions);
+
+     while (++index < children.length) {
+       const child = children[index];
+       /** @type {string} */
+       let after;
+
+       indexStack[indexStack.length - 1] = index;
+
+       if (index + 1 < children.length) {
+         // @ts-expect-error: hush, it’s actually a `zwitch`.
+         let handle = context.handle.handlers[children[index + 1].type];
+         if (handle && handle.peek) handle = handle.peek;
+         after = handle
+           ? handle(children[index + 1], parent, context, {
+               before: '',
+               after: '',
+               ...tracker.current()
+             }).charAt(0)
+           : '';
+       } else {
+         after = safeOptions.after;
+       }
+
+       // In some cases, html (text) can be found in phrasing right after an eol.
+       // When we’d serialize that, in most cases that would be seen as html
+       // (flow).
+       // As we can’t escape or so to prevent it from happening, we take a somewhat
+       // reasonable approach: replace that eol with a space.
+       // See: <https://github.com/syntax-tree/mdast-util-to-markdown/issues/15>
+       if (
+         results.length > 0 &&
+         (before === '\r' || before === '\n') &&
+         child.type === 'html'
+       ) {
+         results[results.length - 1] = results[results.length - 1].replace(
+           /(\r?\n|\r)$/,
+           ' '
+         );
+         before = ' ';
+
+         // To do: does this work to reset tracker?
+         tracker = track(safeOptions);
+         tracker.move(results.join(''));
+       }
+
+       results.push(
+         tracker.move(
+           context.handle(child, parent, context, {
+             ...tracker.current(),
+             before,
+             after
+           })
+         )
+       );
+
+       before = results[results.length - 1].slice(-1);
+     }
+
+     indexStack.pop();
+
+     return results.join('')
+   }
+
+   /**
+    * @typedef {import('../types.js').Node} Node
+    * @typedef {import('../types.js').Parent} Parent
+    * @typedef {import('../types.js').Join} Join
+    * @typedef {import('../types.js').Context} Context
+    * @typedef {import('../types.js').TrackFields} TrackFields
+    */
+
+   /**
+    * @param {Parent} parent
+    * @param {Context} context
+    * @param {TrackFields} safeOptions
+    * @returns {string}
+    */
+   function containerFlow(parent, context, safeOptions) {
+     const indexStack = context.indexStack;
+     const children = parent.children || [];
+     const tracker = track(safeOptions);
+     /** @type {Array<string>} */
+     const results = [];
+     let index = -1;
+
+     indexStack.push(-1);
+
+     while (++index < children.length) {
+       const child = children[index];
+
+       indexStack[indexStack.length - 1] = index;
+
+       results.push(
+         tracker.move(
+           context.handle(child, parent, context, {
+             before: '\n',
+             after: '\n',
+             ...tracker.current()
+           })
+         )
+       );
+
+       if (child.type !== 'list') {
+         context.bulletLastUsed = undefined;
+       }
+
+       if (index < children.length - 1) {
+         results.push(tracker.move(between(child, children[index + 1])));
+       }
+     }
+
+     indexStack.pop();
+
+     return results.join('')
+
+     /**
+      * @param {Node} left
+      * @param {Node} right
+      * @returns {string}
+      */
+     function between(left, right) {
+       let index = context.join.length;
+
+       while (index--) {
+         const result = context.join[index](left, right, parent, context);
+
+         if (result === true || result === 1) {
+           break
+         }
+
+         if (typeof result === 'number') {
+           return '\n'.repeat(1 + result)
+         }
+
+         if (result === false) {
+           return '\n\n<!---->\n\n'
+         }
+       }
+
+       return '\n\n'
+     }
+   }
+
+   /**
+    * @callback Map
+    * @param {string} value
+    * @param {number} line
+    * @param {boolean} blank
+    * @returns {string}
+    */
+
+   const eol = /\r?\n|\r/g;
+
+   /**
+    * @param {string} value
+    * @param {Map} map
+    * @returns {string}
+    */
+   function indentLines(value, map) {
+     /** @type {Array<string>} */
+     const result = [];
+     let start = 0;
+     let line = 0;
+     /** @type {RegExpExecArray|null} */
+     let match;
+
+     while ((match = eol.exec(value))) {
+       one(value.slice(start, match.index));
+       result.push(match[0]);
+       start = match.index + match[0].length;
+       line++;
+     }
+
+     one(value.slice(start));
+
+     return result.join('')
+
+     /**
+      * @param {string} value
+      */
+     function one(value) {
+       result.push(map(value, line, !value));
+     }
+   }
+
+   const defListHandler = (node, _parent, context) => {
+       const exit = context.enter('defList');
+       const value = containerFlow(node, context, {});
+       exit();
+       return value;
+   };
+   const defListTermHandler = (node, _parent, context) => {
+       const exit = context.enter('defListTerm');
+       const subexit = context.enter('phrasing');
+       const value = containerPhrasing(node, context, { before: '\n', after: '\n' });
+       subexit();
+       exit();
+       return value;
+   };
+   const defListDescriptionHandler = (node, _parent, context) => {
+       const exit = context.enter('defListDescription');
+       const subexit = context.enter('phrasing');
+       const value = indentLines(containerPhrasing(node, context, { before: '\n', after: '\n' }), map);
+       subexit();
+       exit();
+       return value;
+       function map(line, index, blank) {
+           if (index) {
+               return blank ? '' : ' '.repeat(4) + line;
+           }
+           return blank ? ':' + ' '.repeat(3) : ':' + ' '.repeat(3) + line;
+       }
+   };
+   const joinDefItems = (left, right, parent, _context) => {
+       if (parent.type !== 'defList') {
+           return;
+       }
+       if (left.type === 'defListDescription' && right.type === 'defListTerm') {
+           return 1;
+       }
+       return 'spread' in right && right.spread ? 1 : 0;
+   };
+   const defListToMarkdown = {
+       join: [joinDefItems],
+       unsafe: [{ character: ':', atBreak: true, inConstruct: ['defListTerm'] }],
+       handlers: {
+           defList: defListHandler,
+           defListTerm: defListTermHandler,
+           defListDescription: defListDescriptionHandler,
+       },
+   };
+
+   /**
+    * @typedef {import('unist').Node} Node
+    * @typedef {import('unist').Parent} Parent
+    * @typedef {import('unist').Literal} Literal
+    * @typedef {Object.<string, unknown>} Props
+    * @typedef {Array.<Node>|string} ChildrenOrValue
+    *
+    * @typedef {(<T extends string, P extends Record<string, unknown>, C extends Node[]>(type: T, props: P, children: C) => {type: T, children: C} & P)} BuildParentWithProps
+    * @typedef {(<T extends string, P extends Record<string, unknown>>(type: T, props: P, value: string) => {type: T, value: string} & P)} BuildLiteralWithProps
+    * @typedef {(<T extends string, P extends Record<string, unknown>>(type: T, props: P) => {type: T} & P)} BuildVoidWithProps
+    * @typedef {(<T extends string, C extends Node[]>(type: T, children: C) => {type: T, children: C})} BuildParent
+    * @typedef {(<T extends string>(type: T, value: string) => {type: T, value: string})} BuildLiteral
+    * @typedef {(<T extends string>(type: T) => {type: T})} BuildVoid
+    */
+
+   var u = /**
+    * @type {BuildVoid & BuildVoidWithProps & BuildLiteral & BuildLiteralWithProps & BuildParent & BuildParentWithProps}
+    */ (
+     /**
+      * @param {string} type Type of node
+      * @param {Props|ChildrenOrValue} [props] Additional properties for node (or `children` or `value`)
+      * @param {ChildrenOrValue} [value] `children` or `value` of node
+      * @returns {Node}
+      */
+     function (type, props, value) {
+       /** @type {Node} */
+       var node = {type: String(type)};
+
+       if (
+         (value === undefined || value === null) &&
+         (typeof props === 'string' || Array.isArray(props))
+       ) {
+         value = props;
+       } else {
+         Object.assign(node, props);
+       }
+
+       if (Array.isArray(value)) {
+         node.children = value;
+       } else if (value !== undefined && value !== null) {
+         node.value = String(value);
+       }
+
+       return node
+     }
+   );
+
+   /**
+    * @typedef {import('mdast').Root|import('mdast').Parent['children'][number]} MdastNode
+    * @typedef {import('./index.js').H} H
+    * @typedef {import('./index.js').Handler} Handler
+    * @typedef {import('./index.js').Content} Content
+    */
+
+   const own$7 = {}.hasOwnProperty;
+
+   /**
+    * Transform an unknown node.
+    * @type {Handler}
+    * @param {MdastNode} node
+    */
+   function unknown$3(h, node) {
+     const data = node.data || {};
+
+     if (
+       'value' in node &&
+       !(
+         own$7.call(data, 'hName') ||
+         own$7.call(data, 'hProperties') ||
+         own$7.call(data, 'hChildren')
+       )
+     ) {
+       return h.augment(node, u('text', node.value))
+     }
+
+     return h(node, 'div', all$4(h, node))
+   }
+
+   /**
+    * @type {Handler}
+    * @param {MdastNode} node
+    */
+   function one$3(h, node, parent) {
+     const type = node && node.type;
+     /** @type {Handler} */
+     let fn;
+
+     // Fail on non-nodes.
+     if (!type) {
+       throw new Error('Expected node, got `' + node + '`')
+     }
+
+     if (own$7.call(h.handlers, type)) {
+       fn = h.handlers[type];
+     } else if (h.passThrough && h.passThrough.includes(type)) {
+       fn = returnNode;
+     } else {
+       fn = h.unknownHandler;
+     }
+
+     return (typeof fn === 'function' ? fn : unknown$3)(h, node, parent)
+   }
+
+   /**
+    * @type {Handler}
+    * @param {MdastNode} node
+    */
+   function returnNode(h, node) {
+     // @ts-expect-error: Pass through custom node.
+     return 'children' in node ? {...node, children: all$4(h, node)} : node
+   }
+
+   /**
+    * @param {H} h
+    * @param {MdastNode} parent
+    */
+   function all$4(h, parent) {
+     /** @type {Array<Content>} */
+     const values = [];
+
+     if ('children' in parent) {
+       const nodes = parent.children;
+       let index = -1;
+
+       while (++index < nodes.length) {
+         const result = one$3(h, nodes[index], parent);
+
+         if (result) {
+           if (index && nodes[index - 1].type === 'break') {
+             if (!Array.isArray(result) && result.type === 'text') {
+               result.value = result.value.replace(/^\s+/, '');
+             }
+
+             if (!Array.isArray(result) && result.type === 'element') {
+               const head = result.children[0];
+
+               if (head && head.type === 'text') {
+                 head.value = head.value.replace(/^\s+/, '');
+               }
+             }
+           }
+
+           if (Array.isArray(result)) {
+             values.push(...result);
+           } else {
+             values.push(result);
+           }
+         }
+       }
+     }
+
+     return values
+   }
+
+   /**
+    * @typedef {import('unist').Node} Node
+    * @typedef {import('unist').Parent} Parent
+    *
+    * @typedef {string} Type
+    * @typedef {Object<string, unknown>} Props
+    *
+    * @typedef {null|undefined|Type|Props|TestFunctionAnything|Array.<Type|Props|TestFunctionAnything>} Test
+    */
+
+   const convert =
+     /**
+      * @type {(
+      *   (<T extends Node>(test: T['type']|Partial<T>|TestFunctionPredicate<T>) => AssertPredicate<T>) &
+      *   ((test?: Test) => AssertAnything)
+      * )}
+      */
+     (
+       /**
+        * Generate an assertion from a check.
+        * @param {Test} [test]
+        * When nullish, checks if `node` is a `Node`.
+        * When `string`, works like passing `function (node) {return node.type === test}`.
+        * When `function` checks if function passed the node is true.
+        * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
+        * When `array`, checks any one of the subtests pass.
+        * @returns {AssertAnything}
+        */
+       function (test) {
+         if (test === undefined || test === null) {
+           return ok
+         }
+
+         if (typeof test === 'string') {
+           return typeFactory(test)
+         }
+
+         if (typeof test === 'object') {
+           return Array.isArray(test) ? anyFactory$1(test) : propsFactory(test)
+         }
+
+         if (typeof test === 'function') {
+           return castFactory$1(test)
+         }
+
+         throw new Error('Expected function, string, or object as test')
+       }
+     );
+   /**
+    * @param {Array.<Type|Props|TestFunctionAnything>} tests
+    * @returns {AssertAnything}
+    */
+   function anyFactory$1(tests) {
+     /** @type {Array.<AssertAnything>} */
+     const checks = [];
+     let index = -1;
+
+     while (++index < tests.length) {
+       checks[index] = convert(tests[index]);
+     }
+
+     return castFactory$1(any)
+
+     /**
+      * @this {unknown}
+      * @param {unknown[]} parameters
+      * @returns {boolean}
+      */
+     function any(...parameters) {
+       let index = -1;
+
+       while (++index < checks.length) {
+         if (checks[index].call(this, ...parameters)) return true
+       }
+
+       return false
+     }
+   }
+
+   /**
+    * Utility to assert each property in `test` is represented in `node`, and each
+    * values are strictly equal.
+    *
+    * @param {Props} check
+    * @returns {AssertAnything}
+    */
+   function propsFactory(check) {
+     return castFactory$1(all)
+
+     /**
+      * @param {Node} node
+      * @returns {boolean}
+      */
+     function all(node) {
+       /** @type {string} */
+       let key;
+
+       for (key in check) {
+         // @ts-expect-error: hush, it sure works as an index.
+         if (node[key] !== check[key]) return false
+       }
+
+       return true
+     }
+   }
+
+   /**
+    * Utility to convert a string into a function which checks a given node’s type
+    * for said string.
+    *
+    * @param {Type} check
+    * @returns {AssertAnything}
+    */
+   function typeFactory(check) {
+     return castFactory$1(type)
+
+     /**
+      * @param {Node} node
+      */
+     function type(node) {
+       return node && node.type === check
+     }
+   }
+
+   /**
+    * Utility to convert a string into a function which checks a given node’s type
+    * for said string.
+    * @param {TestFunctionAnything} check
+    * @returns {AssertAnything}
+    */
+   function castFactory$1(check) {
+     return assertion
+
+     /**
+      * @this {unknown}
+      * @param {Array.<unknown>} parameters
+      * @returns {boolean}
+      */
+     function assertion(...parameters) {
+       // @ts-expect-error: spreading is fine.
+       return Boolean(check.call(this, ...parameters))
+     }
+   }
+
+   // Utility to return true.
+   function ok() {
+     return true
+   }
+
+   /**
+    * @param {string} d
+    * @returns {string}
+    */
+   function color(d) {
+     return d
+   }
+
+   /**
+    * @typedef {import('unist').Node} Node
+    * @typedef {import('unist').Parent} Parent
+    * @typedef {import('unist-util-is').Test} Test
+    * @typedef {import('./complex-types').Action} Action
+    * @typedef {import('./complex-types').Index} Index
+    * @typedef {import('./complex-types').ActionTuple} ActionTuple
+    * @typedef {import('./complex-types').VisitorResult} VisitorResult
+    * @typedef {import('./complex-types').Visitor} Visitor
+    */
+
+   /**
+    * Continue traversing as normal
+    */
+   const CONTINUE = true;
+   /**
+    * Do not traverse this node’s children
+    */
+   const SKIP = 'skip';
+   /**
+    * Stop traversing immediately
+    */
+   const EXIT = false;
+
+   /**
+    * Visit children of tree which pass a test
+    *
+    * @param tree Abstract syntax tree to walk
+    * @param test Test node, optional
+    * @param visitor Function to run for each node
+    * @param reverse Visit the tree in reverse order, defaults to false
+    */
+   const visitParents =
+     /**
+      * @type {(
+      *   (<Tree extends Node, Check extends Test>(tree: Tree, test: Check, visitor: import('./complex-types').BuildVisitor<Tree, Check>, reverse?: boolean) => void) &
+      *   (<Tree extends Node>(tree: Tree, visitor: import('./complex-types').BuildVisitor<Tree>, reverse?: boolean) => void)
+      * )}
+      */
+     (
+       /**
+        * @param {Node} tree
+        * @param {Test} test
+        * @param {import('./complex-types').Visitor<Node>} visitor
+        * @param {boolean} [reverse]
+        */
+       function (tree, test, visitor, reverse) {
+         if (typeof test === 'function' && typeof visitor !== 'function') {
+           reverse = visitor;
+           // @ts-expect-error no visitor given, so `visitor` is test.
+           visitor = test;
+           test = null;
+         }
+
+         const is = convert(test);
+         const step = reverse ? -1 : 1;
+
+         factory(tree, null, [])();
+
+         /**
+          * @param {Node} node
+          * @param {number?} index
+          * @param {Array.<Parent>} parents
+          */
+         function factory(node, index, parents) {
+           /** @type {Object.<string, unknown>} */
+           // @ts-expect-error: hush
+           const value = typeof node === 'object' && node !== null ? node : {};
+           /** @type {string|undefined} */
+           let name;
+
+           if (typeof value.type === 'string') {
+             name =
+               typeof value.tagName === 'string'
+                 ? value.tagName
+                 : typeof value.name === 'string'
+                 ? value.name
+                 : undefined;
+
+             Object.defineProperty(visit, 'name', {
+               value:
+                 'node (' +
+                 color(value.type + (name ? '<' + name + '>' : '')) +
+                 ')'
+             });
+           }
+
+           return visit
+
+           function visit() {
+             /** @type {ActionTuple} */
+             let result = [];
+             /** @type {ActionTuple} */
+             let subresult;
+             /** @type {number} */
+             let offset;
+             /** @type {Array.<Parent>} */
+             let grandparents;
+
+             if (!test || is(node, index, parents[parents.length - 1] || null)) {
+               result = toResult(visitor(node, parents));
+
+               if (result[0] === EXIT) {
+                 return result
+               }
+             }
+
+             // @ts-expect-error looks like a parent.
+             if (node.children && result[0] !== SKIP) {
+               // @ts-expect-error looks like a parent.
+               offset = (reverse ? node.children.length : -1) + step;
+               // @ts-expect-error looks like a parent.
+               grandparents = parents.concat(node);
+
+               // @ts-expect-error looks like a parent.
+               while (offset > -1 && offset < node.children.length) {
+                 // @ts-expect-error looks like a parent.
+                 subresult = factory(node.children[offset], offset, grandparents)();
+
+                 if (subresult[0] === EXIT) {
+                   return subresult
+                 }
+
+                 offset =
+                   typeof subresult[1] === 'number' ? subresult[1] : offset + step;
+               }
+             }
+
+             return result
+           }
+         }
+       }
+     );
+
+   /**
+    * @param {VisitorResult} value
+    * @returns {ActionTuple}
+    */
+   function toResult(value) {
+     if (Array.isArray(value)) {
+       return value
+     }
+
+     if (typeof value === 'number') {
+       return [CONTINUE, value]
+     }
+
+     return [value]
+   }
+
+   /**
+    * @typedef {import('unist').Node} Node
+    * @typedef {import('unist').Parent} Parent
+    * @typedef {import('unist-util-is').Test} Test
+    * @typedef {import('unist-util-visit-parents').VisitorResult} VisitorResult
+    * @typedef {import('./complex-types').Visitor} Visitor
+    */
+
+   /**
+    * Visit children of tree which pass a test
+    *
+    * @param tree Abstract syntax tree to walk
+    * @param test Test, optional
+    * @param visitor Function to run for each node
+    * @param reverse Fisit the tree in reverse, defaults to false
+    */
+   const visit =
+     /**
+      * @type {(
+      *   (<Tree extends Node, Check extends Test>(tree: Tree, test: Check, visitor: import('./complex-types').BuildVisitor<Tree, Check>, reverse?: boolean) => void) &
+      *   (<Tree extends Node>(tree: Tree, visitor: import('./complex-types').BuildVisitor<Tree>, reverse?: boolean) => void)
+      * )}
+      */
+     (
+       /**
+        * @param {Node} tree
+        * @param {Test} test
+        * @param {import('./complex-types').Visitor} visitor
+        * @param {boolean} [reverse]
+        */
+       function (tree, test, visitor, reverse) {
+         if (typeof test === 'function' && typeof visitor !== 'function') {
+           reverse = visitor;
+           visitor = test;
+           test = null;
+         }
+
+         visitParents(tree, test, overload, reverse);
+
+         /**
+          * @param {Node} node
+          * @param {Array.<Parent>} parents
+          */
+         function overload(node, parents) {
+           const parent = parents[parents.length - 1];
+           return visitor(
+             node,
+             parent ? parent.children.indexOf(node) : null,
+             parent
+           )
+         }
+       }
+     );
+
+   /**
+    * @typedef {import('unist').Node} Node
+    * @typedef {import('unist').Parent} Parent
+    * @typedef {import('hast').Element} Element
+    *
+    * @typedef {string} TagName
+    * @typedef {null|undefined|TagName|TestFunctionAnything|Array.<TagName|TestFunctionAnything>} Test
+    */
+
+   /**
+    * @template {Element} T
+    * @typedef {null|undefined|T['tagName']|TestFunctionPredicate<T>|Array.<T['tagName']|TestFunctionPredicate<T>>} PredicateTest
+    */
+
+   /**
+    * Check if an element passes a test
+    *
+    * @callback TestFunctionAnything
+    * @param {Element} element
+    * @param {number|null|undefined} [index]
+    * @param {Parent|null|undefined} [parent]
+    * @returns {boolean|void}
+    */
+
+   /**
+    * Check if an element passes a certain node test
+    *
+    * @template {Element} X
+    * @callback TestFunctionPredicate
+    * @param {Element} element
+    * @param {number|null|undefined} [index]
+    * @param {Parent|null|undefined} [parent]
+    * @returns {element is X}
+    */
+
+   /**
+    * Check if a node is an element and passes a certain node test
+    *
+    * @callback AssertAnything
+    * @param {unknown} [node]
+    * @param {number|null|undefined} [index]
+    * @param {Parent|null|undefined} [parent]
+    * @returns {boolean}
+    */
+
+   /**
+    * Check if a node is an element and passes a certain node test
+    *
+    * @template {Element} Y
+    * @callback AssertPredicate
+    * @param {unknown} [node]
+    * @param {number|null|undefined} [index]
+    * @param {Parent|null|undefined} [parent]
+    * @returns {node is Y}
+    */
+
+   // Check if `node` is an `element` and whether it passes the given test.
+   const isElement =
+     /**
+      * Check if a node is an element and passes a test.
+      * When a `parent` node is known the `index` of node should also be given.
+      *
+      * @type {(
+      *   (() => false) &
+      *   (<T extends Element = Element>(node: unknown, test?: PredicateTest<T>, index?: number, parent?: Parent, context?: unknown) => node is T) &
+      *   ((node: unknown, test: Test, index?: number, parent?: Parent, context?: unknown) => boolean)
+      * )}
+      */
+     (
+       /**
+        * Check if a node passes a test.
+        * When a `parent` node is known the `index` of node should also be given.
+        *
+        * @param {unknown} [node] Node to check
+        * @param {Test} [test] When nullish, checks if `node` is a `Node`.
+        * When `string`, works like passing `function (node) {return node.type === test}`.
+        * When `function` checks if function passed the node is true.
+        * When `array`, checks any one of the subtests pass.
+        * @param {number} [index] Position of `node` in `parent`
+        * @param {Parent} [parent] Parent of `node`
+        * @param {unknown} [context] Context object to invoke `test` with
+        * @returns {boolean} Whether test passed and `node` is an `Element` (object with `type` set to `element` and `tagName` set to a non-empty string).
+        */
+       // eslint-disable-next-line max-params
+       function (node, test, index, parent, context) {
+         const check = convertElement(test);
+
+         if (
+           index !== undefined &&
+           index !== null &&
+           (typeof index !== 'number' ||
+             index < 0 ||
+             index === Number.POSITIVE_INFINITY)
+         ) {
+           throw new Error('Expected positive finite index for child node')
+         }
+
+         if (
+           parent !== undefined &&
+           parent !== null &&
+           (!parent.type || !parent.children)
+         ) {
+           throw new Error('Expected parent node')
+         }
+
+         // @ts-expect-error Looks like a node.
+         if (!node || !node.type || typeof node.type !== 'string') {
+           return false
+         }
+
+         if (
+           (parent === undefined || parent === null) !==
+           (index === undefined || index === null)
+         ) {
+           throw new Error('Expected both parent and index')
+         }
+
+         return check.call(context, node, index, parent)
+       }
+     );
+
+   const convertElement =
+     /**
+      * @type {(
+      *   (<T extends Element>(test: T['tagName']|TestFunctionPredicate<T>) => AssertPredicate<T>) &
+      *   ((test?: Test) => AssertAnything)
+      * )}
+      */
+     (
+       /**
+        * Generate an assertion from a check.
+        * @param {Test} [test]
+        * When nullish, checks if `node` is a `Node`.
+        * When `string`, works like passing `function (node) {return node.type === test}`.
+        * When `function` checks if function passed the node is true.
+        * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
+        * When `array`, checks any one of the subtests pass.
+        * @returns {AssertAnything}
+        */
+       function (test) {
+         if (test === undefined || test === null) {
+           return element$1
+         }
+
+         if (typeof test === 'string') {
+           return tagNameFactory(test)
+         }
+
+         if (typeof test === 'object') {
+           return anyFactory(test)
+         }
+
+         if (typeof test === 'function') {
+           return castFactory(test)
+         }
+
+         throw new Error('Expected function, string, or array as test')
+       }
+     );
+
+   /**
+    * @param {Array.<TagName|TestFunctionAnything>} tests
+    * @returns {AssertAnything}
+    */
+   function anyFactory(tests) {
+     /** @type {Array.<AssertAnything>} */
+     const checks = [];
+     let index = -1;
+
+     while (++index < tests.length) {
+       checks[index] = convertElement(tests[index]);
+     }
+
+     return castFactory(any)
+
+     /**
+      * @this {unknown}
+      * @param {unknown[]} parameters
+      * @returns {boolean}
+      */
+     function any(...parameters) {
+       let index = -1;
+
+       while (++index < checks.length) {
+         if (checks[index].call(this, ...parameters)) {
+           return true
+         }
+       }
+
+       return false
+     }
+   }
+
+   /**
+    * Utility to convert a string into a function which checks a given node’s tag
+    * name for said string.
+    *
+    * @param {TagName} check
+    * @returns {AssertAnything}
+    */
+   function tagNameFactory(check) {
+     return tagName
+
+     /**
+      * @param {unknown} node
+      * @returns {boolean}
+      */
+     function tagName(node) {
+       return element$1(node) && node.tagName === check
+     }
+   }
+
+   /**
+    * @param {TestFunctionAnything} check
+    * @returns {AssertAnything}
+    */
+   function castFactory(check) {
+     return assertion
+
+     /**
+      * @this {unknown}
+      * @param {unknown} node
+      * @param {Array.<unknown>} parameters
+      * @returns {boolean}
+      */
+     function assertion(node, ...parameters) {
+       // @ts-expect-error: fine.
+       return element$1(node) && Boolean(check.call(this, node, ...parameters))
+     }
+   }
+
+   /**
+    * Utility to return true if this is an element.
+    * @param {unknown} node
+    * @returns {node is Element}
+    */
+   function element$1(node) {
+     return Boolean(
+       node &&
+         typeof node === 'object' &&
+         // @ts-expect-error Looks like a node.
+         node.type === 'element' &&
+         // @ts-expect-error Looks like an element.
+         typeof node.tagName === 'string'
+     )
+   }
+
+   /**
+    * @typedef {import('hast').Element & {tagName: 'audio'|'canvas'|'embed'|'iframe'|'img'|'math'|'object'|'picture'|'svg'|'video'}} Embedded
+    * @typedef {import('hast-util-is-element').AssertPredicate<Embedded>} AssertEmbedded
+    */
+
+   /**
+    * Check if a node is an embedded element.
+    * @type {AssertEmbedded}
+    */
+   // @ts-ignore Sure, the assertion matches.
+   const embedded = convertElement([
+     'audio',
+     'canvas',
+     'embed',
+     'iframe',
+     'img',
+     'math',
+     'object',
+     'picture',
+     'svg',
+     'video'
+   ]);
+
+   /**
+    * @param {unknown} thing
+    * @returns {boolean}
+    */
+   function whitespace(thing) {
+     /** @type {string} */
+     var value =
+       // @ts-ignore looks like a node.
+       thing && typeof thing === 'object' && thing.type === 'text'
+         ? // @ts-ignore looks like a text.
+           thing.value || ''
+         : thing;
+
+     // HTML whitespace expression.
+     // See <https://html.spec.whatwg.org/#space-character>.
+     return typeof value === 'string' && value.replace(/[ \t\n\f\r]/g, '') === ''
+   }
+
+   // See: <https://html.spec.whatwg.org/#the-css-user-agent-style-sheet-and-presentational-hints>
+   const blocks = [
+     'address', // Flow content.
+     'article', // Sections and headings.
+     'aside', // Sections and headings.
+     'blockquote', // Flow content.
+     'body', // Page.
+     'br', // Contribute whitespace intrinsically.
+     'caption', // Similar to block.
+     'center', // Flow content, legacy.
+     'col', // Similar to block.
+     'colgroup', // Similar to block.
+     'dd', // Lists.
+     'dialog', // Flow content.
+     'dir', // Lists, legacy.
+     'div', // Flow content.
+     'dl', // Lists.
+     'dt', // Lists.
+     'figcaption', // Flow content.
+     'figure', // Flow content.
+     'footer', // Flow content.
+     'form', // Flow content.
+     'h1', // Sections and headings.
+     'h2', // Sections and headings.
+     'h3', // Sections and headings.
+     'h4', // Sections and headings.
+     'h5', // Sections and headings.
+     'h6', // Sections and headings.
+     'head', // Page.
+     'header', // Flow content.
+     'hgroup', // Sections and headings.
+     'hr', // Flow content.
+     'html', // Page.
+     'legend', // Flow content.
+     'li', // Block-like.
+     'li', // Similar to block.
+     'listing', // Flow content, legacy
+     'main', // Flow content.
+     'menu', // Lists.
+     'nav', // Sections and headings.
+     'ol', // Lists.
+     'optgroup', // Similar to block.
+     'option', // Similar to block.
+     'p', // Flow content.
+     'plaintext', // Flow content, legacy
+     'pre', // Flow content.
+     'section', // Sections and headings.
+     'summary', // Similar to block.
+     'table', // Similar to block.
+     'tbody', // Similar to block.
+     'td', // Block-like.
+     'td', // Similar to block.
+     'tfoot', // Similar to block.
+     'th', // Block-like.
+     'th', // Similar to block.
+     'thead', // Similar to block.
+     'tr', // Similar to block.
+     'ul', // Lists.
+     'wbr', // Contribute whitespace intrinsically.
+     'xmp' // Flow content, legacy
+   ];
+
+   const content$1 = [
+     // Form.
+     'button',
+     'input',
+     'select',
+     'textarea'
+   ];
+
+   const skippable$1 = [
+     'area',
+     'base',
+     'basefont',
+     'dialog',
+     'datalist',
+     'head',
+     'link',
+     'meta',
+     'noembed',
+     'noframes',
+     'param',
+     'rp',
+     'script',
+     'source',
+     'style',
+     'template',
+     'track',
+     'title'
+   ];
+
+   /**
+    * rehype plugin to minify whitespace between elements.
+    *
+    * ## What is this?
+    *
+    * This package is a plugin that can minify the whitespace between elements.
+    *
+    * ## When should I use this?
+    *
+    * You can use this plugin when you want to improve the size of HTML documents.
+    *
+    * ## API
+    *
+    * ### `unified().use(rehypeMinifyWhitespace[, options])`
+    *
+    * Minify whitespace.
+    *
+    * ##### `options`
+    *
+    * Configuration (optional).
+    *
+    * ##### `options.newlines`
+    *
+    * Whether to collapse runs of whitespace that include line endings to one
+    * line ending (`boolean`, default: `false`).
+    * The default is to collapse everything to one space.
+    *
+    * @example
+    *   <h1>Heading</h1>
+    *   <p><strong>This</strong> and <em>that</em></p>
+    */
+
+   const ignorableNode = convert(['doctype', 'comment']);
+
+   /**
+    * Minify whitespace.
+    *
+    * @type {import('unified').Plugin<[Options?]|Array<void>, Root>}
+    */
+   function rehypeMinifyWhitespace(options = {}) {
+     const collapse = collapseFactory(
+       options.newlines ? replaceNewlines : replaceWhitespace
+     );
+
+     return (tree) => {
+       minify(tree, {collapse, whitespace: 'normal'});
+     }
+   }
+
+   /**
+    * @param {Node} node
+    * @param {Context} context
+    * @returns {Result}
+    */
+   function minify(node, context) {
+     if ('children' in node) {
+       const settings = Object.assign({}, context);
+
+       if (node.type === 'root' || blocklike(node)) {
+         settings.before = true;
+         settings.after = true;
+       }
+
+       settings.whitespace = inferWhiteSpace(node, context);
+
+       return all$3(node, settings)
+     }
+
+     if (node.type === 'text') {
+       if (context.whitespace === 'normal') {
+         return minifyText(node, context)
+       }
+
+       // Naïve collapse, but no trimming:
+       if (context.whitespace === 'nowrap') {
+         node.value = context.collapse(node.value);
+       }
+
+       // The `pre-wrap` or `pre` whitespace settings are neither collapsed nor
+       // trimmed.
+     }
+
+     return {remove: false, ignore: ignorableNode(node), stripAtStart: false}
+   }
+
+   /**
+    * @param {Text} node
+    * @param {Context} context
+    * @returns {Result}
+    */
+   function minifyText(node, context) {
+     const value = context.collapse(node.value);
+     const result = {remove: false, ignore: false, stripAtStart: false};
+     let start = 0;
+     let end = value.length;
+
+     if (context.before && removable(value.charAt(0))) {
+       start++;
+     }
+
+     if (start !== end && removable(value.charAt(end - 1))) {
+       if (context.after) {
+         end--;
+       } else {
+         result.stripAtStart = true;
+       }
+     }
+
+     if (start === end) {
+       result.remove = true;
+     } else {
+       node.value = value.slice(start, end);
+     }
+
+     return result
+   }
+
+   /**
+    * @param {Root|Element} parent
+    * @param {Context} context
+    * @returns {Result}
+    */
+   function all$3(parent, context) {
+     let before = context.before;
+     const after = context.after;
+     const children = parent.children;
+     let length = children.length;
+     let index = -1;
+
+     while (++index < length) {
+       const result = minify(
+         children[index],
+         Object.assign({}, context, {
+           before,
+           after: collapsableAfter(children, index, after)
+         })
+       );
+
+       if (result.remove) {
+         children.splice(index, 1);
+         index--;
+         length--;
+       } else if (!result.ignore) {
+         before = result.stripAtStart;
+       }
+
+       // If this element, such as a `<select>` or `<img>`, contributes content
+       // somehow, allow whitespace again.
+       if (content(children[index])) {
+         before = false;
+       }
+     }
+
+     return {remove: false, ignore: false, stripAtStart: Boolean(before || after)}
+   }
+
+   /**
+    * @param {Array<Node>} nodes
+    * @param {number} index
+    * @param {boolean|undefined} [after]
+    * @returns {boolean|undefined}
+    */
+   function collapsableAfter(nodes, index, after) {
+     while (++index < nodes.length) {
+       const node = nodes[index];
+       let result = inferBoundary(node);
+
+       if (result === undefined && 'children' in node && !skippable(node)) {
+         result = collapsableAfter(node.children, -1);
+       }
+
+       if (typeof result === 'boolean') {
+         return result
+       }
+     }
+
+     return after
+   }
+
+   /**
+    * Infer two types of boundaries:
+    *
+    * 1. `true` — boundary for which whitespace around it does not contribute
+    *    anything
+    * 2. `false` — boundary for which whitespace around it *does* contribute
+    *
+    * No result (`undefined`) is returned if it is unknown.
+    *
+    * @param {Node} node
+    * @returns {boolean|undefined}
+    */
+   function inferBoundary(node) {
+     if (node.type === 'element') {
+       if (content(node)) {
+         return false
+       }
+
+       if (blocklike(node)) {
+         return true
+       }
+
+       // Unknown: either depends on siblings if embedded or metadata, or on
+       // children.
+     } else if (node.type === 'text') {
+       if (!whitespace(node)) {
+         return false
+       }
+     } else if (!ignorableNode(node)) {
+       return false
+     }
+   }
+
+   /**
+    * Infer whether a node is skippable.
+    *
+    * @param {Node} node
+    * @returns {boolean}
+    */
+   function content(node) {
+     return embedded(node) || isElement(node, content$1)
+   }
+
+   /**
+    * See: <https://html.spec.whatwg.org/#the-css-user-agent-style-sheet-and-presentational-hints>
+    *
+    * @param {Element} node
+    * @returns {boolean}
+    */
+   function blocklike(node) {
+     return isElement(node, blocks)
+   }
+
+   /**
+    * @param {Element|Root} node
+    * @returns {boolean}
+    */
+   function skippable(node) {
+     return (
+       Boolean(
+         'properties' in node && node.properties && node.properties.hidden
+       ) ||
+       ignorableNode(node) ||
+       isElement(node, skippable$1)
+     )
+   }
+
+   /**
+    * @param {string} character
+    * @returns {boolean}
+    */
+   function removable(character) {
+     return character === ' ' || character === '\n'
+   }
+
+   /**
+    * @param {string} value
+    * @returns {string}
+    */
+   function replaceNewlines(value) {
+     const match = /\r?\n|\r/.exec(value);
+     return match ? match[0] : ' '
+   }
+
+   /**
+    * @returns {string}
+    */
+   function replaceWhitespace() {
+     return ' '
+   }
+
+   /**
+    * @param {(value: string) => string} replace
+    */
+   function collapseFactory(replace) {
+     return collapse
+
+     /**
+      * @param {string} value
+      * @returns {string}
+      */
+     function collapse(value) {
+       return String(value).replace(/[\t\n\v\f\r ]+/g, replace)
+     }
+   }
+
+   /**
+    * We don’t need to support void elements here (so `nobr wbr` -> `normal` is
+    * ignored).
+    *
+    * @param {Root|Element} node
+    * @param {Context} context
+    * @returns {Whitespace}
+    */
+   function inferWhiteSpace(node, context) {
+     if ('tagName' in node && node.properties) {
+       switch (node.tagName) {
+         // Whitespace in script/style, while not displayed by CSS as significant,
+         // could have some meaning in JS/CSS, so we can’t touch them.
+         case 'listing':
+         case 'plaintext':
+         case 'script':
+         case 'style':
+         case 'xmp':
+           return 'pre'
+         case 'nobr':
+           return 'nowrap'
+         case 'pre':
+           return node.properties.wrap ? 'pre-wrap' : 'pre'
+         case 'td':
+         case 'th':
+           return node.properties.noWrap ? 'nowrap' : context.whitespace
+         case 'textarea':
+           return 'pre-wrap'
+       }
+     }
+
+     return context.whitespace
+   }
+
+   /**
+    * @typedef {import('./types.js').H} H
+    * @typedef {import('./types.js').Node} Node
+    * @typedef {import('./types.js').Parent} Parent
+    * @typedef {import('./types.js').Handle} Handle
+    * @typedef {import('./types.js').MdastNode} MdastNode
+    */
+
+   /**
+    * @param {H} h
+    * @param {Node} parent
+    * @returns {Array.<MdastNode>}
+    */
+   function all$2(h, parent) {
+     /** @type {Array.<Node>} */
+     // @ts-expect-error Assume `parent` is a parent.
+     const nodes = parent.children || [];
+     /** @type {Array.<MdastNode>} */
+     const values = [];
+     let index = -1;
+     let length = nodes.length;
+     let child = nodes[index + 1];
+
+     // Trim initial and final `<br>`s.
+     // They’re not semantic per HTML, and they can’t be made in markdown things
+     // like paragraphs or headings.
+     while (child && child.type === 'element' && child.tagName === 'br') {
+       index++;
+       child = nodes[index + 1];
+     }
+
+     child = nodes[length - 1];
+
+     while (
+       length - 1 > index &&
+       child &&
+       child.type === 'element' &&
+       child.tagName === 'br'
+     ) {
+       length--;
+       child = nodes[length - 1];
+     }
+
+     while (++index < length) {
+       // @ts-expect-error assume `parent` is a parent.
+       const result = one$2(h, nodes[index], parent);
+
+       if (Array.isArray(result)) {
+         values.push(...result);
+       } else if (result) {
+         values.push(result);
+       }
+     }
+
+     return values
+   }
+
+   const own$6 = {}.hasOwnProperty;
+
+   /**
+    * @typedef {import('../types.js').H} H
+    */
+
+   /**
+    * @param {H} h
+    * @param {string} value
+    * @returns {string}
+    */
+   function wrapText$1(h, value) {
+     return h.wrapText ? value : value.replace(/\r?\n|\r/g, ' ')
+   }
+
+   /**
+    * @typedef {import('./types.js').H} H
+    * @typedef {import('./types.js').Node} Node
+    * @typedef {import('./types.js').Parent} Parent
+    * @typedef {import('./types.js').Handle} Handle
+    * @typedef {import('./types.js').MdastNode} MdastNode
+    */
+
+   /**
+    * @param {H} h
+    * @param {Node} node
+    * @param {Parent|undefined} parent
+    * @returns {MdastNode|Array.<MdastNode>|void}
+    */
+   function one$2(h, node, parent) {
+     /** @type {Handle|undefined} */
+     let fn;
+
+     if (node.type === 'element') {
+       if (node.properties && node.properties.dataMdast === 'ignore') {
+         return
+       }
+
+       if (own$6.call(h.handlers, node.tagName)) {
+         fn = h.handlers[node.tagName];
+       }
+     } else if (own$6.call(h.handlers, node.type)) {
+       fn = h.handlers[node.type];
+     }
+
+     if (typeof fn === 'function') {
+       return fn(h, node, parent)
+     }
+
+     return unknown$2(h, node)
+   }
+
+   /**
+    * @type {Handle}
+    * @param {Node} node
+    */
+   function unknown$2(h, node) {
+     // @ts-expect-error: Looks like a literal.
+     if (typeof node.value === 'string') {
+       // @ts-expect-error: Looks like a literal.
+       return h(node, 'text', wrapText$1(h, node.value))
+     }
+
+     return all$2(h, node)
+   }
+
+   var hasOwn = Object.prototype.hasOwnProperty;
+   var toStr = Object.prototype.toString;
+   var defineProperty = Object.defineProperty;
+   var gOPD = Object.getOwnPropertyDescriptor;
+
+   var isArray = function isArray(arr) {
+   	if (typeof Array.isArray === 'function') {
+   		return Array.isArray(arr);
+   	}
+
+   	return toStr.call(arr) === '[object Array]';
+   };
+
+   var isPlainObject = function isPlainObject(obj) {
+   	if (!obj || toStr.call(obj) !== '[object Object]') {
+   		return false;
+   	}
+
+   	var hasOwnConstructor = hasOwn.call(obj, 'constructor');
+   	var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
+   	// Not own constructor property must be Object
+   	if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
+   		return false;
+   	}
+
+   	// Own properties are enumerated firstly, so to speed up,
+   	// if last one is own, then all properties are own.
+   	var key;
+   	for (key in obj) { /**/ }
+
+   	return typeof key === 'undefined' || hasOwn.call(obj, key);
+   };
+
+   // If name is '__proto__', and Object.defineProperty is available, define __proto__ as an own property on target
+   var setProperty = function setProperty(target, options) {
+   	if (defineProperty && options.name === '__proto__') {
+   		defineProperty(target, options.name, {
+   			enumerable: true,
+   			configurable: true,
+   			value: options.newValue,
+   			writable: true
+   		});
+   	} else {
+   		target[options.name] = options.newValue;
+   	}
+   };
+
+   // Return undefined instead of __proto__ if '__proto__' is not an own property
+   var getProperty = function getProperty(obj, name) {
+   	if (name === '__proto__') {
+   		if (!hasOwn.call(obj, name)) {
+   			return void 0;
+   		} else if (gOPD) {
+   			// In early versions of node, obj['__proto__'] is buggy when obj has
+   			// __proto__ as an own property. Object.getOwnPropertyDescriptor() works.
+   			return gOPD(obj, name).value;
+   		}
+   	}
+
+   	return obj[name];
+   };
+
+   var extend = function extend() {
+   	var options, name, src, copy, copyIsArray, clone;
+   	var target = arguments[0];
+   	var i = 1;
+   	var length = arguments.length;
+   	var deep = false;
+
+   	// Handle a deep copy situation
+   	if (typeof target === 'boolean') {
+   		deep = target;
+   		target = arguments[1] || {};
+   		// skip the boolean and the target
+   		i = 2;
+   	}
+   	if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
+   		target = {};
+   	}
+
+   	for (; i < length; ++i) {
+   		options = arguments[i];
+   		// Only deal with non-null/undefined values
+   		if (options != null) {
+   			// Extend the base object
+   			for (name in options) {
+   				src = getProperty(target, name);
+   				copy = getProperty(options, name);
+
+   				// Prevent never-ending loop
+   				if (target !== copy) {
+   					// Recurse if we're merging plain objects or arrays
+   					if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+   						if (copyIsArray) {
+   							copyIsArray = false;
+   							clone = src && isArray(src) ? src : [];
+   						} else {
+   							clone = src && isPlainObject(src) ? src : {};
+   						}
+
+   						// Never move original objects, clone them
+   						setProperty(target, { name: name, newValue: extend(deep, clone, copy) });
+
+   					// Don't bring in undefined values
+   					} else if (typeof copy !== 'undefined') {
+   						setProperty(target, { name: name, newValue: copy });
+   					}
+   				}
+   			}
+   		}
+   	}
+
+   	// Return the modified object
+   	return target;
+   };
+
+   /**
+    * @typedef {import('mdast').PhrasingContent} PhrasingContent
+    * @typedef {import('unist-util-is').AssertPredicate<PhrasingContent>} AssertPredicatePhrasing
+    */
+
+   /**
+    * @type {AssertPredicatePhrasing}
+    */
+   // @ts-ignore hush, it’s fine!
+   const phrasing = convert([
+     'break',
+     'delete',
+     'emphasis',
+     'footnote',
+     'footnoteReference',
+     'image',
+     'imageReference',
+     'inlineCode',
+     'link',
+     'linkReference',
+     'strong',
+     'text'
+   ]);
+
+   /**
+    * @typedef {import('../types.js').H} H
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    * @typedef {import('../types.js').MdastPhrasingContent} MdastPhrasingContent
+    */
+
+   /**
+    * @param {Array.<MdastNode>} nodes
+    */
+   function wrap(nodes) {
+     return runs(nodes, onphrasing)
+
+     /**
+      * @param {Array.<MdastPhrasingContent>} nodes
+      * @returns {MdastNode|Array.<MdastNode>}
+      */
+     function onphrasing(nodes) {
+       const head = nodes[0];
+
+       if (
+         nodes.length === 1 &&
+         head.type === 'text' &&
+         (head.value === ' ' || head.value === '\n')
+       ) {
+         return []
+       }
+
+       return {type: 'paragraph', children: nodes}
+     }
+   }
+
+   /**
+    * Check if there are non-phrasing mdast nodes returned.
+    * This is needed if a fragment is given, which could just be a sentence, and
+    * doesn’t need a wrapper paragraph.
+    *
+    * @param {Array.<MdastNode>} nodes
+    * @returns {boolean}
+    */
+   function wrapNeeded(nodes) {
+     let index = -1;
+     /** @type {MdastNode} */
+     let node;
+
+     while (++index < nodes.length) {
+       node = nodes[index];
+
+       if (!phrasing(node) || ('children' in node && wrapNeeded(node.children))) {
+         return true
+       }
+     }
+
+     return false
+   }
+
+   /**
+    * Wrap all runs of mdast phrasing content in `paragraph` nodes.
+    *
+    * @param {Array.<MdastNode>} nodes
+    * @param {(nodes: Array.<MdastPhrasingContent>) => MdastNode|Array.<MdastNode>} onphrasing
+    * @param {(node: MdastNode) => MdastNode} [onnonphrasing]
+    */
+   function runs(nodes, onphrasing, onnonphrasing) {
+     const nonphrasing = onnonphrasing || identity;
+     /** @type {Array.<MdastNode>} */
+     const flattened = flatten(nodes);
+     /** @type {Array.<MdastNode>} */
+     let result = [];
+     let index = -1;
+     /** @type {Array.<MdastPhrasingContent>|undefined} */
+     let queue;
+     /** @type {MdastNode} */
+     let node;
+
+     while (++index < flattened.length) {
+       node = flattened[index];
+
+       if (phrasing(node)) {
+         if (!queue) queue = [];
+         queue.push(node);
+       } else {
+         if (queue) {
+           result = result.concat(onphrasing(queue));
+           queue = undefined;
+         }
+
+         result = result.concat(nonphrasing(node));
+       }
+     }
+
+     if (queue) {
+       result = result.concat(onphrasing(queue));
+     }
+
+     return result
+   }
+
+   /**
+    * Flatten a list of nodes.
+    *
+    * @param {Array.<MdastNode>} nodes
+    * @returns {Array.<MdastNode>}
+    */
+   function flatten(nodes) {
+     /** @type {Array.<MdastNode>} */
+     let flattened = [];
+     let index = -1;
+     /** @type {MdastNode} */
+     let node;
+
+     while (++index < nodes.length) {
+       node = nodes[index];
+
+       // Straddling: some elements are *weird*.
+       // Namely: `map`, `ins`, `del`, and `a`, as they are hybrid elements.
+       // See: <https://html.spec.whatwg.org/#paragraphs>.
+       // Paragraphs are the weirdest of them all.
+       // See the straddling fixture for more info!
+       // `ins` is ignored in mdast, so we don’t need to worry about that.
+       // `map` maps to its content, so we don’t need to worry about that either.
+       // `del` maps to `delete` and `a` to `link`, so we do handle those.
+       // What we’ll do is split `node` over each of its children.
+       if (
+         (node.type === 'delete' || node.type === 'link') &&
+         wrapNeeded(node.children)
+       ) {
+         flattened = flattened.concat(split(node));
+       } else {
+         flattened.push(node);
+       }
+     }
+
+     return flattened
+   }
+
+   /**
+    * @param {MdastNode} node
+    * @returns {Array.<MdastNode>}
+    */
+   function split(node) {
+     // @ts-expect-error Assume parent.
+     return runs(node.children, onphrasing, onnonphrasing)
+
+     /**
+      * Use `child`, add `parent` as its first child, put the original children
+      * into `parent`.
+      * If `child` is not a parent, `parent` will not be added.
+      *
+      * @param {MdastNode} child
+      * @returns {MdastNode}
+      */
+     function onnonphrasing(child) {
+       if ('children' in child && 'children' in node) {
+         const {children, ...rest} = node;
+         return {
+           ...child,
+           // @ts-expect-error: assume matching parent & child.
+           children: [{...extend(true, {}, rest), children: child.children}]
+         }
+       }
+
+       return {...child}
+     }
+
+     /**
+      * Use `parent`, put the phrasing run inside it.
+      *
+      * @param {Array.<MdastPhrasingContent>} nodes
+      * @returns {MdastNode}
+      */
+     function onphrasing(nodes) {
+       // @ts-expect-error: assume parent.
+       const {children, ...rest} = node;
+       // @ts-expect-error: assume matching parent & child.
+       return {...extend(true, {}, rest), children: nodes}
+     }
+   }
+
+   /**
+    * @template {unknown} T
+    * @param {T} n
+    * @returns {T}
+    */
+   function identity(n) {
+     return n
+   }
+
+   /**
+    * @typedef {import('../types.js').H} H
+    * @typedef {import('../types.js').Node} Node
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    */
+
+   /**
+    * @param {H} h
+    * @param {Node} node
+    * @returns {Array.<MdastNode>}
+    */
+   function wrapChildren(h, node) {
+     return wrap(all$2(h, node))
+   }
+
+   /**
+    * @typedef {import('../types.js').H} H
+    */
+
+   /**
+    * @param {H} h
+    * @param {string|null|undefined} url
+    * @returns {string}
+    */
+   function resolve(h, url) {
+     if (url === null || url === undefined) {
+       return ''
+     }
+
+     if (h.frozenBaseUrl) {
+       return String(new URL(url, h.frozenBaseUrl))
+     }
+
+     return url
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Properties} Properties
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function a(h, node) {
+     /** @type {Properties} */
+     // @ts-expect-error: `props` are defined.
+     const props = node.properties;
+     return h(
+       node,
+       'link',
+       {
+         title: props.title || null,
+         url: resolve(h, String(props.href || '') || null)
+       },
+       all$2(h, node)
+     )
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function base$1(h, node) {
+     if (!h.baseFound) {
+       h.frozenBaseUrl =
+         String((node.properties && node.properties.href) || '') || null;
+       h.baseFound = true;
+     }
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function blockquote$1(h, node) {
+     return h(node, 'blockquote', wrapChildren(h, node))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function br$1(h, node) {
+     return h.wrapText ? h(node, 'break') : h(node, 'text', ' ')
+   }
+
+   /**
+    * @typedef {import('unist').Node} Node
+    * @typedef {import('unist').Parent} Parent
+    *
+    * @typedef {import('unist-util-is').Type} Type
+    * @typedef {import('unist-util-is').Props} Props
+    * @typedef {import('unist-util-is').TestFunctionAnything} TestFunctionAnything
+    */
+
+   var findAfter =
+     /**
+      * @type {(
+      *  (<T extends Node>(node: Parent, index: Node|number, test: T['type']|Partial<T>|import('unist-util-is').TestFunctionPredicate<T>|Array.<T['type']|Partial<T>|import('unist-util-is').TestFunctionPredicate<T>>) => T|null) &
+      *  ((node: Parent, index: Node|number, test?: null|undefined|Type|Props|TestFunctionAnything|Array<Type|Props|TestFunctionAnything>) => Node|null)
+      * )}
+      */
+     (
+       /**
+        * @param {Parent} parent Parent node
+        * @param {Node|number} index Child of `parent`, or it’s index
+        * @param {null|undefined|Type|Props|TestFunctionAnything|Array<Type|Props|TestFunctionAnything>} [test] is-compatible test (such as a type)
+        * @returns {Node|null}
+        */
+       function (parent, index, test) {
+         var is = convert(test);
+
+         if (!parent || !parent.type || !parent.children) {
+           throw new Error('Expected parent node')
+         }
+
+         if (typeof index === 'number') {
+           if (index < 0 || index === Number.POSITIVE_INFINITY) {
+             throw new Error('Expected positive finite number as index')
+           }
+         } else {
+           index = parent.children.indexOf(index);
+
+           if (index < 0) {
+             throw new Error('Expected child node or index')
+           }
+         }
+
+         while (++index < parent.children.length) {
+           if (is(parent.children[index], index, parent)) {
+             return parent.children[index]
+           }
+         }
+
+         return null
+       }
+     );
+
+   /**
+    * @typedef {import('hast-util-is-element').TestFunctionAnything} TestFunctionAnything
+    * @typedef {import('hast').Parent['children'][number]} HastChild
+    * @typedef {import('hast').Text} HastText
+    * @typedef {import('hast').Comment} HastComment
+    * @typedef {import('hast').Root} HastRoot
+    * @typedef {import('hast').Element} HastElement
+    * @typedef {import('hast').Properties} HastProperties
+    * @typedef {HastChild|HastRoot} HastNode
+    * @typedef {HastRoot|HastElement} HastParent
+    *
+    * @typedef {'normal'|'pre'|'nowrap'|'pre-wrap'} Whitespace
+    * @typedef {boolean} BreakValue
+    * @typedef {1|2} BreakNumber
+    * @typedef {'\n'} BreakForce
+    * @typedef {BreakValue|BreakNumber|undefined} BreakBefore
+    * @typedef {BreakValue|BreakNumber|BreakForce|undefined} BreakAfter
+    *
+    * @typedef CollectionOptions
+    * @property {Whitespace} whitespace
+    * @property {BreakBefore} breakBefore
+    * @property {BreakAfter} breakAfter
+    *
+    * @typedef Options
+    *   Configuration.
+    * @property {Whitespace} [whitespace='normal']
+    *   Initial CSS whitespace setting to use.
+    */
+
+   const searchLineFeeds = /\n/g;
+   const searchTabOrSpaces = /[\t ]+/g;
+
+   const br = convertElement('br');
+   const p$2 = convertElement('p');
+   const cell$2 = convertElement(['th', 'td']);
+   const row = convertElement('tr');
+
+   // Note that we don’t need to include void elements here as they don’t have text.
+   // See: <https://github.com/wooorm/html-void-elements>
+   const notRendered = convertElement([
+     // List from: <https://html.spec.whatwg.org/#hidden-elements>
+     'datalist',
+     'head',
+     'noembed',
+     'noframes',
+     'noscript', // Act as if we support scripting.
+     'rp',
+     'script',
+     'style',
+     'template',
+     'title',
+     // Hidden attribute.
+     hidden,
+     // From: <https://html.spec.whatwg.org/#flow-content-3>
+     closedDialog
+   ]);
+
+   // See: <https://html.spec.whatwg.org/#the-css-user-agent-style-sheet-and-presentational-hints>
+   const blockOrCaption = convertElement([
+     'address', // Flow content
+     'article', // Sections and headings
+     'aside', // Sections and headings
+     'blockquote', // Flow content
+     'body', // Page
+     'caption', // `table-caption`
+     'center', // Flow content (legacy)
+     'dd', // Lists
+     'dialog', // Flow content
+     'dir', // Lists (legacy)
+     'dl', // Lists
+     'dt', // Lists
+     'div', // Flow content
+     'figure', // Flow content
+     'figcaption', // Flow content
+     'footer', // Flow content
+     'form,', // Flow content
+     'h1', // Sections and headings
+     'h2', // Sections and headings
+     'h3', // Sections and headings
+     'h4', // Sections and headings
+     'h5', // Sections and headings
+     'h6', // Sections and headings
+     'header', // Flow content
+     'hgroup', // Sections and headings
+     'hr', // Flow content
+     'html', // Page
+     'legend', // Flow content
+     'listing', // Flow content (legacy)
+     'main', // Flow content
+     'menu', // Lists
+     'nav', // Sections and headings
+     'ol', // Lists
+     'p', // Flow content
+     'plaintext', // Flow content (legacy)
+     'pre', // Flow content
+     'section', // Sections and headings
+     'ul', // Lists
+     'xmp' // Flow content (legacy)
+   ]);
+
+   /**
+    * Implementation of the `innerText` getter:
+    * <https://html.spec.whatwg.org/#the-innertext-idl-attribute>
+    * Note that we act as if `node` is being rendered, and as if we’re a
+    * CSS-supporting user agent.
+    *
+    * @param {HastNode} node
+    * @param {Options} [options={}]
+    * @returns {string}
+    */
+   function toText(node, options = {}) {
+     /** @type {Array.<HastChild>} */
+     // @ts-ignore looks like a parent.
+     const children = node.children || [];
+     const block = blockOrCaption(node);
+     const whitespace = inferWhitespace(node, {
+       whitespace: options.whitespace || 'normal',
+       breakBefore: false,
+       breakAfter: false
+     });
+     let index = -1;
+     /** @type {Array.<string|BreakNumber>} */
+     let results;
+     /** @type {string|BreakNumber} */
+     let value;
+     /** @type {number|undefined} */
+     let count;
+
+     // Treat `text` and `comment` as having normal white-space.
+     // This deviates from the spec as in the DOM the node’s `.data` has to be
+     // returned.
+     // If you want that behavior use `hast-util-to-string`.
+     // All other nodes are later handled as if they are `element`s (so the
+     // algorithm also works on a `root`).
+     // Nodes without children are treated as a void element, so `doctype` is thus
+     // ignored.
+     if (node.type === 'text' || node.type === 'comment') {
+       return collectText(node, {whitespace, breakBefore: true, breakAfter: true})
+     }
+
+     // 1.  If this element is not being rendered, or if the user agent is a
+     //     non-CSS user agent, then return the same value as the textContent IDL
+     //     attribute on this element.
+     //
+     //     Note: we’re not supporting stylesheets so we’re acting as if the node
+     //     is rendered.
+     //
+     //     If you want that behavior use `hast-util-to-string`.
+     //     Important: we’ll have to account for this later though.
+
+     // 2.  Let results be a new empty list.
+     results = [];
+
+     // 3.  For each child node node of this element:
+     while (++index < children.length) {
+       // 3.1. Let current be the list resulting in running the inner text
+       //      collection steps with node.
+       //      Each item in results will either be a JavaScript string or a
+       //      positive integer (a required line break count).
+       // 3.2. For each item item in current, append item to results.
+       results = results.concat(
+         // @ts-ignore Looks like a parent.
+         innerTextCollection(children[index], node, {
+           whitespace,
+           breakBefore: index ? null : block,
+           breakAfter:
+             index < children.length - 1 ? br(children[index + 1]) : block
+         })
+       );
+     }
+
+     // 4.  Remove any items from results that are the empty string.
+     // 5.  Remove any runs of consecutive required line break count items at the
+     //     start or end of results.
+     // 6.  Replace each remaining run of consecutive required line break count
+     //     items with a string consisting of as many U+000A LINE FEED (LF)
+     //     characters as the maximum of the values in the required line break
+     //     count items.
+     index = -1;
+     /** @type {Array.<string>} */
+     const result = [];
+
+     while (++index < results.length) {
+       value = results[index];
+
+       if (typeof value === 'number') {
+         if (count !== undefined && value > count) count = value;
+       } else if (value) {
+         if (count) result.push('\n'.repeat(count));
+         count = 0;
+         result.push(value);
+       }
+     }
+
+     // 7.  Return the concatenation of the string items in results.
+     return result.join('')
+   }
+
+   /**
+    * <https://html.spec.whatwg.org/#inner-text-collection-steps>
+    *
+    * @param {HastNode} node
+    * @param {HastParent} parent
+    * @param {CollectionOptions} options
+    * @returns {Array.<string|BreakNumber>}
+    */
+   function innerTextCollection(node, parent, options) {
+     if (node.type === 'element') {
+       return collectElement(node, parent, options)
+     }
+
+     if (node.type === 'text') {
+       return [
+         options.whitespace === 'normal'
+           ? collectText(node, options)
+           : collectPreText(node)
+       ]
+     }
+
+     return []
+   }
+
+   /**
+    * Collect an element.
+    *
+    * @param {HastElement} node
+    * @param {HastParent} parent
+    * @param {CollectionOptions} options
+    */
+   function collectElement(node, parent, options) {
+     // First we infer the `white-space` property.
+     const whitespace = inferWhitespace(node, options);
+     const children = node.children || [];
+     let index = -1;
+     /** @type {Array.<string|BreakNumber>} */
+     let items = [];
+     /** @type {BreakNumber|undefined} */
+     let prefix;
+     /** @type {BreakNumber|BreakForce|undefined} */
+     let suffix;
+
+     // We’re ignoring point 3, and exiting without any content here, because we
+     // deviated from the spec in `toText` at step 3.
+     if (notRendered(node)) {
+       return items
+     }
+
+     // Note: we first detect if there is going to be a break before or after the
+     // contents, as that changes the white-space handling.
+
+     // 2.  If node’s computed value of `visibility` is not `visible`, then return
+     //     items.
+     //
+     //     Note: Ignored, as everything is visible by default user agent styles.
+
+     // 3.  If node is not being rendered, then return items. [...]
+     //
+     //     Note: We already did this above.
+
+     // See `collectText` for step 4.
+
+     // 5.  If node is a `<br>` element, then append a string containing a single
+     //     U+000A LINE FEED (LF) character to items.
+     if (br(node)) {
+       suffix = '\n';
+     }
+
+     // 7.  If node’s computed value of `display` is `table-row`, and node’s CSS
+     //     box is not the last `table-row` box of the nearest ancestor `table`
+     //     box, then append a string containing a single U+000A LINE FEED (LF)
+     //     character to items.
+     //
+     //     See: <https://html.spec.whatwg.org/#tables-2>
+     //     Note: needs further investigation as this does not account for implicit
+     //     rows.
+     else if (row(node) && findAfter(parent, node, row)) {
+       suffix = '\n';
+     }
+
+     // 8.  If node is a `<p>` element, then append 2 (a required line break count)
+     //     at the beginning and end of items.
+     else if (p$2(node)) {
+       prefix = 2;
+       suffix = 2;
+     }
+
+     // 9.  If node’s used value of `display` is block-level or `table-caption`,
+     //     then append 1 (a required line break count) at the beginning and end of
+     //     items.
+     else if (blockOrCaption(node)) {
+       prefix = 1;
+       suffix = 1;
+     }
+
+     // 1.  Let items be the result of running the inner text collection steps with
+     //     each child node of node in tree order, and then concatenating the
+     //     results to a single list.
+     while (++index < children.length) {
+       items = items.concat(
+         innerTextCollection(children[index], node, {
+           whitespace,
+           breakBefore: index ? undefined : prefix,
+           breakAfter:
+             index < children.length - 1 ? br(children[index + 1]) : suffix
+         })
+       );
+     }
+
+     // 6.  If node’s computed value of `display` is `table-cell`, and node’s CSS
+     //     box is not the last `table-cell` box of its enclosing `table-row` box,
+     //     then append a string containing a single U+0009 CHARACTER TABULATION
+     //     (tab) character to items.
+     //
+     //     See: <https://html.spec.whatwg.org/#tables-2>
+     if (cell$2(node) && findAfter(parent, node, cell$2)) {
+       items.push('\t');
+     }
+
+     // Add the pre- and suffix.
+     if (prefix) items.unshift(prefix);
+     if (suffix) items.push(suffix);
+
+     return items
+   }
+
+   /**
+    * 4.  If node is a Text node, then for each CSS text box produced by node,
+    *     in content order, compute the text of the box after application of the
+    *     CSS `white-space` processing rules and `text-transform` rules, set
+    *     items to the list of the resulting strings, and return items.
+    *     The CSS `white-space` processing rules are slightly modified:
+    *     collapsible spaces at the end of lines are always collapsed, but they
+    *     are only removed if the line is the last line of the block, or it ends
+    *     with a br element.
+    *     Soft hyphens should be preserved.
+    *
+    *     Note: See `collectText` and `collectPreText`.
+    *     Note: we don’t deal with `text-transform`, no element has that by
+    *     default.
+    *
+    * See: <https://drafts.csswg.org/css-text/#white-space-phase-1>
+    *
+    * @param {HastText|HastComment} node
+    * @param {CollectionOptions} options
+    * @returns {string}
+    */
+   function collectText(node, options) {
+     const value = String(node.value);
+     /** @type {Array.<string>} */
+     const lines = [];
+     /** @type {Array.<string>} */
+     const result = [];
+     let start = 0;
+     let index = -1;
+     /** @type {RegExpMatchArray|null} */
+     let match;
+     /** @type {number} */
+     let end;
+     /** @type {string|undefined} */
+     let join;
+
+     while (start < value.length) {
+       searchLineFeeds.lastIndex = start;
+       match = searchLineFeeds.exec(value);
+       // @ts-expect-error: `index` is set.
+       end = match ? match.index : value.length;
+
+       lines.push(
+         // Any sequence of collapsible spaces and tabs immediately preceding or
+         // following a segment break is removed.
+         trimAndCollapseSpacesAndTabs(
+           // [...] ignoring bidi formatting characters (characters with the
+           // Bidi_Control property [UAX9]: ALM, LTR, RTL, LRE-RLO, LRI-PDI) as if
+           // they were not there.
+           value
+             .slice(start, end)
+             .replace(/[\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, ''),
+           options.breakBefore,
+           options.breakAfter
+         )
+       );
+
+       start = end + 1;
+     }
+
+     // Collapsible segment breaks are transformed for rendering according to the
+     // segment break transformation rules.
+     // So here we jump to 4.1.2 of [CSSTEXT]:
+     // Any collapsible segment break immediately following another collapsible
+     // segment break is removed
+     while (++index < lines.length) {
+       // *   If the character immediately before or immediately after the segment
+       //     break is the zero-width space character (U+200B), then the break is
+       //     removed, leaving behind the zero-width space.
+       if (
+         lines[index].charCodeAt(lines[index].length - 1) === 0x200b /* ZWSP */ ||
+         (index < lines.length - 1 &&
+           lines[index + 1].charCodeAt(0) === 0x200b) /* ZWSP */
+       ) {
+         result.push(lines[index]);
+         join = '';
+       }
+
+       // *   Otherwise, if the East Asian Width property [UAX11] of both the
+       //     character before and after the segment break is Fullwidth, Wide, or
+       //     Halfwidth (not Ambiguous), and neither side is Hangul, then the
+       //     segment break is removed.
+       //
+       //     Note: ignored.
+       // *   Otherwise, if the writing system of the segment break is Chinese,
+       //     Japanese, or Yi, and the character before or after the segment break
+       //     is punctuation or a symbol (Unicode general category P* or S*) and
+       //     has an East Asian Width property of Ambiguous, and the character on
+       //     the other side of the segment break is Fullwidth, Wide, or Halfwidth,
+       //     and not Hangul, then the segment break is removed.
+       //
+       //     Note: ignored.
+
+       // *   Otherwise, the segment break is converted to a space (U+0020).
+       else if (lines[index]) {
+         if (join) result.push(join);
+         result.push(lines[index]);
+         join = ' ';
+       }
+     }
+
+     return result.join('')
+   }
+
+   /**
+    * @param {HastText|HastComment} node
+    * @returns {string}
+    */
+   function collectPreText(node) {
+     return String(node.value)
+   }
+
+   /**
+    * 3.  Every collapsible tab is converted to a collapsible space (U+0020).
+    * 4.  Any collapsible space immediately following another collapsible
+    *     space—even one outside the boundary of the inline containing that
+    *     space, provided both spaces are within the same inline formatting
+    *     context—is collapsed to have zero advance width. (It is invisible,
+    *     but retains its soft wrap opportunity, if any.)
+    *
+    * @param {string} value
+    * @param {BreakBefore} breakBefore
+    * @param {BreakAfter} breakAfter
+    * @returns {string}
+    */
+   function trimAndCollapseSpacesAndTabs(value, breakBefore, breakAfter) {
+     /** @type {Array.<string>} */
+     const result = [];
+     let start = 0;
+     /** @type {RegExpMatchArray|null} */
+     let match;
+     /** @type {number} */
+     let end;
+
+     while (start < value.length) {
+       searchTabOrSpaces.lastIndex = start;
+       match = searchTabOrSpaces.exec(value);
+       // @ts-expect-error: `index` is set.
+       end = match ? match.index : value.length;
+
+       // If we’re not directly after a segment break, but there was white space,
+       // add an empty value that will be turned into a space.
+       if (!start && !end && match && !breakBefore) {
+         result.push('');
+       }
+
+       if (start !== end) {
+         result.push(value.slice(start, end));
+       }
+
+       start = match ? end + match[0].length : end;
+     }
+
+     // If we reached the end, there was trailing white space, and there’s no
+     // segment break after this node, add an empty value that will be turned
+     // into a space.
+     // @ts-expect-error: `end` is defined.
+     if (start !== end && !breakAfter) {
+       result.push('');
+     }
+
+     return result.join(' ')
+   }
+
+   /**
+    * We don’t support void elements here (so `nobr wbr` -> `normal` is ignored).
+    *
+    * @param {HastNode} node
+    * @param {CollectionOptions} options
+    * @returns {Whitespace}
+    */
+   function inferWhitespace(node, options) {
+     /** @type {HastProperties} */
+     let props;
+
+     if (node.type === 'element') {
+       props = node.properties || {};
+       switch (node.tagName) {
+         case 'listing':
+         case 'plaintext':
+         case 'xmp':
+           return 'pre'
+         case 'nobr':
+           return 'nowrap'
+         case 'pre':
+           return props.wrap ? 'pre-wrap' : 'pre'
+         case 'td':
+         case 'th':
+           return props.noWrap ? 'nowrap' : options.whitespace
+         case 'textarea':
+           return 'pre-wrap'
+       }
+     }
+
+     return options.whitespace
+   }
+
+   /** @type {TestFunctionAnything} */
+   function hidden(node) {
+     return Boolean((node.properties || {}).hidden)
+   }
+
+   /** @type {TestFunctionAnything} */
+   function closedDialog(node) {
+     return node.tagName === 'dialog' && !(node.properties || {}).open
+   }
+
+   /**
+    * Remove final newline characters from `value`.
+    *
+    * @param {unknown} value Value with trailing line feeds, coerced to string.
+    * @return {string} Value without trailing newlines.
+    */
+   function trimTrailingLines(value) {
+     return String(value).replace(/\n+$/, '')
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').ElementChild} ElementChild
+    */
+
+   const prefix = 'language-';
+
+   const pre = convertElement('pre');
+   const isCode = convertElement('code');
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function code$1(h, node) {
+     const children = node.children;
+     let index = -1;
+     /** @type {Array.<string|number>|undefined} */
+     let classList;
+     /** @type {string|undefined} */
+     let lang;
+
+     if (pre(node)) {
+       while (++index < children.length) {
+         const child = children[index];
+
+         if (
+           isCode(child) &&
+           child.properties &&
+           child.properties.className &&
+           Array.isArray(child.properties.className)
+         ) {
+           classList = child.properties.className;
+           break
+         }
+       }
+     }
+
+     if (classList) {
+       index = -1;
+
+       while (++index < classList.length) {
+         if (String(classList[index]).slice(0, prefix.length) === prefix) {
+           lang = String(classList[index]).slice(prefix.length);
+           break
+         }
+       }
+     }
+
+     return h(
+       node,
+       'code',
+       {lang: lang || null, meta: null},
+       trimTrailingLines(wrapText$1(h, toText(node)))
+     )
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Comment} Comment
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Comment} node
+    */
+   function comment$1(h, node) {
+     return h(node, 'html', '<!--' + wrapText$1(h, node.value) + '-->')
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function del(h, node) {
+     return h(node, 'delete', all$2(h, node))
+   }
+
+   /**
+    * @typedef {import('../types.js').MdastListContent} MdastListContent
+    */
+
+   /**
+    * @param {Array.<MdastListContent>} children
+    * @returns {boolean}
+    */
+   function listItemsSpread(children) {
+     let index = -1;
+
+     if (children.length > 1) {
+       while (++index < children.length) {
+         if (children[index].spread) {
+           return true
+         }
+       }
+     }
+
+     return false
+   }
+
+   /**
+    * @typedef {import('../types.js').H} H
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Child} Child
+    * @typedef {import('../types.js').MdastListContent} MdastListContent
+    */
+
+   /**
+    * @param {H} h
+    * @param {Child} node
+    * @returns {Array.<MdastListContent>}
+    */
+   function wrapListItems(h, node) {
+     const children = all$2(h, node);
+     let index = -1;
+
+     while (++index < children.length) {
+       const child = children[index];
+       if (child.type !== 'listItem') {
+         children[index] = {
+           type: 'listItem',
+           spread: false,
+           checked: null,
+           // @ts-expect-error Assume `children[index]` is block content.
+           children: [child]
+         };
+       }
+     }
+
+     // @ts-expect-error Assume all `listItem`s
+     return children
+   }
+
+   /**
+    * @typedef {import('../types.js').H} H
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').ElementChild} ElementChild
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    * @typedef {import('../types.js').MdastListContent} MdastListContent
+    * @typedef {import('../types.js').MdastBlockContent} MdastBlockContent
+    * @typedef {import('../types.js').MdastDefinitionContent} MdastDefinitionContent
+    *
+    * @typedef Group
+    * @property {Array.<Element>} titles
+    * @property {Array.<ElementChild>} definitions
+    */
+
+   const div = convertElement('div');
+   const dt = convertElement('dt');
+   const dd = convertElement('dd');
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function dl(h, node) {
+     const children = node.children;
+     let index = -1;
+     /** @type {Array.<ElementChild>} */
+     let clean = [];
+     /** @type {Array.<Group>} */
+     const groups = [];
+     /** @type {Group} */
+     let group = {titles: [], definitions: []};
+     /** @type {ElementChild} */
+     let child;
+     /** @type {Array.<MdastBlockContent|MdastDefinitionContent>} */
+     let result;
+
+     // Unwrap `<div>`s
+     while (++index < children.length) {
+       child = children[index];
+       clean = clean.concat(div(child) ? child.children : child);
+     }
+
+     index = -1;
+
+     // Group titles and definitions.
+     while (++index < clean.length) {
+       child = clean[index];
+
+       if (dt(child)) {
+         if (dd(clean[index - 1])) {
+           groups.push(group);
+           group = {titles: [], definitions: []};
+         }
+
+         group.titles.push(child);
+       } else {
+         group.definitions.push(child);
+       }
+     }
+
+     groups.push(group);
+
+     // Create items.
+     index = -1;
+     /** @type {Array.<MdastListContent>} */
+     const content = [];
+
+     while (++index < groups.length) {
+       result = [
+         ...handle$1(h, groups[index].titles),
+         ...handle$1(h, groups[index].definitions)
+       ];
+
+       if (result.length > 0) {
+         content.push({
+           type: 'listItem',
+           spread: result.length > 1,
+           checked: null,
+           children: result
+         });
+       }
+     }
+
+     // Create a list if there are items.
+     if (content.length > 0) {
+       return h(
+         node,
+         'list',
+         {ordered: false, start: null, spread: listItemsSpread(content)},
+         content
+       )
+     }
+   }
+
+   /**
+    * @param {H} h
+    * @param {Array.<ElementChild>} children
+    * @returns {Array.<MdastBlockContent|MdastDefinitionContent>}
+    */
+   function handle$1(h, children) {
+     const nodes = wrapListItems(h, {type: 'element', tagName: 'x', children});
+
+     if (nodes.length === 0) {
+       return []
+     }
+
+     if (nodes.length === 1) {
+       return nodes[0].children
+     }
+
+     return [
+       {
+         type: 'list',
+         ordered: false,
+         start: null,
+         spread: listItemsSpread(nodes),
+         children: nodes
+       }
+     ]
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function em(h, node) {
+     return h(node, 'emphasis', all$2(h, node))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function heading$1(h, node) {
+     // `else` shouldn’t happen, of course…
+     /* c8 ignore next */
+     const depth = Number(node.tagName.charAt(1)) || 1;
+     const wrap = h.wrapText;
+
+     h.wrapText = false;
+     const result = h(node, 'heading', {depth}, all$2(h, node));
+     h.wrapText = wrap;
+
+     return result
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function hr(h, node) {
+     return h(node, 'thematicBreak')
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Properties} Properties
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function iframe(h, node) {
+     /** @type {Properties} */
+     // @ts-expect-error: `props` are defined.
+     const props = node.properties;
+     const src = String(props.src || '');
+     const title = String(props.title || '');
+
+     // Only create a link if there is a title.
+     // We can’t use the content of the frame because conforming HTML parsers treat
+     // it as text, whereas legacy parsers treat it as HTML, so it will likely
+     // contain tags that will show up in text.
+     if (src && title) {
+       return {
+         type: 'link',
+         title: null,
+         url: resolve(h, src),
+         children: [{type: 'text', value: wrapText$1(h, title)}]
+       }
+     }
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Properties} Properties
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function img(h, node) {
+     /** @type {Properties} */
+     // @ts-expect-error: `props` are defined.
+     const props = node.properties;
+     return h(node, 'image', {
+       url: resolve(h, String(props.src || '') || null),
+       title: props.title || null,
+       alt: props.alt || ''
+     })
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function inlineCode$1(h, node) {
+     return h(node, 'inlineCode', wrapText$1(h, toText(node)))
+   }
+
+   var own$5 = {}.hasOwnProperty;
+
+   /**
+    * Check if `node` has a set `name` property.
+    *
+    * @param {unknown} node
+    * @param {string} name
+    * @returns {boolean}
+    */
+   function hasProperty(node, name) {
+     /** @type {unknown} */
+     var value =
+       name &&
+       node &&
+       typeof node === 'object' &&
+       // @ts-ignore Looks like a node.
+       node.type === 'element' &&
+       // @ts-ignore Looks like an element.
+       node.properties &&
+       // @ts-ignore Looks like an element.
+       own$5.call(node.properties, name) &&
+       // @ts-ignore Looks like an element.
+       node.properties[name];
+
+     return value !== null && value !== undefined && value !== false
+   }
+
+   /**
+    * @typedef {import('../types.js').H} H
+    * @typedef {import('../types.js').Parent} Parent
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Child} Child
+    * @typedef {import('../types.js').Properties} Properties
+    */
+
+   const option = convertElement('option');
+
+   /**
+    * @param {H} h
+    * @param {Element} node
+    * @param {Properties} [properties]
+    * @returns {Array.<[string, string|null]>}
+    */
+   function findSelectedOptions(h, node, properties) {
+     /** @type {Properties} */
+     // @ts-expect-error: `props` exist.
+     const props = properties || node.properties;
+     let options = findOptions(node);
+     const size =
+       Math.min(Number.parseInt(String(props.size), 10), 0) ||
+       (props.multiple ? 4 : 1);
+     let index = -1;
+     /** @type {Array.<Element>} */
+     const selectedOptions = [];
+     /** @type {Array.<[string, string|null]>} */
+     const values = [];
+
+     while (++index < options.length) {
+       if (hasProperty(options[index], 'selected')) {
+         selectedOptions.push(options[index]);
+       }
+     }
+
+     const list = selectedOptions.length > 0 ? selectedOptions : options;
+     options = list.slice(0, size);
+     index = -1;
+
+     while (++index < options.length) {
+       const option = options[index];
+       const content = wrapText$1(h, toText(option));
+       /** @type {Properties} */
+       // @ts-expect-error: `props` exist.
+       const props = option.properties;
+       const label = content || String(props.label || '');
+       const value = String(props.value || '') || content;
+       values.push([value, label === value ? null : label]);
+     }
+
+     return values
+   }
+
+   /**
+    * @param {Parent} node
+    */
+   function findOptions(node) {
+     const children = node.children;
+     let index = -1;
+     /** @type {Array.<Element>} */
+     let results = [];
+     /** @type {Child} */
+     let child;
+
+     while (++index < children.length) {
+       child = children[index];
+
+       // @ts-expect-error Looks like a parent.
+       if (Array.isArray(child.children)) {
+         // @ts-expect-error Looks like a parent.
+         results = results.concat(findOptions(child));
+       }
+
+       if (option(child) && !hasProperty(child, 'disabled')) {
+         results.push(child);
+       }
+     }
+
+     return results
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Properties} Properties
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    */
+
+   const datalist = convertElement('datalist');
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   // eslint-disable-next-line complexity
+   function input$1(h, node) {
+     /** @type {Properties} */
+     // @ts-expect-error: `props` are defined.
+     const props = node.properties;
+     let value = String(props.value || props.placeholder || '');
+     /** @type {Array.<MdastNode>} */
+     const results = [];
+     /** @type {Array.<string>} */
+     const texts = [];
+     /** @type {Array.<[string, string|null]>} */
+     let values = [];
+     let index = -1;
+     /** @type {string} */
+     let list;
+
+     if (props.disabled || props.type === 'hidden' || props.type === 'file') {
+       return
+     }
+
+     if (props.type === 'checkbox' || props.type === 'radio') {
+       return h(
+         node,
+         'text',
+         wrapText$1(h, h[props.checked ? 'checked' : 'unchecked'])
+       )
+     }
+
+     if (props.type === 'image') {
+       return props.alt || value
+         ? h(node, 'image', {
+             url: resolve(h, String(props.src || '') || null),
+             title: wrapText$1(h, String(props.title || '')) || null,
+             alt: wrapText$1(h, String(props.alt || value))
+           })
+         : []
+     }
+
+     if (value) {
+       values = [[value, null]];
+     } else if (
+       // `list` is not supported on these types:
+       props.type !== 'password' &&
+       props.type !== 'file' &&
+       props.type !== 'submit' &&
+       props.type !== 'reset' &&
+       props.type !== 'button' &&
+       props.list
+     ) {
+       list = String(props.list).toUpperCase();
+
+       if (own$6.call(h.nodeById, list) && datalist(h.nodeById[list])) {
+         values = findSelectedOptions(h, h.nodeById[list], props);
+       }
+     }
+
+     if (values.length === 0) {
+       return
+     }
+
+     // Hide password value.
+     if (props.type === 'password') {
+       // Passwords don’t support `list`.
+       values[0] = ['•'.repeat(values[0][0].length), null];
+     }
+
+     if (props.type === 'url' || props.type === 'email') {
+       while (++index < values.length) {
+         value = resolve(h, values[index][0]);
+
+         results.push(
+           h(
+             node,
+             'link',
+             {
+               title: null,
+               url: wrapText$1(h, props.type === 'email' ? 'mailto:' + value : value)
+             },
+             [{type: 'text', value: wrapText$1(h, values[index][1] || value)}]
+           )
+         );
+
+         if (index !== values.length - 1) {
+           results.push({type: 'text', value: ', '});
+         }
+       }
+
+       return results
+     }
+
+     while (++index < values.length) {
+       texts.push(
+         values[index][1]
+           ? values[index][1] + ' (' + values[index][0] + ')'
+           : values[index][0]
+       );
+     }
+
+     return h(node, 'text', wrapText$1(h, texts.join(', ')))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').ElementChild} ElementChild
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    */
+
+   const p$1 = convertElement('p');
+   const input = convertElement('input');
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function li(h, node) {
+     const head = node.children[0];
+     /** @type {boolean|null} */
+     let checked = null;
+     /** @type {ElementChild} */
+     let checkbox;
+     /** @type {Element|undefined} */
+     let clone;
+
+     // Check if this node starts with a checkbox.
+     if (p$1(head)) {
+       checkbox = head.children[0];
+
+       if (
+         input(checkbox) &&
+         checkbox.properties &&
+         (checkbox.properties.type === 'checkbox' ||
+           checkbox.properties.type === 'radio')
+       ) {
+         checked = Boolean(checkbox.properties.checked);
+         clone = {
+           ...node,
+           children: [
+             {...head, children: head.children.slice(1)},
+             ...node.children.slice(1)
+           ]
+         };
+       }
+     }
+
+     const content = wrapChildren(h, clone || node);
+
+     return h(node, 'listItem', {spread: content.length > 1, checked}, content)
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   const ol = convertElement('ol');
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function list$1(h, node) {
+     const ordered = ol(node);
+     const children = wrapListItems(h, node);
+     /** @type {number|null} */
+     let start = null;
+
+     if (ordered) {
+       start = hasProperty(node, 'start')
+         ? // @ts-expect-error: `props` exist.
+           Number.parseInt(String(node.properties.start), 10)
+         : 1;
+     }
+
+     return h(
+       node,
+       'list',
+       {ordered, start, spread: listItemsSpread(children)},
+       children
+     )
+   }
+
+   /**
+    * @typedef Options
+    * @property {boolean} [includeImageAlt=true]
+    */
+
+   /**
+    * Get the text content of a node.
+    * Prefer the node’s plain-text fields, otherwise serialize its children,
+    * and if the given value is an array, serialize the nodes in it.
+    *
+    * @param {unknown} node
+    * @param {Options} [options]
+    * @returns {string}
+    */
+   function toString(node, options) {
+     var {includeImageAlt = true} = options || {};
+     return one$1(node, includeImageAlt)
+   }
+
+   /**
+    * @param {unknown} node
+    * @param {boolean} includeImageAlt
+    * @returns {string}
+    */
+   function one$1(node, includeImageAlt) {
+     return (
+       (node &&
+         typeof node === 'object' &&
+         // @ts-ignore looks like a literal.
+         (node.value ||
+           // @ts-ignore looks like an image.
+           (includeImageAlt ? node.alt : '') ||
+           // @ts-ignore looks like a parent.
+           ('children' in node && all$1(node.children, includeImageAlt)) ||
+           (Array.isArray(node) && all$1(node, includeImageAlt)))) ||
+       ''
+     )
+   }
+
+   /**
+    * @param {Array.<unknown>} values
+    * @param {boolean} includeImageAlt
+    * @returns {string}
+    */
+   function all$1(values, includeImageAlt) {
+     /** @type {Array.<string>} */
+     var result = [];
+     var index = -1;
+
+     while (++index < values.length) {
+       result[index] = one$1(values[index], includeImageAlt);
+     }
+
+     return result.join('')
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').Properties} Properties
+    * @typedef {import('../types.js').ElementChild} ElementChild
+    */
+
+   const source = convertElement('source');
+   const video = convertElement('video');
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function media(h, node) {
+     let nodes = all$2(h, node);
+     /** @type {Properties} */
+     // @ts-expect-error: `props` are defined.
+     const properties = node.properties;
+     const poster = video(node) && String(properties.poster || '');
+     let src = String(properties.src || '');
+     let index = -1;
+     /** @type {boolean} */
+     let linkInFallbackContent = false;
+     /** @type {ElementChild} */
+     let child;
+
+     visit({type: 'root', children: nodes}, 'link', findLink);
+
+     // If the content links to something, or if it’s not phrasing…
+     if (linkInFallbackContent || wrapNeeded(nodes)) {
+       return nodes
+     }
+
+     // Find the source.
+     while (!src && ++index < node.children.length) {
+       child = node.children[index];
+       if (source(child)) {
+         // @ts-expect-error: `props` are defined.
+         src = String(child.properties.src || '');
+       }
+     }
+
+     // If there’s a poster defined on the video, create an image.
+     if (poster) {
+       nodes = [
+         {
+           type: 'image',
+           title: null,
+           url: resolve(h, poster),
+           alt: toString({children: nodes})
+         }
+       ];
+     }
+
+     // Link to the media resource.
+     return {
+       type: 'link',
+       // @ts-expect-error Types are broken.
+       title: node.properties.title || null,
+       url: resolve(h, src),
+       // @ts-expect-error Assume phrasing content.
+       children: nodes
+     }
+
+     function findLink() {
+       linkInFallbackContent = true;
+       return EXIT
+     }
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function p(h, node) {
+     const nodes = all$2(h, node);
+
+     if (nodes.length > 0) {
+       return h(node, 'paragraph', nodes)
+     }
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function q(h, node) {
+     const expected = h.quotes[h.qNesting % h.quotes.length];
+
+     h.qNesting++;
+     const contents = all$2(h, node);
+     h.qNesting--;
+
+     contents.unshift({type: 'text', value: expected.charAt(0)});
+
+     contents.push({
+       type: 'text',
+       value: expected.length > 1 ? expected.charAt(1) : expected
+     });
+
+     return contents
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Root} Root
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Root} node
+    */
+   function root$2(h, node) {
+     let children = all$2(h, node);
+
+     if (h.document || wrapNeeded(children)) {
+       children = wrap(children);
+     }
+
+     return h(node, 'root', children)
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function select(h, node) {
+     const values = findSelectedOptions(h, node);
+     let index = -1;
+     /** @type {Array.<string>} */
+     const results = [];
+     /** @type {[string, string|null]} */
+     let value;
+
+     while (++index < values.length) {
+       value = values[index];
+       results.push(value[1] ? value[1] + ' (' + value[0] + ')' : value[0]);
+     }
+
+     if (results.length > 0) {
+       return h(node, 'text', wrapText$1(h, results.join(', ')))
+     }
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function strong$1(h, node) {
+     return h(node, 'strong', all$2(h, node))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function tableCell(h, node) {
+     const wrap = h.wrapText;
+
+     h.wrapText = false;
+
+     const result = h(node, 'tableCell', all$2(h, node));
+
+     if (node.properties && (node.properties.rowSpan || node.properties.colSpan)) {
+       const data = result.data || (result.data = {});
+       if (node.properties.rowSpan) data.rowSpan = node.properties.rowSpan;
+       if (node.properties.colSpan) data.colSpan = node.properties.colSpan;
+     }
+
+     h.wrapText = wrap;
+
+     return result
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function tableRow(h, node) {
+     return h(node, 'tableRow', all$2(h, node))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    * @typedef {import('../types.js').MdastNode} MdastNode
+    * @typedef {import('../types.js').MdastTableContent} MdastTableContent
+    * @typedef {import('../types.js').MdastRowContent} MdastRowContent
+    * @typedef {import('../types.js').MdastPhrasingContent} MdastPhrasingContent
+    *
+    * @typedef Info
+    * @property {Array.<string|null>} align
+    * @property {boolean} headless
+    */
+
+   const thead$1 = convertElement('thead');
+   const tr$1 = convertElement('tr');
+   const cell$1 = convertElement(['th', 'td']);
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function table(h, node) {
+     if (h.inTable) {
+       return h(node, 'text', wrapText$1(h, toText(node)))
+     }
+
+     h.inTable = true;
+
+     const {headless, align} = inspect$1(node);
+     const rows = toRows$1(all$2(h, node), headless);
+     let columns = 1;
+     let rowIndex = -1;
+
+     while (++rowIndex < rows.length) {
+       const cells = rows[rowIndex].children;
+       let cellIndex = -1;
+
+       while (++cellIndex < cells.length) {
+         const cell = cells[cellIndex];
+
+         if (cell.data) {
+           const colSpan = Number.parseInt(String(cell.data.colSpan), 10) || 1;
+           const rowSpan = Number.parseInt(String(cell.data.rowSpan), 10) || 1;
+
+           if (colSpan > 1 || rowSpan > 1) {
+             let otherRowIndex = rowIndex - 1;
+
+             while (++otherRowIndex < rowIndex + rowSpan) {
+               let colIndex = cellIndex - 1;
+
+               while (++colIndex < cellIndex + colSpan) {
+                 if (!rows[otherRowIndex]) {
+                   // Don’t add rows that don’t exist.
+                   // Browsers don’t render them either.
+                   break
+                 }
+
+                 /** @type {Array.<MdastRowContent>} */
+                 const newCells = [];
+
+                 if (otherRowIndex !== rowIndex || colIndex !== cellIndex) {
+                   newCells.push({type: 'tableCell', children: []});
+                 }
+
+                 rows[otherRowIndex].children.splice(colIndex, 0, ...newCells);
+               }
+             }
+           }
+
+           // Clean the data fields.
+           if ('colSpan' in cell.data) delete cell.data.colSpan;
+           if ('rowSpan' in cell.data) delete cell.data.rowSpan;
+           if (Object.keys(cell.data).length === 0) delete cell.data;
+         }
+       }
+
+       if (cells.length > columns) columns = cells.length;
+     }
+
+     // Add extra empty cells.
+     rowIndex = -1;
+
+     while (++rowIndex < rows.length) {
+       const cells = rows[rowIndex].children;
+       let cellIndex = cells.length - 1;
+       while (++cellIndex < columns) {
+         cells.push({type: 'tableCell', children: []});
+       }
+     }
+
+     let alignIndex = align.length - 1;
+     while (++alignIndex < columns) {
+       align.push(null);
+     }
+
+     h.inTable = false;
+
+     return h(node, 'table', {align}, rows)
+   }
+
+   /**
+    * Infer whether the HTML table has a head and how it aligns.
+    *
+    * @param {Element} node
+    * @returns {Info}
+    */
+   function inspect$1(node) {
+     let headless = true;
+     let rowIndex = 0;
+     let cellIndex = 0;
+     /** @type {Array.<string|null>} */
+     const align = [null];
+
+     visit(node, 'element', (child) => {
+       if (child.tagName === 'table' && node !== child) {
+         return SKIP
+       }
+
+       // If there is a `thead`, assume there is a header row.
+       if (cell$1(child) && child.properties) {
+         if (!align[cellIndex]) {
+           align[cellIndex] = String(child.properties.align || '') || null;
+         }
+
+         // If there is a th in the first row, assume there is a header row.
+         if (headless && rowIndex < 2 && child.tagName === 'th') {
+           headless = false;
+         }
+
+         cellIndex++;
+       } else if (thead$1(child)) {
+         headless = false;
+       } else if (tr$1(child)) {
+         rowIndex++;
+         cellIndex = 0;
+       }
+     });
+
+     return {align, headless}
+   }
+
+   /**
+    * Ensure the rows are properly structured.
+    *
+    * @param {Array.<MdastNode>} children
+    * @param {boolean} headless
+    * @returns {Array.<MdastTableContent>}
+    */
+   function toRows$1(children, headless) {
+     let index = -1;
+     /** @type {Array.<MdastTableContent>} */
+     const nodes = [];
+     /** @type {Array.<MdastRowContent>|undefined} */
+     let queue;
+
+     // Add an empty header row.
+     if (headless) {
+       nodes.push({type: 'tableRow', children: []});
+     }
+
+     while (++index < children.length) {
+       const node = children[index];
+
+       if (node.type === 'tableRow') {
+         if (queue) {
+           node.children.unshift(...queue);
+           queue = undefined;
+         }
+
+         nodes.push(node);
+       } else {
+         if (!queue) queue = [];
+         // @ts-expect-error Assume row content.
+         queue.push(node);
+       }
+     }
+
+     if (queue) {
+       nodes[nodes.length - 1].children.push(...queue);
+     }
+
+     index = -1;
+
+     while (++index < nodes.length) {
+       nodes[index].children = toCells$1(nodes[index].children);
+     }
+
+     return nodes
+   }
+
+   /**
+    * Ensure the cells in a row are properly structured.
+    *
+    * @param {Array.<MdastNode>} children
+    * @returns {Array.<MdastRowContent>}
+    */
+   function toCells$1(children) {
+     /** @type {Array.<MdastRowContent>} */
+     const nodes = [];
+     let index = -1;
+     /** @type {MdastNode} */
+     let node;
+     /** @type {Array.<MdastPhrasingContent>|undefined} */
+     let queue;
+
+     while (++index < children.length) {
+       node = children[index];
+
+       if (node.type === 'tableCell') {
+         if (queue) {
+           node.children.unshift(...queue);
+           queue = undefined;
+         }
+
+         nodes.push(node);
+       } else {
+         if (!queue) queue = [];
+         // @ts-expect-error Assume phrasing content.
+         queue.push(node);
+       }
+     }
+
+     if (queue) {
+       node = nodes[nodes.length - 1];
+
+       if (!node) {
+         node = {type: 'tableCell', children: []};
+         nodes.push(node);
+       }
+
+       node.children.push(...queue);
+     }
+
+     return nodes
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Text} Text
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Text} node
+    */
+   function text$2(h, node) {
+     return h(node, 'text', wrapText$1(h, node.value))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function textarea(h, node) {
+     return h(node, 'text', wrapText$1(h, toText(node)))
+   }
+
+   /**
+    * @typedef {import('../types.js').Handle} Handle
+    * @typedef {import('../types.js').Element} Element
+    */
+
+   /**
+    * @type {Handle}
+    * @param {Element} node
+    */
+   function wbr(h, node) {
+     return h(node, 'text', '\u200B')
+   }
+
+   const handlers = {
+     root: root$2,
+     text: text$2,
+     comment: comment$1,
+     doctype: ignore,
+
+     applet: ignore,
+     area: ignore,
+     basefont: ignore,
+     bgsound: ignore,
+     caption: ignore,
+     col: ignore,
+     colgroup: ignore,
+     command: ignore,
+     content: ignore,
+     datalist: ignore,
+     dialog: ignore,
+     element: ignore,
+     embed: ignore,
+     frame: ignore,
+     frameset: ignore,
+     isindex: ignore,
+     keygen: ignore,
+     link: ignore,
+     math: ignore,
+     menu: ignore,
+     menuitem: ignore,
+     meta: ignore,
+     nextid: ignore,
+     noembed: ignore,
+     noframes: ignore,
+     optgroup: ignore,
+     option: ignore,
+     param: ignore,
+     script: ignore,
+     shadow: ignore,
+     source: ignore,
+     spacer: ignore,
+     style: ignore,
+     svg: ignore,
+     template: ignore,
+     title: ignore,
+     track: ignore,
+
+     abbr: all$2,
+     acronym: all$2,
+     bdi: all$2,
+     bdo: all$2,
+     big: all$2,
+     blink: all$2,
+     button: all$2,
+     canvas: all$2,
+     cite: all$2,
+     data: all$2,
+     details: all$2,
+     dfn: all$2,
+     font: all$2,
+     ins: all$2,
+     label: all$2,
+     map: all$2,
+     marquee: all$2,
+     meter: all$2,
+     nobr: all$2,
+     noscript: all$2,
+     object: all$2,
+     output: all$2,
+     progress: all$2,
+     rb: all$2,
+     rbc: all$2,
+     rp: all$2,
+     rt: all$2,
+     rtc: all$2,
+     ruby: all$2,
+     slot: all$2,
+     small: all$2,
+     span: all$2,
+     sup: all$2,
+     sub: all$2,
+     tbody: all$2,
+     tfoot: all$2,
+     thead: all$2,
+     time: all$2,
+
+     address: wrapChildren,
+     article: wrapChildren,
+     aside: wrapChildren,
+     body: wrapChildren,
+     center: wrapChildren,
+     div: wrapChildren,
+     fieldset: wrapChildren,
+     figcaption: wrapChildren,
+     figure: wrapChildren,
+     form: wrapChildren,
+     footer: wrapChildren,
+     header: wrapChildren,
+     hgroup: wrapChildren,
+     html: wrapChildren,
+     legend: wrapChildren,
+     main: wrapChildren,
+     multicol: wrapChildren,
+     nav: wrapChildren,
+     picture: wrapChildren,
+     section: wrapChildren,
+
+     a,
+     audio: media,
+     b: strong$1,
+     base: base$1,
+     blockquote: blockquote$1,
+     br: br$1,
+     code: inlineCode$1,
+     dir: list$1,
+     dl,
+     dt: li,
+     dd: li,
+     del,
+     em,
+     h1: heading$1,
+     h2: heading$1,
+     h3: heading$1,
+     h4: heading$1,
+     h5: heading$1,
+     h6: heading$1,
+     hr,
+     i: em,
+     iframe,
+     img,
+     image: img,
+     input: input$1,
+     kbd: inlineCode$1,
+     li,
+     listing: code$1,
+     mark: em,
+     ol: list$1,
+     p,
+     plaintext: code$1,
+     pre: code$1,
+     q,
+     s: del,
+     samp: inlineCode$1,
+     select,
+     strike: del,
+     strong: strong$1,
+     summary: p,
+     table,
+     td: tableCell,
+     textarea,
+     th: tableCell,
+     tr: tableRow,
+     tt: inlineCode$1,
+     u: em,
+     ul: list$1,
+     var: inlineCode$1,
+     video: media,
+     wbr,
+     xmp: code$1
+   };
+
+   function ignore() {}
+
+   /**
+    * @typedef {import('./types.js').Node} Node
+    * @typedef {import('./types.js').Element} Element
+    * @typedef {import('./types.js').Text} Text
+    * @typedef {import('./types.js').Options} Options
+    * @typedef {import('./types.js').Context} Context
+    * @typedef {import('./types.js').Properties} Properties
+    * @typedef {import('./types.js').H} H
+    * @typedef {import('./types.js').HWithoutProps} HWithoutProps
+    * @typedef {import('./types.js').HWithProps} HWithProps
+    * @typedef {import('./types.js').MdastNode} MdastNode
+    * @typedef {import('./types.js').MdastRoot} MdastRoot
+    */
+
+   const block = convert(['heading', 'paragraph', 'root']);
+
+   /**
+    * @param {Node} tree
+    * @param {Options} [options]
+    */
+   function toMdast(tree, options = {}) {
+     /** @type {Object.<string, Element>} */
+     const byId = {};
+     /** @type {MdastNode|MdastRoot} */
+     let mdast;
+
+     /**
+      * @type {H}
+      */
+     const h = Object.assign(
+       /**
+        * @type {HWithProps & HWithoutProps}
+        */
+       (
+         /**
+          * @param {Node} node
+          * @param {string} type
+          * @param {Properties|string|Array.<Node>} [props]
+          * @param {string|Array.<Node>} [children]
+          */
+         (node, type, props, children) => {
+           /** @type {Properties|undefined} */
+           let properties;
+
+           if (typeof props === 'string' || Array.isArray(props)) {
+             children = props;
+             properties = {};
+           } else {
+             properties = props;
+           }
+
+           /** @type {Node} */
+           // @ts-expect-error Assume valid `type` and `children`/`value`.
+           const result = {type, ...properties};
+
+           if (typeof children === 'string') {
+             // @ts-expect-error: Looks like a literal.
+             result.value = children;
+           } else if (children) {
+             // @ts-expect-error: Looks like a parent.
+             result.children = children;
+           }
+
+           if (node.position) {
+             result.position = node.position;
+           }
+
+           return result
+         }
+       ),
+       {
+         nodeById: byId,
+         baseFound: false,
+         inTable: false,
+         wrapText: true,
+         /** @type {string|null} */
+         frozenBaseUrl: null,
+         qNesting: 0,
+         handlers: options.handlers
+           ? {...handlers, ...options.handlers}
+           : handlers,
+         document: options.document,
+         checked: options.checked || '[x]',
+         unchecked: options.unchecked || '[ ]',
+         quotes: options.quotes || ['"']
+       }
+     );
+
+     visit(tree, 'element', (node) => {
+       const id =
+         node.properties &&
+         'id' in node.properties &&
+         String(node.properties.id).toUpperCase();
+
+       if (id && !own$6.call(byId, id)) {
+         byId[id] = node;
+       }
+     });
+
+     // @ts-expect-error: does return a transformer, that does accept any node.
+     rehypeMinifyWhitespace({newlines: options.newlines === true})(tree);
+
+     const result = one$2(h, tree, undefined);
+
+     if (!result) {
+       mdast = {type: 'root', children: []};
+     } else if (Array.isArray(result)) {
+       mdast = {type: 'root', children: result};
+     } else {
+       mdast = result;
+     }
+
+     visit(mdast, 'text', ontext);
+
+     return mdast
+
+     /**
+      * Collapse text nodes, and fix whitespace.
+      * Most of this is taken care of by `rehype-minify-whitespace`, but
+      * we’re generating some whitespace too, and some nodes are in the end
+      * ignored.
+      * So clean up.
+      *
+      * @type {import('unist-util-visit/complex-types').BuildVisitor<MdastRoot, 'text'>}
+      */
+     function ontext(node, index, parent) {
+       /* c8 ignore next 3 */
+       if (index === null || !parent) {
+         return
+       }
+
+       const previous = parent.children[index - 1];
+
+       if (previous && previous.type === node.type) {
+         previous.value += node.value;
+         parent.children.splice(index, 1);
+
+         if (previous.position && node.position) {
+           previous.position.end = node.position.end;
+         }
+
+         // Iterate over the previous node again, to handle its total value.
+         return index - 1
+       }
+
+       node.value = node.value.replace(/[\t ]*(\r?\n|\r)[\t ]*/, '$1');
+
+       // We don’t care about other phrasing nodes in between (e.g., `[ asd ]()`),
+       // as there the whitespace matters.
+       if (parent && block(parent)) {
+         if (!index) {
+           node.value = node.value.replace(/^[\t ]+/, '');
+         }
+
+         if (index === parent.children.length - 1) {
+           node.value = node.value.replace(/[\t ]+$/, '');
+         }
+       }
+
+       if (!node.value) {
+         parent.children.splice(index, 1);
+         return index
+       }
+     }
+   }
+
+   const definitionListHastToMdast = {
+       dl: function (h, node) { return h(node, 'defList', all$2(h, node)); },
+       dt: function (h, node) { return h(node, 'defListTerm', all$2(h, node)); },
+       dd: function (h, node) { return h(node, 'defListDescription', all$2(h, node)); }
+   };
 
    const UNDEFINED_CODE_POINTS = new Set([
        65534, 65535, 131070, 131071, 196606, 196607, 262142, 262143, 327678, 327679, 393214,
@@ -47166,7 +52202,7 @@ var MarkdownInput = (function (exports) {
     * @property {Array<string>} [mustUseProperty]
     */
 
-   const own$7 = {}.hasOwnProperty;
+   const own$4 = {}.hasOwnProperty;
 
    /**
     * @param {Definition} definition
@@ -47181,7 +52217,7 @@ var MarkdownInput = (function (exports) {
      let prop;
 
      for (prop in definition.properties) {
-       if (own$7.call(definition.properties, prop)) {
+       if (own$4.call(definition.properties, prop)) {
          const value = definition.properties[prop];
          const info = new DefinedInfo(
            prop,
@@ -48391,7 +53427,7 @@ var MarkdownInput = (function (exports) {
 
    const buttonTypes = new Set(['menu', 'submit', 'reset', 'button']);
 
-   const own$6 = {}.hasOwnProperty;
+   const own$3 = {}.hasOwnProperty;
 
    /**
     * @param {Schema} schema
@@ -48432,7 +53468,7 @@ var MarkdownInput = (function (exports) {
              node = parseSelector(selector, defaultTagName);
              // Normalize the name.
              node.tagName = node.tagName.toLowerCase();
-             if (adjust && own$6.call(adjust, node.tagName)) {
+             if (adjust && own$3.call(adjust, node.tagName)) {
                node.tagName = adjust[node.tagName];
              }
 
@@ -48442,7 +53478,7 @@ var MarkdownInput = (function (exports) {
                let key;
 
                for (key in properties) {
-                 if (own$6.call(properties, key)) {
+                 if (own$3.call(properties, key)) {
                    // @ts-expect-error `node.properties` is set.
                    addProperty(schema, node.properties, key, properties[key]);
                  }
@@ -48624,7 +53660,7 @@ var MarkdownInput = (function (exports) {
      let key;
 
      for (key in value) {
-       if (own$6.call(value, key)) {
+       if (own$3.call(value, key)) {
          result.push([key, value[key]].join(': '));
        }
      }
@@ -48853,14 +53889,14 @@ var MarkdownInput = (function (exports) {
     * @property {boolean} location
     */
 
-   const own$5 = {}.hasOwnProperty;
+   const own$2 = {}.hasOwnProperty;
 
    // Handlers.
    const map$2 = {
-     '#document': root$2,
-     '#document-fragment': root$2,
-     '#text': text$2,
-     '#comment': comment$1,
+     '#document': root$1,
+     '#document-fragment': root$1,
+     '#text': text$1,
+     '#comment': comment,
      '#documentType': doctype
    };
 
@@ -48906,7 +53942,7 @@ var MarkdownInput = (function (exports) {
      const schema = ctx.schema;
      /** @type {Handler} */
      // @ts-expect-error: index is fine.
-     const fn = own$5.call(map$2, ast.nodeName) ? map$2[ast.nodeName] : element$1;
+     const fn = own$2.call(map$2, ast.nodeName) ? map$2[ast.nodeName] : element;
      /** @type {Array.<Child>|undefined} */
      let children;
 
@@ -48965,7 +54001,7 @@ var MarkdownInput = (function (exports) {
     * @param {Array.<Child>} children
     * @returns {Root}
     */
-   function root$2(ctx, ast, children) {
+   function root$1(ctx, ast, children) {
      /** @type {Root} */
      const result = {
        type: 'root',
@@ -49003,7 +54039,7 @@ var MarkdownInput = (function (exports) {
     * @param {P5Text} ast
     * @returns {Text}
     */
-   function text$2(_, ast) {
+   function text$1(_, ast) {
      return {type: 'text', value: ast.value}
    }
 
@@ -49014,7 +54050,7 @@ var MarkdownInput = (function (exports) {
     * @param {P5Comment} ast
     * @returns {Comment}
     */
-   function comment$1(_, ast) {
+   function comment(_, ast) {
      return {type: 'comment', value: ast.data}
    }
 
@@ -49026,7 +54062,7 @@ var MarkdownInput = (function (exports) {
     * @param {Array.<ElementChild>} children
     * @returns {Element}
     */
-   function element$1(ctx, ast, children) {
+   function element(ctx, ast, children) {
      const fn = ctx.schema.space === 'svg' ? s : h;
      let index = -1;
      /** @type {Object.<string, string>} */
@@ -49092,7 +54128,7 @@ var MarkdownInput = (function (exports) {
          let key;
 
          for (key in location.attrs) {
-           if (own$5.call(location.attrs, key)) {
+           if (own$2.call(location.attrs, key)) {
              props[find(ctx.schema, key).property] = position(location.attrs[key]);
            }
          }
@@ -49466,7 +54502,7 @@ var MarkdownInput = (function (exports) {
     * @typedef {FromParse5Options & ParseFields & ErrorFields} Options
     */
 
-   const base$1 = 'https://html.spec.whatwg.org/multipage/parsing.html#parse-error-';
+   const base = 'https://html.spec.whatwg.org/multipage/parsing.html#parse-error-';
 
    const fatalities = {2: true, 1: false, 0: null};
 
@@ -49528,7 +54564,7 @@ var MarkdownInput = (function (exports) {
          message.ruleId = code;
          message.fatal = fatalities[level];
          message.note = format(info.description);
-         message.url = 'url' in info && info.url === false ? null : base$1 + code;
+         message.url = 'url' in info && info.url === false ? null : base + code;
          // @ts-expect-error: `onerror` is not passed if `warn` is not set.
          warn(message);
        }
@@ -49566,3765 +54602,7 @@ var MarkdownInput = (function (exports) {
      return value.replace(/-[a-z]/g, ($0) => $0.charAt(1).toUpperCase())
    }
 
-   /**
-    * @typedef {import('unist').Node} Node
-    * @typedef {import('unist').Parent} Parent
-    * @typedef {import('hast').Element} Element
-    *
-    * @typedef {string} TagName
-    * @typedef {null|undefined|TagName|TestFunctionAnything|Array.<TagName|TestFunctionAnything>} Test
-    */
-
-   /**
-    * @template {Element} T
-    * @typedef {null|undefined|T['tagName']|TestFunctionPredicate<T>|Array.<T['tagName']|TestFunctionPredicate<T>>} PredicateTest
-    */
-
-   /**
-    * Check if an element passes a test
-    *
-    * @callback TestFunctionAnything
-    * @param {Element} element
-    * @param {number|null|undefined} [index]
-    * @param {Parent|null|undefined} [parent]
-    * @returns {boolean|void}
-    */
-
-   /**
-    * Check if an element passes a certain node test
-    *
-    * @template {Element} X
-    * @callback TestFunctionPredicate
-    * @param {Element} element
-    * @param {number|null|undefined} [index]
-    * @param {Parent|null|undefined} [parent]
-    * @returns {element is X}
-    */
-
-   /**
-    * Check if a node is an element and passes a certain node test
-    *
-    * @callback AssertAnything
-    * @param {unknown} [node]
-    * @param {number|null|undefined} [index]
-    * @param {Parent|null|undefined} [parent]
-    * @returns {boolean}
-    */
-
-   /**
-    * Check if a node is an element and passes a certain node test
-    *
-    * @template {Element} Y
-    * @callback AssertPredicate
-    * @param {unknown} [node]
-    * @param {number|null|undefined} [index]
-    * @param {Parent|null|undefined} [parent]
-    * @returns {node is Y}
-    */
-
-   // Check if `node` is an `element` and whether it passes the given test.
-   const isElement =
-     /**
-      * Check if a node is an element and passes a test.
-      * When a `parent` node is known the `index` of node should also be given.
-      *
-      * @type {(
-      *   (() => false) &
-      *   (<T extends Element = Element>(node: unknown, test?: PredicateTest<T>, index?: number, parent?: Parent, context?: unknown) => node is T) &
-      *   ((node: unknown, test: Test, index?: number, parent?: Parent, context?: unknown) => boolean)
-      * )}
-      */
-     (
-       /**
-        * Check if a node passes a test.
-        * When a `parent` node is known the `index` of node should also be given.
-        *
-        * @param {unknown} [node] Node to check
-        * @param {Test} [test] When nullish, checks if `node` is a `Node`.
-        * When `string`, works like passing `function (node) {return node.type === test}`.
-        * When `function` checks if function passed the node is true.
-        * When `array`, checks any one of the subtests pass.
-        * @param {number} [index] Position of `node` in `parent`
-        * @param {Parent} [parent] Parent of `node`
-        * @param {unknown} [context] Context object to invoke `test` with
-        * @returns {boolean} Whether test passed and `node` is an `Element` (object with `type` set to `element` and `tagName` set to a non-empty string).
-        */
-       // eslint-disable-next-line max-params
-       function (node, test, index, parent, context) {
-         const check = convertElement(test);
-
-         if (
-           index !== undefined &&
-           index !== null &&
-           (typeof index !== 'number' ||
-             index < 0 ||
-             index === Number.POSITIVE_INFINITY)
-         ) {
-           throw new Error('Expected positive finite index for child node')
-         }
-
-         if (
-           parent !== undefined &&
-           parent !== null &&
-           (!parent.type || !parent.children)
-         ) {
-           throw new Error('Expected parent node')
-         }
-
-         // @ts-expect-error Looks like a node.
-         if (!node || !node.type || typeof node.type !== 'string') {
-           return false
-         }
-
-         if (
-           (parent === undefined || parent === null) !==
-           (index === undefined || index === null)
-         ) {
-           throw new Error('Expected both parent and index')
-         }
-
-         return check.call(context, node, index, parent)
-       }
-     );
-
-   const convertElement =
-     /**
-      * @type {(
-      *   (<T extends Element>(test: T['tagName']|TestFunctionPredicate<T>) => AssertPredicate<T>) &
-      *   ((test?: Test) => AssertAnything)
-      * )}
-      */
-     (
-       /**
-        * Generate an assertion from a check.
-        * @param {Test} [test]
-        * When nullish, checks if `node` is a `Node`.
-        * When `string`, works like passing `function (node) {return node.type === test}`.
-        * When `function` checks if function passed the node is true.
-        * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
-        * When `array`, checks any one of the subtests pass.
-        * @returns {AssertAnything}
-        */
-       function (test) {
-         if (test === undefined || test === null) {
-           return element
-         }
-
-         if (typeof test === 'string') {
-           return tagNameFactory(test)
-         }
-
-         if (typeof test === 'object') {
-           return anyFactory$1(test)
-         }
-
-         if (typeof test === 'function') {
-           return castFactory$1(test)
-         }
-
-         throw new Error('Expected function, string, or array as test')
-       }
-     );
-
-   /**
-    * @param {Array.<TagName|TestFunctionAnything>} tests
-    * @returns {AssertAnything}
-    */
-   function anyFactory$1(tests) {
-     /** @type {Array.<AssertAnything>} */
-     const checks = [];
-     let index = -1;
-
-     while (++index < tests.length) {
-       checks[index] = convertElement(tests[index]);
-     }
-
-     return castFactory$1(any)
-
-     /**
-      * @this {unknown}
-      * @param {unknown[]} parameters
-      * @returns {boolean}
-      */
-     function any(...parameters) {
-       let index = -1;
-
-       while (++index < checks.length) {
-         if (checks[index].call(this, ...parameters)) {
-           return true
-         }
-       }
-
-       return false
-     }
-   }
-
-   /**
-    * Utility to convert a string into a function which checks a given node’s tag
-    * name for said string.
-    *
-    * @param {TagName} check
-    * @returns {AssertAnything}
-    */
-   function tagNameFactory(check) {
-     return tagName
-
-     /**
-      * @param {unknown} node
-      * @returns {boolean}
-      */
-     function tagName(node) {
-       return element(node) && node.tagName === check
-     }
-   }
-
-   /**
-    * @param {TestFunctionAnything} check
-    * @returns {AssertAnything}
-    */
-   function castFactory$1(check) {
-     return assertion
-
-     /**
-      * @this {unknown}
-      * @param {unknown} node
-      * @param {Array.<unknown>} parameters
-      * @returns {boolean}
-      */
-     function assertion(node, ...parameters) {
-       // @ts-expect-error: fine.
-       return element(node) && Boolean(check.call(this, node, ...parameters))
-     }
-   }
-
-   /**
-    * Utility to return true if this is an element.
-    * @param {unknown} node
-    * @returns {node is Element}
-    */
-   function element(node) {
-     return Boolean(
-       node &&
-         typeof node === 'object' &&
-         // @ts-expect-error Looks like a node.
-         node.type === 'element' &&
-         // @ts-expect-error Looks like an element.
-         typeof node.tagName === 'string'
-     )
-   }
-
-   /**
-    * @typedef {import('hast').Element & {tagName: 'audio'|'canvas'|'embed'|'iframe'|'img'|'math'|'object'|'picture'|'svg'|'video'}} Embedded
-    * @typedef {import('hast-util-is-element').AssertPredicate<Embedded>} AssertEmbedded
-    */
-
-   /**
-    * Check if a node is an embedded element.
-    * @type {AssertEmbedded}
-    */
-   // @ts-ignore Sure, the assertion matches.
-   const embedded = convertElement([
-     'audio',
-     'canvas',
-     'embed',
-     'iframe',
-     'img',
-     'math',
-     'object',
-     'picture',
-     'svg',
-     'video'
-   ]);
-
-   /**
-    * @typedef {import('unist').Node} Node
-    * @typedef {import('unist').Parent} Parent
-    *
-    * @typedef {string} Type
-    * @typedef {Object<string, unknown>} Props
-    *
-    * @typedef {null|undefined|Type|Props|TestFunctionAnything|Array.<Type|Props|TestFunctionAnything>} Test
-    */
-
-   const convert =
-     /**
-      * @type {(
-      *   (<T extends Node>(test: T['type']|Partial<T>|TestFunctionPredicate<T>) => AssertPredicate<T>) &
-      *   ((test?: Test) => AssertAnything)
-      * )}
-      */
-     (
-       /**
-        * Generate an assertion from a check.
-        * @param {Test} [test]
-        * When nullish, checks if `node` is a `Node`.
-        * When `string`, works like passing `function (node) {return node.type === test}`.
-        * When `function` checks if function passed the node is true.
-        * When `object`, checks that all keys in test are in node, and that they have (strictly) equal values.
-        * When `array`, checks any one of the subtests pass.
-        * @returns {AssertAnything}
-        */
-       function (test) {
-         if (test === undefined || test === null) {
-           return ok
-         }
-
-         if (typeof test === 'string') {
-           return typeFactory(test)
-         }
-
-         if (typeof test === 'object') {
-           return Array.isArray(test) ? anyFactory(test) : propsFactory(test)
-         }
-
-         if (typeof test === 'function') {
-           return castFactory(test)
-         }
-
-         throw new Error('Expected function, string, or object as test')
-       }
-     );
-   /**
-    * @param {Array.<Type|Props|TestFunctionAnything>} tests
-    * @returns {AssertAnything}
-    */
-   function anyFactory(tests) {
-     /** @type {Array.<AssertAnything>} */
-     const checks = [];
-     let index = -1;
-
-     while (++index < tests.length) {
-       checks[index] = convert(tests[index]);
-     }
-
-     return castFactory(any)
-
-     /**
-      * @this {unknown}
-      * @param {unknown[]} parameters
-      * @returns {boolean}
-      */
-     function any(...parameters) {
-       let index = -1;
-
-       while (++index < checks.length) {
-         if (checks[index].call(this, ...parameters)) return true
-       }
-
-       return false
-     }
-   }
-
-   /**
-    * Utility to assert each property in `test` is represented in `node`, and each
-    * values are strictly equal.
-    *
-    * @param {Props} check
-    * @returns {AssertAnything}
-    */
-   function propsFactory(check) {
-     return castFactory(all)
-
-     /**
-      * @param {Node} node
-      * @returns {boolean}
-      */
-     function all(node) {
-       /** @type {string} */
-       let key;
-
-       for (key in check) {
-         // @ts-expect-error: hush, it sure works as an index.
-         if (node[key] !== check[key]) return false
-       }
-
-       return true
-     }
-   }
-
-   /**
-    * Utility to convert a string into a function which checks a given node’s type
-    * for said string.
-    *
-    * @param {Type} check
-    * @returns {AssertAnything}
-    */
-   function typeFactory(check) {
-     return castFactory(type)
-
-     /**
-      * @param {Node} node
-      */
-     function type(node) {
-       return node && node.type === check
-     }
-   }
-
-   /**
-    * Utility to convert a string into a function which checks a given node’s type
-    * for said string.
-    * @param {TestFunctionAnything} check
-    * @returns {AssertAnything}
-    */
-   function castFactory(check) {
-     return assertion
-
-     /**
-      * @this {unknown}
-      * @param {Array.<unknown>} parameters
-      * @returns {boolean}
-      */
-     function assertion(...parameters) {
-       // @ts-expect-error: spreading is fine.
-       return Boolean(check.call(this, ...parameters))
-     }
-   }
-
-   // Utility to return true.
-   function ok() {
-     return true
-   }
-
-   /**
-    * @param {unknown} thing
-    * @returns {boolean}
-    */
-   function whitespace(thing) {
-     /** @type {string} */
-     var value =
-       // @ts-ignore looks like a node.
-       thing && typeof thing === 'object' && thing.type === 'text'
-         ? // @ts-ignore looks like a text.
-           thing.value || ''
-         : thing;
-
-     // HTML whitespace expression.
-     // See <https://html.spec.whatwg.org/#space-character>.
-     return typeof value === 'string' && value.replace(/[ \t\n\f\r]/g, '') === ''
-   }
-
-   // See: <https://html.spec.whatwg.org/#the-css-user-agent-style-sheet-and-presentational-hints>
-   const blocks = [
-     'address', // Flow content.
-     'article', // Sections and headings.
-     'aside', // Sections and headings.
-     'blockquote', // Flow content.
-     'body', // Page.
-     'br', // Contribute whitespace intrinsically.
-     'caption', // Similar to block.
-     'center', // Flow content, legacy.
-     'col', // Similar to block.
-     'colgroup', // Similar to block.
-     'dd', // Lists.
-     'dialog', // Flow content.
-     'dir', // Lists, legacy.
-     'div', // Flow content.
-     'dl', // Lists.
-     'dt', // Lists.
-     'figcaption', // Flow content.
-     'figure', // Flow content.
-     'footer', // Flow content.
-     'form', // Flow content.
-     'h1', // Sections and headings.
-     'h2', // Sections and headings.
-     'h3', // Sections and headings.
-     'h4', // Sections and headings.
-     'h5', // Sections and headings.
-     'h6', // Sections and headings.
-     'head', // Page.
-     'header', // Flow content.
-     'hgroup', // Sections and headings.
-     'hr', // Flow content.
-     'html', // Page.
-     'legend', // Flow content.
-     'li', // Block-like.
-     'li', // Similar to block.
-     'listing', // Flow content, legacy
-     'main', // Flow content.
-     'menu', // Lists.
-     'nav', // Sections and headings.
-     'ol', // Lists.
-     'optgroup', // Similar to block.
-     'option', // Similar to block.
-     'p', // Flow content.
-     'plaintext', // Flow content, legacy
-     'pre', // Flow content.
-     'section', // Sections and headings.
-     'summary', // Similar to block.
-     'table', // Similar to block.
-     'tbody', // Similar to block.
-     'td', // Block-like.
-     'td', // Similar to block.
-     'tfoot', // Similar to block.
-     'th', // Block-like.
-     'th', // Similar to block.
-     'thead', // Similar to block.
-     'tr', // Similar to block.
-     'ul', // Lists.
-     'wbr', // Contribute whitespace intrinsically.
-     'xmp' // Flow content, legacy
-   ];
-
-   const content$1 = [
-     // Form.
-     'button',
-     'input',
-     'select',
-     'textarea'
-   ];
-
-   const skippable$1 = [
-     'area',
-     'base',
-     'basefont',
-     'dialog',
-     'datalist',
-     'head',
-     'link',
-     'meta',
-     'noembed',
-     'noframes',
-     'param',
-     'rp',
-     'script',
-     'source',
-     'style',
-     'template',
-     'track',
-     'title'
-   ];
-
-   /**
-    * rehype plugin to minify whitespace between elements.
-    *
-    * ## What is this?
-    *
-    * This package is a plugin that can minify the whitespace between elements.
-    *
-    * ## When should I use this?
-    *
-    * You can use this plugin when you want to improve the size of HTML documents.
-    *
-    * ## API
-    *
-    * ### `unified().use(rehypeMinifyWhitespace[, options])`
-    *
-    * Minify whitespace.
-    *
-    * ##### `options`
-    *
-    * Configuration (optional).
-    *
-    * ##### `options.newlines`
-    *
-    * Whether to collapse runs of whitespace that include line endings to one
-    * line ending (`boolean`, default: `false`).
-    * The default is to collapse everything to one space.
-    *
-    * @example
-    *   <h1>Heading</h1>
-    *   <p><strong>This</strong> and <em>that</em></p>
-    */
-
-   const ignorableNode = convert(['doctype', 'comment']);
-
-   /**
-    * Minify whitespace.
-    *
-    * @type {import('unified').Plugin<[Options?]|Array<void>, Root>}
-    */
-   function rehypeMinifyWhitespace(options = {}) {
-     const collapse = collapseFactory(
-       options.newlines ? replaceNewlines : replaceWhitespace
-     );
-
-     return (tree) => {
-       minify(tree, {collapse, whitespace: 'normal'});
-     }
-   }
-
-   /**
-    * @param {Node} node
-    * @param {Context} context
-    * @returns {Result}
-    */
-   function minify(node, context) {
-     if ('children' in node) {
-       const settings = Object.assign({}, context);
-
-       if (node.type === 'root' || blocklike(node)) {
-         settings.before = true;
-         settings.after = true;
-       }
-
-       settings.whitespace = inferWhiteSpace(node, context);
-
-       return all$4(node, settings)
-     }
-
-     if (node.type === 'text') {
-       if (context.whitespace === 'normal') {
-         return minifyText(node, context)
-       }
-
-       // Naïve collapse, but no trimming:
-       if (context.whitespace === 'nowrap') {
-         node.value = context.collapse(node.value);
-       }
-
-       // The `pre-wrap` or `pre` whitespace settings are neither collapsed nor
-       // trimmed.
-     }
-
-     return {remove: false, ignore: ignorableNode(node), stripAtStart: false}
-   }
-
-   /**
-    * @param {Text} node
-    * @param {Context} context
-    * @returns {Result}
-    */
-   function minifyText(node, context) {
-     const value = context.collapse(node.value);
-     const result = {remove: false, ignore: false, stripAtStart: false};
-     let start = 0;
-     let end = value.length;
-
-     if (context.before && removable(value.charAt(0))) {
-       start++;
-     }
-
-     if (start !== end && removable(value.charAt(end - 1))) {
-       if (context.after) {
-         end--;
-       } else {
-         result.stripAtStart = true;
-       }
-     }
-
-     if (start === end) {
-       result.remove = true;
-     } else {
-       node.value = value.slice(start, end);
-     }
-
-     return result
-   }
-
-   /**
-    * @param {Root|Element} parent
-    * @param {Context} context
-    * @returns {Result}
-    */
-   function all$4(parent, context) {
-     let before = context.before;
-     const after = context.after;
-     const children = parent.children;
-     let length = children.length;
-     let index = -1;
-
-     while (++index < length) {
-       const result = minify(
-         children[index],
-         Object.assign({}, context, {
-           before,
-           after: collapsableAfter(children, index, after)
-         })
-       );
-
-       if (result.remove) {
-         children.splice(index, 1);
-         index--;
-         length--;
-       } else if (!result.ignore) {
-         before = result.stripAtStart;
-       }
-
-       // If this element, such as a `<select>` or `<img>`, contributes content
-       // somehow, allow whitespace again.
-       if (content(children[index])) {
-         before = false;
-       }
-     }
-
-     return {remove: false, ignore: false, stripAtStart: Boolean(before || after)}
-   }
-
-   /**
-    * @param {Array<Node>} nodes
-    * @param {number} index
-    * @param {boolean|undefined} [after]
-    * @returns {boolean|undefined}
-    */
-   function collapsableAfter(nodes, index, after) {
-     while (++index < nodes.length) {
-       const node = nodes[index];
-       let result = inferBoundary(node);
-
-       if (result === undefined && 'children' in node && !skippable(node)) {
-         result = collapsableAfter(node.children, -1);
-       }
-
-       if (typeof result === 'boolean') {
-         return result
-       }
-     }
-
-     return after
-   }
-
-   /**
-    * Infer two types of boundaries:
-    *
-    * 1. `true` — boundary for which whitespace around it does not contribute
-    *    anything
-    * 2. `false` — boundary for which whitespace around it *does* contribute
-    *
-    * No result (`undefined`) is returned if it is unknown.
-    *
-    * @param {Node} node
-    * @returns {boolean|undefined}
-    */
-   function inferBoundary(node) {
-     if (node.type === 'element') {
-       if (content(node)) {
-         return false
-       }
-
-       if (blocklike(node)) {
-         return true
-       }
-
-       // Unknown: either depends on siblings if embedded or metadata, or on
-       // children.
-     } else if (node.type === 'text') {
-       if (!whitespace(node)) {
-         return false
-       }
-     } else if (!ignorableNode(node)) {
-       return false
-     }
-   }
-
-   /**
-    * Infer whether a node is skippable.
-    *
-    * @param {Node} node
-    * @returns {boolean}
-    */
-   function content(node) {
-     return embedded(node) || isElement(node, content$1)
-   }
-
-   /**
-    * See: <https://html.spec.whatwg.org/#the-css-user-agent-style-sheet-and-presentational-hints>
-    *
-    * @param {Element} node
-    * @returns {boolean}
-    */
-   function blocklike(node) {
-     return isElement(node, blocks)
-   }
-
-   /**
-    * @param {Element|Root} node
-    * @returns {boolean}
-    */
-   function skippable(node) {
-     return (
-       Boolean(
-         'properties' in node && node.properties && node.properties.hidden
-       ) ||
-       ignorableNode(node) ||
-       isElement(node, skippable$1)
-     )
-   }
-
-   /**
-    * @param {string} character
-    * @returns {boolean}
-    */
-   function removable(character) {
-     return character === ' ' || character === '\n'
-   }
-
-   /**
-    * @param {string} value
-    * @returns {string}
-    */
-   function replaceNewlines(value) {
-     const match = /\r?\n|\r/.exec(value);
-     return match ? match[0] : ' '
-   }
-
-   /**
-    * @returns {string}
-    */
-   function replaceWhitespace() {
-     return ' '
-   }
-
-   /**
-    * @param {(value: string) => string} replace
-    */
-   function collapseFactory(replace) {
-     return collapse
-
-     /**
-      * @param {string} value
-      * @returns {string}
-      */
-     function collapse(value) {
-       return String(value).replace(/[\t\n\v\f\r ]+/g, replace)
-     }
-   }
-
-   /**
-    * We don’t need to support void elements here (so `nobr wbr` -> `normal` is
-    * ignored).
-    *
-    * @param {Root|Element} node
-    * @param {Context} context
-    * @returns {Whitespace}
-    */
-   function inferWhiteSpace(node, context) {
-     if ('tagName' in node && node.properties) {
-       switch (node.tagName) {
-         // Whitespace in script/style, while not displayed by CSS as significant,
-         // could have some meaning in JS/CSS, so we can’t touch them.
-         case 'listing':
-         case 'plaintext':
-         case 'script':
-         case 'style':
-         case 'xmp':
-           return 'pre'
-         case 'nobr':
-           return 'nowrap'
-         case 'pre':
-           return node.properties.wrap ? 'pre-wrap' : 'pre'
-         case 'td':
-         case 'th':
-           return node.properties.noWrap ? 'nowrap' : context.whitespace
-         case 'textarea':
-           return 'pre-wrap'
-       }
-     }
-
-     return context.whitespace
-   }
-
-   /**
-    * @param {string} d
-    * @returns {string}
-    */
-   function color(d) {
-     return d
-   }
-
-   /**
-    * @typedef {import('unist').Node} Node
-    * @typedef {import('unist').Parent} Parent
-    * @typedef {import('unist-util-is').Test} Test
-    * @typedef {import('./complex-types').Action} Action
-    * @typedef {import('./complex-types').Index} Index
-    * @typedef {import('./complex-types').ActionTuple} ActionTuple
-    * @typedef {import('./complex-types').VisitorResult} VisitorResult
-    * @typedef {import('./complex-types').Visitor} Visitor
-    */
-
-   /**
-    * Continue traversing as normal
-    */
-   const CONTINUE = true;
-   /**
-    * Do not traverse this node’s children
-    */
-   const SKIP = 'skip';
-   /**
-    * Stop traversing immediately
-    */
-   const EXIT = false;
-
-   /**
-    * Visit children of tree which pass a test
-    *
-    * @param tree Abstract syntax tree to walk
-    * @param test Test node, optional
-    * @param visitor Function to run for each node
-    * @param reverse Visit the tree in reverse order, defaults to false
-    */
-   const visitParents =
-     /**
-      * @type {(
-      *   (<Tree extends Node, Check extends Test>(tree: Tree, test: Check, visitor: import('./complex-types').BuildVisitor<Tree, Check>, reverse?: boolean) => void) &
-      *   (<Tree extends Node>(tree: Tree, visitor: import('./complex-types').BuildVisitor<Tree>, reverse?: boolean) => void)
-      * )}
-      */
-     (
-       /**
-        * @param {Node} tree
-        * @param {Test} test
-        * @param {import('./complex-types').Visitor<Node>} visitor
-        * @param {boolean} [reverse]
-        */
-       function (tree, test, visitor, reverse) {
-         if (typeof test === 'function' && typeof visitor !== 'function') {
-           reverse = visitor;
-           // @ts-expect-error no visitor given, so `visitor` is test.
-           visitor = test;
-           test = null;
-         }
-
-         const is = convert(test);
-         const step = reverse ? -1 : 1;
-
-         factory(tree, null, [])();
-
-         /**
-          * @param {Node} node
-          * @param {number?} index
-          * @param {Array.<Parent>} parents
-          */
-         function factory(node, index, parents) {
-           /** @type {Object.<string, unknown>} */
-           // @ts-expect-error: hush
-           const value = typeof node === 'object' && node !== null ? node : {};
-           /** @type {string|undefined} */
-           let name;
-
-           if (typeof value.type === 'string') {
-             name =
-               typeof value.tagName === 'string'
-                 ? value.tagName
-                 : typeof value.name === 'string'
-                 ? value.name
-                 : undefined;
-
-             Object.defineProperty(visit, 'name', {
-               value:
-                 'node (' +
-                 color(value.type + (name ? '<' + name + '>' : '')) +
-                 ')'
-             });
-           }
-
-           return visit
-
-           function visit() {
-             /** @type {ActionTuple} */
-             let result = [];
-             /** @type {ActionTuple} */
-             let subresult;
-             /** @type {number} */
-             let offset;
-             /** @type {Array.<Parent>} */
-             let grandparents;
-
-             if (!test || is(node, index, parents[parents.length - 1] || null)) {
-               result = toResult(visitor(node, parents));
-
-               if (result[0] === EXIT) {
-                 return result
-               }
-             }
-
-             // @ts-expect-error looks like a parent.
-             if (node.children && result[0] !== SKIP) {
-               // @ts-expect-error looks like a parent.
-               offset = (reverse ? node.children.length : -1) + step;
-               // @ts-expect-error looks like a parent.
-               grandparents = parents.concat(node);
-
-               // @ts-expect-error looks like a parent.
-               while (offset > -1 && offset < node.children.length) {
-                 // @ts-expect-error looks like a parent.
-                 subresult = factory(node.children[offset], offset, grandparents)();
-
-                 if (subresult[0] === EXIT) {
-                   return subresult
-                 }
-
-                 offset =
-                   typeof subresult[1] === 'number' ? subresult[1] : offset + step;
-               }
-             }
-
-             return result
-           }
-         }
-       }
-     );
-
-   /**
-    * @param {VisitorResult} value
-    * @returns {ActionTuple}
-    */
-   function toResult(value) {
-     if (Array.isArray(value)) {
-       return value
-     }
-
-     if (typeof value === 'number') {
-       return [CONTINUE, value]
-     }
-
-     return [value]
-   }
-
-   /**
-    * @typedef {import('unist').Node} Node
-    * @typedef {import('unist').Parent} Parent
-    * @typedef {import('unist-util-is').Test} Test
-    * @typedef {import('unist-util-visit-parents').VisitorResult} VisitorResult
-    * @typedef {import('./complex-types').Visitor} Visitor
-    */
-
-   /**
-    * Visit children of tree which pass a test
-    *
-    * @param tree Abstract syntax tree to walk
-    * @param test Test, optional
-    * @param visitor Function to run for each node
-    * @param reverse Fisit the tree in reverse, defaults to false
-    */
-   const visit =
-     /**
-      * @type {(
-      *   (<Tree extends Node, Check extends Test>(tree: Tree, test: Check, visitor: import('./complex-types').BuildVisitor<Tree, Check>, reverse?: boolean) => void) &
-      *   (<Tree extends Node>(tree: Tree, visitor: import('./complex-types').BuildVisitor<Tree>, reverse?: boolean) => void)
-      * )}
-      */
-     (
-       /**
-        * @param {Node} tree
-        * @param {Test} test
-        * @param {import('./complex-types').Visitor} visitor
-        * @param {boolean} [reverse]
-        */
-       function (tree, test, visitor, reverse) {
-         if (typeof test === 'function' && typeof visitor !== 'function') {
-           reverse = visitor;
-           visitor = test;
-           test = null;
-         }
-
-         visitParents(tree, test, overload, reverse);
-
-         /**
-          * @param {Node} node
-          * @param {Array.<Parent>} parents
-          */
-         function overload(node, parents) {
-           const parent = parents[parents.length - 1];
-           return visitor(
-             node,
-             parent ? parent.children.indexOf(node) : null,
-             parent
-           )
-         }
-       }
-     );
-
-   /**
-    * @typedef {import('./types.js').H} H
-    * @typedef {import('./types.js').Node} Node
-    * @typedef {import('./types.js').Parent} Parent
-    * @typedef {import('./types.js').Handle} Handle
-    * @typedef {import('./types.js').MdastNode} MdastNode
-    */
-
-   /**
-    * @param {H} h
-    * @param {Node} parent
-    * @returns {Array.<MdastNode>}
-    */
-   function all$3(h, parent) {
-     /** @type {Array.<Node>} */
-     // @ts-expect-error Assume `parent` is a parent.
-     const nodes = parent.children || [];
-     /** @type {Array.<MdastNode>} */
-     const values = [];
-     let index = -1;
-     let length = nodes.length;
-     let child = nodes[index + 1];
-
-     // Trim initial and final `<br>`s.
-     // They’re not semantic per HTML, and they can’t be made in markdown things
-     // like paragraphs or headings.
-     while (child && child.type === 'element' && child.tagName === 'br') {
-       index++;
-       child = nodes[index + 1];
-     }
-
-     child = nodes[length - 1];
-
-     while (
-       length - 1 > index &&
-       child &&
-       child.type === 'element' &&
-       child.tagName === 'br'
-     ) {
-       length--;
-       child = nodes[length - 1];
-     }
-
-     while (++index < length) {
-       // @ts-expect-error assume `parent` is a parent.
-       const result = one$3(h, nodes[index], parent);
-
-       if (Array.isArray(result)) {
-         values.push(...result);
-       } else if (result) {
-         values.push(result);
-       }
-     }
-
-     return values
-   }
-
-   const own$4 = {}.hasOwnProperty;
-
-   /**
-    * @typedef {import('../types.js').H} H
-    */
-
-   /**
-    * @param {H} h
-    * @param {string} value
-    * @returns {string}
-    */
-   function wrapText$1(h, value) {
-     return h.wrapText ? value : value.replace(/\r?\n|\r/g, ' ')
-   }
-
-   /**
-    * @typedef {import('./types.js').H} H
-    * @typedef {import('./types.js').Node} Node
-    * @typedef {import('./types.js').Parent} Parent
-    * @typedef {import('./types.js').Handle} Handle
-    * @typedef {import('./types.js').MdastNode} MdastNode
-    */
-
-   /**
-    * @param {H} h
-    * @param {Node} node
-    * @param {Parent|undefined} parent
-    * @returns {MdastNode|Array.<MdastNode>|void}
-    */
-   function one$3(h, node, parent) {
-     /** @type {Handle|undefined} */
-     let fn;
-
-     if (node.type === 'element') {
-       if (node.properties && node.properties.dataMdast === 'ignore') {
-         return
-       }
-
-       if (own$4.call(h.handlers, node.tagName)) {
-         fn = h.handlers[node.tagName];
-       }
-     } else if (own$4.call(h.handlers, node.type)) {
-       fn = h.handlers[node.type];
-     }
-
-     if (typeof fn === 'function') {
-       return fn(h, node, parent)
-     }
-
-     return unknown$3(h, node)
-   }
-
-   /**
-    * @type {Handle}
-    * @param {Node} node
-    */
-   function unknown$3(h, node) {
-     // @ts-expect-error: Looks like a literal.
-     if (typeof node.value === 'string') {
-       // @ts-expect-error: Looks like a literal.
-       return h(node, 'text', wrapText$1(h, node.value))
-     }
-
-     return all$3(h, node)
-   }
-
-   var hasOwn = Object.prototype.hasOwnProperty;
-   var toStr = Object.prototype.toString;
-   var defineProperty = Object.defineProperty;
-   var gOPD = Object.getOwnPropertyDescriptor;
-
-   var isArray = function isArray(arr) {
-   	if (typeof Array.isArray === 'function') {
-   		return Array.isArray(arr);
-   	}
-
-   	return toStr.call(arr) === '[object Array]';
-   };
-
-   var isPlainObject = function isPlainObject(obj) {
-   	if (!obj || toStr.call(obj) !== '[object Object]') {
-   		return false;
-   	}
-
-   	var hasOwnConstructor = hasOwn.call(obj, 'constructor');
-   	var hasIsPrototypeOf = obj.constructor && obj.constructor.prototype && hasOwn.call(obj.constructor.prototype, 'isPrototypeOf');
-   	// Not own constructor property must be Object
-   	if (obj.constructor && !hasOwnConstructor && !hasIsPrototypeOf) {
-   		return false;
-   	}
-
-   	// Own properties are enumerated firstly, so to speed up,
-   	// if last one is own, then all properties are own.
-   	var key;
-   	for (key in obj) { /**/ }
-
-   	return typeof key === 'undefined' || hasOwn.call(obj, key);
-   };
-
-   // If name is '__proto__', and Object.defineProperty is available, define __proto__ as an own property on target
-   var setProperty = function setProperty(target, options) {
-   	if (defineProperty && options.name === '__proto__') {
-   		defineProperty(target, options.name, {
-   			enumerable: true,
-   			configurable: true,
-   			value: options.newValue,
-   			writable: true
-   		});
-   	} else {
-   		target[options.name] = options.newValue;
-   	}
-   };
-
-   // Return undefined instead of __proto__ if '__proto__' is not an own property
-   var getProperty = function getProperty(obj, name) {
-   	if (name === '__proto__') {
-   		if (!hasOwn.call(obj, name)) {
-   			return void 0;
-   		} else if (gOPD) {
-   			// In early versions of node, obj['__proto__'] is buggy when obj has
-   			// __proto__ as an own property. Object.getOwnPropertyDescriptor() works.
-   			return gOPD(obj, name).value;
-   		}
-   	}
-
-   	return obj[name];
-   };
-
-   var extend = function extend() {
-   	var options, name, src, copy, copyIsArray, clone;
-   	var target = arguments[0];
-   	var i = 1;
-   	var length = arguments.length;
-   	var deep = false;
-
-   	// Handle a deep copy situation
-   	if (typeof target === 'boolean') {
-   		deep = target;
-   		target = arguments[1] || {};
-   		// skip the boolean and the target
-   		i = 2;
-   	}
-   	if (target == null || (typeof target !== 'object' && typeof target !== 'function')) {
-   		target = {};
-   	}
-
-   	for (; i < length; ++i) {
-   		options = arguments[i];
-   		// Only deal with non-null/undefined values
-   		if (options != null) {
-   			// Extend the base object
-   			for (name in options) {
-   				src = getProperty(target, name);
-   				copy = getProperty(options, name);
-
-   				// Prevent never-ending loop
-   				if (target !== copy) {
-   					// Recurse if we're merging plain objects or arrays
-   					if (deep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
-   						if (copyIsArray) {
-   							copyIsArray = false;
-   							clone = src && isArray(src) ? src : [];
-   						} else {
-   							clone = src && isPlainObject(src) ? src : {};
-   						}
-
-   						// Never move original objects, clone them
-   						setProperty(target, { name: name, newValue: extend(deep, clone, copy) });
-
-   					// Don't bring in undefined values
-   					} else if (typeof copy !== 'undefined') {
-   						setProperty(target, { name: name, newValue: copy });
-   					}
-   				}
-   			}
-   		}
-   	}
-
-   	// Return the modified object
-   	return target;
-   };
-
-   /**
-    * @typedef {import('mdast').PhrasingContent} PhrasingContent
-    * @typedef {import('unist-util-is').AssertPredicate<PhrasingContent>} AssertPredicatePhrasing
-    */
-
-   /**
-    * @type {AssertPredicatePhrasing}
-    */
-   // @ts-ignore hush, it’s fine!
-   const phrasing = convert([
-     'break',
-     'delete',
-     'emphasis',
-     'footnote',
-     'footnoteReference',
-     'image',
-     'imageReference',
-     'inlineCode',
-     'link',
-     'linkReference',
-     'strong',
-     'text'
-   ]);
-
-   /**
-    * @typedef {import('../types.js').H} H
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    * @typedef {import('../types.js').MdastPhrasingContent} MdastPhrasingContent
-    */
-
-   /**
-    * @param {Array.<MdastNode>} nodes
-    */
-   function wrap(nodes) {
-     return runs(nodes, onphrasing)
-
-     /**
-      * @param {Array.<MdastPhrasingContent>} nodes
-      * @returns {MdastNode|Array.<MdastNode>}
-      */
-     function onphrasing(nodes) {
-       const head = nodes[0];
-
-       if (
-         nodes.length === 1 &&
-         head.type === 'text' &&
-         (head.value === ' ' || head.value === '\n')
-       ) {
-         return []
-       }
-
-       return {type: 'paragraph', children: nodes}
-     }
-   }
-
-   /**
-    * Check if there are non-phrasing mdast nodes returned.
-    * This is needed if a fragment is given, which could just be a sentence, and
-    * doesn’t need a wrapper paragraph.
-    *
-    * @param {Array.<MdastNode>} nodes
-    * @returns {boolean}
-    */
-   function wrapNeeded(nodes) {
-     let index = -1;
-     /** @type {MdastNode} */
-     let node;
-
-     while (++index < nodes.length) {
-       node = nodes[index];
-
-       if (!phrasing(node) || ('children' in node && wrapNeeded(node.children))) {
-         return true
-       }
-     }
-
-     return false
-   }
-
-   /**
-    * Wrap all runs of mdast phrasing content in `paragraph` nodes.
-    *
-    * @param {Array.<MdastNode>} nodes
-    * @param {(nodes: Array.<MdastPhrasingContent>) => MdastNode|Array.<MdastNode>} onphrasing
-    * @param {(node: MdastNode) => MdastNode} [onnonphrasing]
-    */
-   function runs(nodes, onphrasing, onnonphrasing) {
-     const nonphrasing = onnonphrasing || identity;
-     /** @type {Array.<MdastNode>} */
-     const flattened = flatten(nodes);
-     /** @type {Array.<MdastNode>} */
-     let result = [];
-     let index = -1;
-     /** @type {Array.<MdastPhrasingContent>|undefined} */
-     let queue;
-     /** @type {MdastNode} */
-     let node;
-
-     while (++index < flattened.length) {
-       node = flattened[index];
-
-       if (phrasing(node)) {
-         if (!queue) queue = [];
-         queue.push(node);
-       } else {
-         if (queue) {
-           result = result.concat(onphrasing(queue));
-           queue = undefined;
-         }
-
-         result = result.concat(nonphrasing(node));
-       }
-     }
-
-     if (queue) {
-       result = result.concat(onphrasing(queue));
-     }
-
-     return result
-   }
-
-   /**
-    * Flatten a list of nodes.
-    *
-    * @param {Array.<MdastNode>} nodes
-    * @returns {Array.<MdastNode>}
-    */
-   function flatten(nodes) {
-     /** @type {Array.<MdastNode>} */
-     let flattened = [];
-     let index = -1;
-     /** @type {MdastNode} */
-     let node;
-
-     while (++index < nodes.length) {
-       node = nodes[index];
-
-       // Straddling: some elements are *weird*.
-       // Namely: `map`, `ins`, `del`, and `a`, as they are hybrid elements.
-       // See: <https://html.spec.whatwg.org/#paragraphs>.
-       // Paragraphs are the weirdest of them all.
-       // See the straddling fixture for more info!
-       // `ins` is ignored in mdast, so we don’t need to worry about that.
-       // `map` maps to its content, so we don’t need to worry about that either.
-       // `del` maps to `delete` and `a` to `link`, so we do handle those.
-       // What we’ll do is split `node` over each of its children.
-       if (
-         (node.type === 'delete' || node.type === 'link') &&
-         wrapNeeded(node.children)
-       ) {
-         flattened = flattened.concat(split(node));
-       } else {
-         flattened.push(node);
-       }
-     }
-
-     return flattened
-   }
-
-   /**
-    * @param {MdastNode} node
-    * @returns {Array.<MdastNode>}
-    */
-   function split(node) {
-     // @ts-expect-error Assume parent.
-     return runs(node.children, onphrasing, onnonphrasing)
-
-     /**
-      * Use `child`, add `parent` as its first child, put the original children
-      * into `parent`.
-      * If `child` is not a parent, `parent` will not be added.
-      *
-      * @param {MdastNode} child
-      * @returns {MdastNode}
-      */
-     function onnonphrasing(child) {
-       if ('children' in child && 'children' in node) {
-         const {children, ...rest} = node;
-         return {
-           ...child,
-           // @ts-expect-error: assume matching parent & child.
-           children: [{...extend(true, {}, rest), children: child.children}]
-         }
-       }
-
-       return {...child}
-     }
-
-     /**
-      * Use `parent`, put the phrasing run inside it.
-      *
-      * @param {Array.<MdastPhrasingContent>} nodes
-      * @returns {MdastNode}
-      */
-     function onphrasing(nodes) {
-       // @ts-expect-error: assume parent.
-       const {children, ...rest} = node;
-       // @ts-expect-error: assume matching parent & child.
-       return {...extend(true, {}, rest), children: nodes}
-     }
-   }
-
-   /**
-    * @template {unknown} T
-    * @param {T} n
-    * @returns {T}
-    */
-   function identity(n) {
-     return n
-   }
-
-   /**
-    * @typedef {import('../types.js').H} H
-    * @typedef {import('../types.js').Node} Node
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    */
-
-   /**
-    * @param {H} h
-    * @param {Node} node
-    * @returns {Array.<MdastNode>}
-    */
-   function wrapChildren(h, node) {
-     return wrap(all$3(h, node))
-   }
-
-   /**
-    * @typedef {import('../types.js').H} H
-    */
-
-   /**
-    * @param {H} h
-    * @param {string|null|undefined} url
-    * @returns {string}
-    */
-   function resolve(h, url) {
-     if (url === null || url === undefined) {
-       return ''
-     }
-
-     if (h.frozenBaseUrl) {
-       return String(new URL(url, h.frozenBaseUrl))
-     }
-
-     return url
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Properties} Properties
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function a(h, node) {
-     /** @type {Properties} */
-     // @ts-expect-error: `props` are defined.
-     const props = node.properties;
-     return h(
-       node,
-       'link',
-       {
-         title: props.title || null,
-         url: resolve(h, String(props.href || '') || null)
-       },
-       all$3(h, node)
-     )
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function base(h, node) {
-     if (!h.baseFound) {
-       h.frozenBaseUrl =
-         String((node.properties && node.properties.href) || '') || null;
-       h.baseFound = true;
-     }
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function blockquote$1(h, node) {
-     return h(node, 'blockquote', wrapChildren(h, node))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function br$1(h, node) {
-     return h.wrapText ? h(node, 'break') : h(node, 'text', ' ')
-   }
-
-   /**
-    * @typedef {import('unist').Node} Node
-    * @typedef {import('unist').Parent} Parent
-    *
-    * @typedef {import('unist-util-is').Type} Type
-    * @typedef {import('unist-util-is').Props} Props
-    * @typedef {import('unist-util-is').TestFunctionAnything} TestFunctionAnything
-    */
-
-   var findAfter =
-     /**
-      * @type {(
-      *  (<T extends Node>(node: Parent, index: Node|number, test: T['type']|Partial<T>|import('unist-util-is').TestFunctionPredicate<T>|Array.<T['type']|Partial<T>|import('unist-util-is').TestFunctionPredicate<T>>) => T|null) &
-      *  ((node: Parent, index: Node|number, test?: null|undefined|Type|Props|TestFunctionAnything|Array<Type|Props|TestFunctionAnything>) => Node|null)
-      * )}
-      */
-     (
-       /**
-        * @param {Parent} parent Parent node
-        * @param {Node|number} index Child of `parent`, or it’s index
-        * @param {null|undefined|Type|Props|TestFunctionAnything|Array<Type|Props|TestFunctionAnything>} [test] is-compatible test (such as a type)
-        * @returns {Node|null}
-        */
-       function (parent, index, test) {
-         var is = convert(test);
-
-         if (!parent || !parent.type || !parent.children) {
-           throw new Error('Expected parent node')
-         }
-
-         if (typeof index === 'number') {
-           if (index < 0 || index === Number.POSITIVE_INFINITY) {
-             throw new Error('Expected positive finite number as index')
-           }
-         } else {
-           index = parent.children.indexOf(index);
-
-           if (index < 0) {
-             throw new Error('Expected child node or index')
-           }
-         }
-
-         while (++index < parent.children.length) {
-           if (is(parent.children[index], index, parent)) {
-             return parent.children[index]
-           }
-         }
-
-         return null
-       }
-     );
-
-   /**
-    * @typedef {import('hast-util-is-element').TestFunctionAnything} TestFunctionAnything
-    * @typedef {import('hast').Parent['children'][number]} HastChild
-    * @typedef {import('hast').Text} HastText
-    * @typedef {import('hast').Comment} HastComment
-    * @typedef {import('hast').Root} HastRoot
-    * @typedef {import('hast').Element} HastElement
-    * @typedef {import('hast').Properties} HastProperties
-    * @typedef {HastChild|HastRoot} HastNode
-    * @typedef {HastRoot|HastElement} HastParent
-    *
-    * @typedef {'normal'|'pre'|'nowrap'|'pre-wrap'} Whitespace
-    * @typedef {boolean} BreakValue
-    * @typedef {1|2} BreakNumber
-    * @typedef {'\n'} BreakForce
-    * @typedef {BreakValue|BreakNumber|undefined} BreakBefore
-    * @typedef {BreakValue|BreakNumber|BreakForce|undefined} BreakAfter
-    *
-    * @typedef CollectionOptions
-    * @property {Whitespace} whitespace
-    * @property {BreakBefore} breakBefore
-    * @property {BreakAfter} breakAfter
-    *
-    * @typedef Options
-    *   Configuration.
-    * @property {Whitespace} [whitespace='normal']
-    *   Initial CSS whitespace setting to use.
-    */
-
-   const searchLineFeeds = /\n/g;
-   const searchTabOrSpaces = /[\t ]+/g;
-
-   const br = convertElement('br');
-   const p$2 = convertElement('p');
-   const cell$2 = convertElement(['th', 'td']);
-   const row = convertElement('tr');
-
-   // Note that we don’t need to include void elements here as they don’t have text.
-   // See: <https://github.com/wooorm/html-void-elements>
-   const notRendered = convertElement([
-     // List from: <https://html.spec.whatwg.org/#hidden-elements>
-     'datalist',
-     'head',
-     'noembed',
-     'noframes',
-     'noscript', // Act as if we support scripting.
-     'rp',
-     'script',
-     'style',
-     'template',
-     'title',
-     // Hidden attribute.
-     hidden,
-     // From: <https://html.spec.whatwg.org/#flow-content-3>
-     closedDialog
-   ]);
-
-   // See: <https://html.spec.whatwg.org/#the-css-user-agent-style-sheet-and-presentational-hints>
-   const blockOrCaption = convertElement([
-     'address', // Flow content
-     'article', // Sections and headings
-     'aside', // Sections and headings
-     'blockquote', // Flow content
-     'body', // Page
-     'caption', // `table-caption`
-     'center', // Flow content (legacy)
-     'dd', // Lists
-     'dialog', // Flow content
-     'dir', // Lists (legacy)
-     'dl', // Lists
-     'dt', // Lists
-     'div', // Flow content
-     'figure', // Flow content
-     'figcaption', // Flow content
-     'footer', // Flow content
-     'form,', // Flow content
-     'h1', // Sections and headings
-     'h2', // Sections and headings
-     'h3', // Sections and headings
-     'h4', // Sections and headings
-     'h5', // Sections and headings
-     'h6', // Sections and headings
-     'header', // Flow content
-     'hgroup', // Sections and headings
-     'hr', // Flow content
-     'html', // Page
-     'legend', // Flow content
-     'listing', // Flow content (legacy)
-     'main', // Flow content
-     'menu', // Lists
-     'nav', // Sections and headings
-     'ol', // Lists
-     'p', // Flow content
-     'plaintext', // Flow content (legacy)
-     'pre', // Flow content
-     'section', // Sections and headings
-     'ul', // Lists
-     'xmp' // Flow content (legacy)
-   ]);
-
-   /**
-    * Implementation of the `innerText` getter:
-    * <https://html.spec.whatwg.org/#the-innertext-idl-attribute>
-    * Note that we act as if `node` is being rendered, and as if we’re a
-    * CSS-supporting user agent.
-    *
-    * @param {HastNode} node
-    * @param {Options} [options={}]
-    * @returns {string}
-    */
-   function toText(node, options = {}) {
-     /** @type {Array.<HastChild>} */
-     // @ts-ignore looks like a parent.
-     const children = node.children || [];
-     const block = blockOrCaption(node);
-     const whitespace = inferWhitespace(node, {
-       whitespace: options.whitespace || 'normal',
-       breakBefore: false,
-       breakAfter: false
-     });
-     let index = -1;
-     /** @type {Array.<string|BreakNumber>} */
-     let results;
-     /** @type {string|BreakNumber} */
-     let value;
-     /** @type {number|undefined} */
-     let count;
-
-     // Treat `text` and `comment` as having normal white-space.
-     // This deviates from the spec as in the DOM the node’s `.data` has to be
-     // returned.
-     // If you want that behavior use `hast-util-to-string`.
-     // All other nodes are later handled as if they are `element`s (so the
-     // algorithm also works on a `root`).
-     // Nodes without children are treated as a void element, so `doctype` is thus
-     // ignored.
-     if (node.type === 'text' || node.type === 'comment') {
-       return collectText(node, {whitespace, breakBefore: true, breakAfter: true})
-     }
-
-     // 1.  If this element is not being rendered, or if the user agent is a
-     //     non-CSS user agent, then return the same value as the textContent IDL
-     //     attribute on this element.
-     //
-     //     Note: we’re not supporting stylesheets so we’re acting as if the node
-     //     is rendered.
-     //
-     //     If you want that behavior use `hast-util-to-string`.
-     //     Important: we’ll have to account for this later though.
-
-     // 2.  Let results be a new empty list.
-     results = [];
-
-     // 3.  For each child node node of this element:
-     while (++index < children.length) {
-       // 3.1. Let current be the list resulting in running the inner text
-       //      collection steps with node.
-       //      Each item in results will either be a JavaScript string or a
-       //      positive integer (a required line break count).
-       // 3.2. For each item item in current, append item to results.
-       results = results.concat(
-         // @ts-ignore Looks like a parent.
-         innerTextCollection(children[index], node, {
-           whitespace,
-           breakBefore: index ? null : block,
-           breakAfter:
-             index < children.length - 1 ? br(children[index + 1]) : block
-         })
-       );
-     }
-
-     // 4.  Remove any items from results that are the empty string.
-     // 5.  Remove any runs of consecutive required line break count items at the
-     //     start or end of results.
-     // 6.  Replace each remaining run of consecutive required line break count
-     //     items with a string consisting of as many U+000A LINE FEED (LF)
-     //     characters as the maximum of the values in the required line break
-     //     count items.
-     index = -1;
-     /** @type {Array.<string>} */
-     const result = [];
-
-     while (++index < results.length) {
-       value = results[index];
-
-       if (typeof value === 'number') {
-         if (count !== undefined && value > count) count = value;
-       } else if (value) {
-         if (count) result.push('\n'.repeat(count));
-         count = 0;
-         result.push(value);
-       }
-     }
-
-     // 7.  Return the concatenation of the string items in results.
-     return result.join('')
-   }
-
-   /**
-    * <https://html.spec.whatwg.org/#inner-text-collection-steps>
-    *
-    * @param {HastNode} node
-    * @param {HastParent} parent
-    * @param {CollectionOptions} options
-    * @returns {Array.<string|BreakNumber>}
-    */
-   function innerTextCollection(node, parent, options) {
-     if (node.type === 'element') {
-       return collectElement(node, parent, options)
-     }
-
-     if (node.type === 'text') {
-       return [
-         options.whitespace === 'normal'
-           ? collectText(node, options)
-           : collectPreText(node)
-       ]
-     }
-
-     return []
-   }
-
-   /**
-    * Collect an element.
-    *
-    * @param {HastElement} node
-    * @param {HastParent} parent
-    * @param {CollectionOptions} options
-    */
-   function collectElement(node, parent, options) {
-     // First we infer the `white-space` property.
-     const whitespace = inferWhitespace(node, options);
-     const children = node.children || [];
-     let index = -1;
-     /** @type {Array.<string|BreakNumber>} */
-     let items = [];
-     /** @type {BreakNumber|undefined} */
-     let prefix;
-     /** @type {BreakNumber|BreakForce|undefined} */
-     let suffix;
-
-     // We’re ignoring point 3, and exiting without any content here, because we
-     // deviated from the spec in `toText` at step 3.
-     if (notRendered(node)) {
-       return items
-     }
-
-     // Note: we first detect if there is going to be a break before or after the
-     // contents, as that changes the white-space handling.
-
-     // 2.  If node’s computed value of `visibility` is not `visible`, then return
-     //     items.
-     //
-     //     Note: Ignored, as everything is visible by default user agent styles.
-
-     // 3.  If node is not being rendered, then return items. [...]
-     //
-     //     Note: We already did this above.
-
-     // See `collectText` for step 4.
-
-     // 5.  If node is a `<br>` element, then append a string containing a single
-     //     U+000A LINE FEED (LF) character to items.
-     if (br(node)) {
-       suffix = '\n';
-     }
-
-     // 7.  If node’s computed value of `display` is `table-row`, and node’s CSS
-     //     box is not the last `table-row` box of the nearest ancestor `table`
-     //     box, then append a string containing a single U+000A LINE FEED (LF)
-     //     character to items.
-     //
-     //     See: <https://html.spec.whatwg.org/#tables-2>
-     //     Note: needs further investigation as this does not account for implicit
-     //     rows.
-     else if (row(node) && findAfter(parent, node, row)) {
-       suffix = '\n';
-     }
-
-     // 8.  If node is a `<p>` element, then append 2 (a required line break count)
-     //     at the beginning and end of items.
-     else if (p$2(node)) {
-       prefix = 2;
-       suffix = 2;
-     }
-
-     // 9.  If node’s used value of `display` is block-level or `table-caption`,
-     //     then append 1 (a required line break count) at the beginning and end of
-     //     items.
-     else if (blockOrCaption(node)) {
-       prefix = 1;
-       suffix = 1;
-     }
-
-     // 1.  Let items be the result of running the inner text collection steps with
-     //     each child node of node in tree order, and then concatenating the
-     //     results to a single list.
-     while (++index < children.length) {
-       items = items.concat(
-         innerTextCollection(children[index], node, {
-           whitespace,
-           breakBefore: index ? undefined : prefix,
-           breakAfter:
-             index < children.length - 1 ? br(children[index + 1]) : suffix
-         })
-       );
-     }
-
-     // 6.  If node’s computed value of `display` is `table-cell`, and node’s CSS
-     //     box is not the last `table-cell` box of its enclosing `table-row` box,
-     //     then append a string containing a single U+0009 CHARACTER TABULATION
-     //     (tab) character to items.
-     //
-     //     See: <https://html.spec.whatwg.org/#tables-2>
-     if (cell$2(node) && findAfter(parent, node, cell$2)) {
-       items.push('\t');
-     }
-
-     // Add the pre- and suffix.
-     if (prefix) items.unshift(prefix);
-     if (suffix) items.push(suffix);
-
-     return items
-   }
-
-   /**
-    * 4.  If node is a Text node, then for each CSS text box produced by node,
-    *     in content order, compute the text of the box after application of the
-    *     CSS `white-space` processing rules and `text-transform` rules, set
-    *     items to the list of the resulting strings, and return items.
-    *     The CSS `white-space` processing rules are slightly modified:
-    *     collapsible spaces at the end of lines are always collapsed, but they
-    *     are only removed if the line is the last line of the block, or it ends
-    *     with a br element.
-    *     Soft hyphens should be preserved.
-    *
-    *     Note: See `collectText` and `collectPreText`.
-    *     Note: we don’t deal with `text-transform`, no element has that by
-    *     default.
-    *
-    * See: <https://drafts.csswg.org/css-text/#white-space-phase-1>
-    *
-    * @param {HastText|HastComment} node
-    * @param {CollectionOptions} options
-    * @returns {string}
-    */
-   function collectText(node, options) {
-     const value = String(node.value);
-     /** @type {Array.<string>} */
-     const lines = [];
-     /** @type {Array.<string>} */
-     const result = [];
-     let start = 0;
-     let index = -1;
-     /** @type {RegExpMatchArray|null} */
-     let match;
-     /** @type {number} */
-     let end;
-     /** @type {string|undefined} */
-     let join;
-
-     while (start < value.length) {
-       searchLineFeeds.lastIndex = start;
-       match = searchLineFeeds.exec(value);
-       // @ts-expect-error: `index` is set.
-       end = match ? match.index : value.length;
-
-       lines.push(
-         // Any sequence of collapsible spaces and tabs immediately preceding or
-         // following a segment break is removed.
-         trimAndCollapseSpacesAndTabs(
-           // [...] ignoring bidi formatting characters (characters with the
-           // Bidi_Control property [UAX9]: ALM, LTR, RTL, LRE-RLO, LRI-PDI) as if
-           // they were not there.
-           value
-             .slice(start, end)
-             .replace(/[\u061C\u200E\u200F\u202A-\u202E\u2066-\u2069]/g, ''),
-           options.breakBefore,
-           options.breakAfter
-         )
-       );
-
-       start = end + 1;
-     }
-
-     // Collapsible segment breaks are transformed for rendering according to the
-     // segment break transformation rules.
-     // So here we jump to 4.1.2 of [CSSTEXT]:
-     // Any collapsible segment break immediately following another collapsible
-     // segment break is removed
-     while (++index < lines.length) {
-       // *   If the character immediately before or immediately after the segment
-       //     break is the zero-width space character (U+200B), then the break is
-       //     removed, leaving behind the zero-width space.
-       if (
-         lines[index].charCodeAt(lines[index].length - 1) === 0x200b /* ZWSP */ ||
-         (index < lines.length - 1 &&
-           lines[index + 1].charCodeAt(0) === 0x200b) /* ZWSP */
-       ) {
-         result.push(lines[index]);
-         join = '';
-       }
-
-       // *   Otherwise, if the East Asian Width property [UAX11] of both the
-       //     character before and after the segment break is Fullwidth, Wide, or
-       //     Halfwidth (not Ambiguous), and neither side is Hangul, then the
-       //     segment break is removed.
-       //
-       //     Note: ignored.
-       // *   Otherwise, if the writing system of the segment break is Chinese,
-       //     Japanese, or Yi, and the character before or after the segment break
-       //     is punctuation or a symbol (Unicode general category P* or S*) and
-       //     has an East Asian Width property of Ambiguous, and the character on
-       //     the other side of the segment break is Fullwidth, Wide, or Halfwidth,
-       //     and not Hangul, then the segment break is removed.
-       //
-       //     Note: ignored.
-
-       // *   Otherwise, the segment break is converted to a space (U+0020).
-       else if (lines[index]) {
-         if (join) result.push(join);
-         result.push(lines[index]);
-         join = ' ';
-       }
-     }
-
-     return result.join('')
-   }
-
-   /**
-    * @param {HastText|HastComment} node
-    * @returns {string}
-    */
-   function collectPreText(node) {
-     return String(node.value)
-   }
-
-   /**
-    * 3.  Every collapsible tab is converted to a collapsible space (U+0020).
-    * 4.  Any collapsible space immediately following another collapsible
-    *     space—even one outside the boundary of the inline containing that
-    *     space, provided both spaces are within the same inline formatting
-    *     context—is collapsed to have zero advance width. (It is invisible,
-    *     but retains its soft wrap opportunity, if any.)
-    *
-    * @param {string} value
-    * @param {BreakBefore} breakBefore
-    * @param {BreakAfter} breakAfter
-    * @returns {string}
-    */
-   function trimAndCollapseSpacesAndTabs(value, breakBefore, breakAfter) {
-     /** @type {Array.<string>} */
-     const result = [];
-     let start = 0;
-     /** @type {RegExpMatchArray|null} */
-     let match;
-     /** @type {number} */
-     let end;
-
-     while (start < value.length) {
-       searchTabOrSpaces.lastIndex = start;
-       match = searchTabOrSpaces.exec(value);
-       // @ts-expect-error: `index` is set.
-       end = match ? match.index : value.length;
-
-       // If we’re not directly after a segment break, but there was white space,
-       // add an empty value that will be turned into a space.
-       if (!start && !end && match && !breakBefore) {
-         result.push('');
-       }
-
-       if (start !== end) {
-         result.push(value.slice(start, end));
-       }
-
-       start = match ? end + match[0].length : end;
-     }
-
-     // If we reached the end, there was trailing white space, and there’s no
-     // segment break after this node, add an empty value that will be turned
-     // into a space.
-     // @ts-expect-error: `end` is defined.
-     if (start !== end && !breakAfter) {
-       result.push('');
-     }
-
-     return result.join(' ')
-   }
-
-   /**
-    * We don’t support void elements here (so `nobr wbr` -> `normal` is ignored).
-    *
-    * @param {HastNode} node
-    * @param {CollectionOptions} options
-    * @returns {Whitespace}
-    */
-   function inferWhitespace(node, options) {
-     /** @type {HastProperties} */
-     let props;
-
-     if (node.type === 'element') {
-       props = node.properties || {};
-       switch (node.tagName) {
-         case 'listing':
-         case 'plaintext':
-         case 'xmp':
-           return 'pre'
-         case 'nobr':
-           return 'nowrap'
-         case 'pre':
-           return props.wrap ? 'pre-wrap' : 'pre'
-         case 'td':
-         case 'th':
-           return props.noWrap ? 'nowrap' : options.whitespace
-         case 'textarea':
-           return 'pre-wrap'
-       }
-     }
-
-     return options.whitespace
-   }
-
-   /** @type {TestFunctionAnything} */
-   function hidden(node) {
-     return Boolean((node.properties || {}).hidden)
-   }
-
-   /** @type {TestFunctionAnything} */
-   function closedDialog(node) {
-     return node.tagName === 'dialog' && !(node.properties || {}).open
-   }
-
-   /**
-    * Remove final newline characters from `value`.
-    *
-    * @param {unknown} value Value with trailing line feeds, coerced to string.
-    * @return {string} Value without trailing newlines.
-    */
-   function trimTrailingLines(value) {
-     return String(value).replace(/\n+$/, '')
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').ElementChild} ElementChild
-    */
-
-   const prefix = 'language-';
-
-   const pre = convertElement('pre');
-   const isCode = convertElement('code');
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function code$1(h, node) {
-     const children = node.children;
-     let index = -1;
-     /** @type {Array.<string|number>|undefined} */
-     let classList;
-     /** @type {string|undefined} */
-     let lang;
-
-     if (pre(node)) {
-       while (++index < children.length) {
-         const child = children[index];
-
-         if (
-           isCode(child) &&
-           child.properties &&
-           child.properties.className &&
-           Array.isArray(child.properties.className)
-         ) {
-           classList = child.properties.className;
-           break
-         }
-       }
-     }
-
-     if (classList) {
-       index = -1;
-
-       while (++index < classList.length) {
-         if (String(classList[index]).slice(0, prefix.length) === prefix) {
-           lang = String(classList[index]).slice(prefix.length);
-           break
-         }
-       }
-     }
-
-     return h(
-       node,
-       'code',
-       {lang: lang || null, meta: null},
-       trimTrailingLines(wrapText$1(h, toText(node)))
-     )
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Comment} Comment
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Comment} node
-    */
-   function comment(h, node) {
-     return h(node, 'html', '<!--' + wrapText$1(h, node.value) + '-->')
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function del(h, node) {
-     return h(node, 'delete', all$3(h, node))
-   }
-
-   /**
-    * @typedef {import('../types.js').MdastListContent} MdastListContent
-    */
-
-   /**
-    * @param {Array.<MdastListContent>} children
-    * @returns {boolean}
-    */
-   function listItemsSpread(children) {
-     let index = -1;
-
-     if (children.length > 1) {
-       while (++index < children.length) {
-         if (children[index].spread) {
-           return true
-         }
-       }
-     }
-
-     return false
-   }
-
-   /**
-    * @typedef {import('../types.js').H} H
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Child} Child
-    * @typedef {import('../types.js').MdastListContent} MdastListContent
-    */
-
-   /**
-    * @param {H} h
-    * @param {Child} node
-    * @returns {Array.<MdastListContent>}
-    */
-   function wrapListItems(h, node) {
-     const children = all$3(h, node);
-     let index = -1;
-
-     while (++index < children.length) {
-       const child = children[index];
-       if (child.type !== 'listItem') {
-         children[index] = {
-           type: 'listItem',
-           spread: false,
-           checked: null,
-           // @ts-expect-error Assume `children[index]` is block content.
-           children: [child]
-         };
-       }
-     }
-
-     // @ts-expect-error Assume all `listItem`s
-     return children
-   }
-
-   /**
-    * @typedef {import('../types.js').H} H
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').ElementChild} ElementChild
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    * @typedef {import('../types.js').MdastListContent} MdastListContent
-    * @typedef {import('../types.js').MdastBlockContent} MdastBlockContent
-    * @typedef {import('../types.js').MdastDefinitionContent} MdastDefinitionContent
-    *
-    * @typedef Group
-    * @property {Array.<Element>} titles
-    * @property {Array.<ElementChild>} definitions
-    */
-
-   const div = convertElement('div');
-   const dt = convertElement('dt');
-   const dd = convertElement('dd');
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function dl(h, node) {
-     const children = node.children;
-     let index = -1;
-     /** @type {Array.<ElementChild>} */
-     let clean = [];
-     /** @type {Array.<Group>} */
-     const groups = [];
-     /** @type {Group} */
-     let group = {titles: [], definitions: []};
-     /** @type {ElementChild} */
-     let child;
-     /** @type {Array.<MdastBlockContent|MdastDefinitionContent>} */
-     let result;
-
-     // Unwrap `<div>`s
-     while (++index < children.length) {
-       child = children[index];
-       clean = clean.concat(div(child) ? child.children : child);
-     }
-
-     index = -1;
-
-     // Group titles and definitions.
-     while (++index < clean.length) {
-       child = clean[index];
-
-       if (dt(child)) {
-         if (dd(clean[index - 1])) {
-           groups.push(group);
-           group = {titles: [], definitions: []};
-         }
-
-         group.titles.push(child);
-       } else {
-         group.definitions.push(child);
-       }
-     }
-
-     groups.push(group);
-
-     // Create items.
-     index = -1;
-     /** @type {Array.<MdastListContent>} */
-     const content = [];
-
-     while (++index < groups.length) {
-       result = [
-         ...handle$1(h, groups[index].titles),
-         ...handle$1(h, groups[index].definitions)
-       ];
-
-       if (result.length > 0) {
-         content.push({
-           type: 'listItem',
-           spread: result.length > 1,
-           checked: null,
-           children: result
-         });
-       }
-     }
-
-     // Create a list if there are items.
-     if (content.length > 0) {
-       return h(
-         node,
-         'list',
-         {ordered: false, start: null, spread: listItemsSpread(content)},
-         content
-       )
-     }
-   }
-
-   /**
-    * @param {H} h
-    * @param {Array.<ElementChild>} children
-    * @returns {Array.<MdastBlockContent|MdastDefinitionContent>}
-    */
-   function handle$1(h, children) {
-     const nodes = wrapListItems(h, {type: 'element', tagName: 'x', children});
-
-     if (nodes.length === 0) {
-       return []
-     }
-
-     if (nodes.length === 1) {
-       return nodes[0].children
-     }
-
-     return [
-       {
-         type: 'list',
-         ordered: false,
-         start: null,
-         spread: listItemsSpread(nodes),
-         children: nodes
-       }
-     ]
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function em(h, node) {
-     return h(node, 'emphasis', all$3(h, node))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function heading$1(h, node) {
-     // `else` shouldn’t happen, of course…
-     /* c8 ignore next */
-     const depth = Number(node.tagName.charAt(1)) || 1;
-     const wrap = h.wrapText;
-
-     h.wrapText = false;
-     const result = h(node, 'heading', {depth}, all$3(h, node));
-     h.wrapText = wrap;
-
-     return result
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function hr(h, node) {
-     return h(node, 'thematicBreak')
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Properties} Properties
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function iframe(h, node) {
-     /** @type {Properties} */
-     // @ts-expect-error: `props` are defined.
-     const props = node.properties;
-     const src = String(props.src || '');
-     const title = String(props.title || '');
-
-     // Only create a link if there is a title.
-     // We can’t use the content of the frame because conforming HTML parsers treat
-     // it as text, whereas legacy parsers treat it as HTML, so it will likely
-     // contain tags that will show up in text.
-     if (src && title) {
-       return {
-         type: 'link',
-         title: null,
-         url: resolve(h, src),
-         children: [{type: 'text', value: wrapText$1(h, title)}]
-       }
-     }
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Properties} Properties
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function img(h, node) {
-     /** @type {Properties} */
-     // @ts-expect-error: `props` are defined.
-     const props = node.properties;
-     return h(node, 'image', {
-       url: resolve(h, String(props.src || '') || null),
-       title: props.title || null,
-       alt: props.alt || ''
-     })
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function inlineCode$1(h, node) {
-     return h(node, 'inlineCode', wrapText$1(h, toText(node)))
-   }
-
-   var own$3 = {}.hasOwnProperty;
-
-   /**
-    * Check if `node` has a set `name` property.
-    *
-    * @param {unknown} node
-    * @param {string} name
-    * @returns {boolean}
-    */
-   function hasProperty(node, name) {
-     /** @type {unknown} */
-     var value =
-       name &&
-       node &&
-       typeof node === 'object' &&
-       // @ts-ignore Looks like a node.
-       node.type === 'element' &&
-       // @ts-ignore Looks like an element.
-       node.properties &&
-       // @ts-ignore Looks like an element.
-       own$3.call(node.properties, name) &&
-       // @ts-ignore Looks like an element.
-       node.properties[name];
-
-     return value !== null && value !== undefined && value !== false
-   }
-
-   /**
-    * @typedef {import('../types.js').H} H
-    * @typedef {import('../types.js').Parent} Parent
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Child} Child
-    * @typedef {import('../types.js').Properties} Properties
-    */
-
-   const option = convertElement('option');
-
-   /**
-    * @param {H} h
-    * @param {Element} node
-    * @param {Properties} [properties]
-    * @returns {Array.<[string, string|null]>}
-    */
-   function findSelectedOptions(h, node, properties) {
-     /** @type {Properties} */
-     // @ts-expect-error: `props` exist.
-     const props = properties || node.properties;
-     let options = findOptions(node);
-     const size =
-       Math.min(Number.parseInt(String(props.size), 10), 0) ||
-       (props.multiple ? 4 : 1);
-     let index = -1;
-     /** @type {Array.<Element>} */
-     const selectedOptions = [];
-     /** @type {Array.<[string, string|null]>} */
-     const values = [];
-
-     while (++index < options.length) {
-       if (hasProperty(options[index], 'selected')) {
-         selectedOptions.push(options[index]);
-       }
-     }
-
-     const list = selectedOptions.length > 0 ? selectedOptions : options;
-     options = list.slice(0, size);
-     index = -1;
-
-     while (++index < options.length) {
-       const option = options[index];
-       const content = wrapText$1(h, toText(option));
-       /** @type {Properties} */
-       // @ts-expect-error: `props` exist.
-       const props = option.properties;
-       const label = content || String(props.label || '');
-       const value = String(props.value || '') || content;
-       values.push([value, label === value ? null : label]);
-     }
-
-     return values
-   }
-
-   /**
-    * @param {Parent} node
-    */
-   function findOptions(node) {
-     const children = node.children;
-     let index = -1;
-     /** @type {Array.<Element>} */
-     let results = [];
-     /** @type {Child} */
-     let child;
-
-     while (++index < children.length) {
-       child = children[index];
-
-       // @ts-expect-error Looks like a parent.
-       if (Array.isArray(child.children)) {
-         // @ts-expect-error Looks like a parent.
-         results = results.concat(findOptions(child));
-       }
-
-       if (option(child) && !hasProperty(child, 'disabled')) {
-         results.push(child);
-       }
-     }
-
-     return results
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Properties} Properties
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    */
-
-   const datalist = convertElement('datalist');
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   // eslint-disable-next-line complexity
-   function input$1(h, node) {
-     /** @type {Properties} */
-     // @ts-expect-error: `props` are defined.
-     const props = node.properties;
-     let value = String(props.value || props.placeholder || '');
-     /** @type {Array.<MdastNode>} */
-     const results = [];
-     /** @type {Array.<string>} */
-     const texts = [];
-     /** @type {Array.<[string, string|null]>} */
-     let values = [];
-     let index = -1;
-     /** @type {string} */
-     let list;
-
-     if (props.disabled || props.type === 'hidden' || props.type === 'file') {
-       return
-     }
-
-     if (props.type === 'checkbox' || props.type === 'radio') {
-       return h(
-         node,
-         'text',
-         wrapText$1(h, h[props.checked ? 'checked' : 'unchecked'])
-       )
-     }
-
-     if (props.type === 'image') {
-       return props.alt || value
-         ? h(node, 'image', {
-             url: resolve(h, String(props.src || '') || null),
-             title: wrapText$1(h, String(props.title || '')) || null,
-             alt: wrapText$1(h, String(props.alt || value))
-           })
-         : []
-     }
-
-     if (value) {
-       values = [[value, null]];
-     } else if (
-       // `list` is not supported on these types:
-       props.type !== 'password' &&
-       props.type !== 'file' &&
-       props.type !== 'submit' &&
-       props.type !== 'reset' &&
-       props.type !== 'button' &&
-       props.list
-     ) {
-       list = String(props.list).toUpperCase();
-
-       if (own$4.call(h.nodeById, list) && datalist(h.nodeById[list])) {
-         values = findSelectedOptions(h, h.nodeById[list], props);
-       }
-     }
-
-     if (values.length === 0) {
-       return
-     }
-
-     // Hide password value.
-     if (props.type === 'password') {
-       // Passwords don’t support `list`.
-       values[0] = ['•'.repeat(values[0][0].length), null];
-     }
-
-     if (props.type === 'url' || props.type === 'email') {
-       while (++index < values.length) {
-         value = resolve(h, values[index][0]);
-
-         results.push(
-           h(
-             node,
-             'link',
-             {
-               title: null,
-               url: wrapText$1(h, props.type === 'email' ? 'mailto:' + value : value)
-             },
-             [{type: 'text', value: wrapText$1(h, values[index][1] || value)}]
-           )
-         );
-
-         if (index !== values.length - 1) {
-           results.push({type: 'text', value: ', '});
-         }
-       }
-
-       return results
-     }
-
-     while (++index < values.length) {
-       texts.push(
-         values[index][1]
-           ? values[index][1] + ' (' + values[index][0] + ')'
-           : values[index][0]
-       );
-     }
-
-     return h(node, 'text', wrapText$1(h, texts.join(', ')))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').ElementChild} ElementChild
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    */
-
-   const p$1 = convertElement('p');
-   const input = convertElement('input');
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function li(h, node) {
-     const head = node.children[0];
-     /** @type {boolean|null} */
-     let checked = null;
-     /** @type {ElementChild} */
-     let checkbox;
-     /** @type {Element|undefined} */
-     let clone;
-
-     // Check if this node starts with a checkbox.
-     if (p$1(head)) {
-       checkbox = head.children[0];
-
-       if (
-         input(checkbox) &&
-         checkbox.properties &&
-         (checkbox.properties.type === 'checkbox' ||
-           checkbox.properties.type === 'radio')
-       ) {
-         checked = Boolean(checkbox.properties.checked);
-         clone = {
-           ...node,
-           children: [
-             {...head, children: head.children.slice(1)},
-             ...node.children.slice(1)
-           ]
-         };
-       }
-     }
-
-     const content = wrapChildren(h, clone || node);
-
-     return h(node, 'listItem', {spread: content.length > 1, checked}, content)
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   const ol = convertElement('ol');
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function list$1(h, node) {
-     const ordered = ol(node);
-     const children = wrapListItems(h, node);
-     /** @type {number|null} */
-     let start = null;
-
-     if (ordered) {
-       start = hasProperty(node, 'start')
-         ? // @ts-expect-error: `props` exist.
-           Number.parseInt(String(node.properties.start), 10)
-         : 1;
-     }
-
-     return h(
-       node,
-       'list',
-       {ordered, start, spread: listItemsSpread(children)},
-       children
-     )
-   }
-
-   /**
-    * @typedef Options
-    * @property {boolean} [includeImageAlt=true]
-    */
-
-   /**
-    * Get the text content of a node.
-    * Prefer the node’s plain-text fields, otherwise serialize its children,
-    * and if the given value is an array, serialize the nodes in it.
-    *
-    * @param {unknown} node
-    * @param {Options} [options]
-    * @returns {string}
-    */
-   function toString(node, options) {
-     var {includeImageAlt = true} = options || {};
-     return one$2(node, includeImageAlt)
-   }
-
-   /**
-    * @param {unknown} node
-    * @param {boolean} includeImageAlt
-    * @returns {string}
-    */
-   function one$2(node, includeImageAlt) {
-     return (
-       (node &&
-         typeof node === 'object' &&
-         // @ts-ignore looks like a literal.
-         (node.value ||
-           // @ts-ignore looks like an image.
-           (includeImageAlt ? node.alt : '') ||
-           // @ts-ignore looks like a parent.
-           ('children' in node && all$2(node.children, includeImageAlt)) ||
-           (Array.isArray(node) && all$2(node, includeImageAlt)))) ||
-       ''
-     )
-   }
-
-   /**
-    * @param {Array.<unknown>} values
-    * @param {boolean} includeImageAlt
-    * @returns {string}
-    */
-   function all$2(values, includeImageAlt) {
-     /** @type {Array.<string>} */
-     var result = [];
-     var index = -1;
-
-     while (++index < values.length) {
-       result[index] = one$2(values[index], includeImageAlt);
-     }
-
-     return result.join('')
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').Properties} Properties
-    * @typedef {import('../types.js').ElementChild} ElementChild
-    */
-
-   const source = convertElement('source');
-   const video = convertElement('video');
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function media(h, node) {
-     let nodes = all$3(h, node);
-     /** @type {Properties} */
-     // @ts-expect-error: `props` are defined.
-     const properties = node.properties;
-     const poster = video(node) && String(properties.poster || '');
-     let src = String(properties.src || '');
-     let index = -1;
-     /** @type {boolean} */
-     let linkInFallbackContent = false;
-     /** @type {ElementChild} */
-     let child;
-
-     visit({type: 'root', children: nodes}, 'link', findLink);
-
-     // If the content links to something, or if it’s not phrasing…
-     if (linkInFallbackContent || wrapNeeded(nodes)) {
-       return nodes
-     }
-
-     // Find the source.
-     while (!src && ++index < node.children.length) {
-       child = node.children[index];
-       if (source(child)) {
-         // @ts-expect-error: `props` are defined.
-         src = String(child.properties.src || '');
-       }
-     }
-
-     // If there’s a poster defined on the video, create an image.
-     if (poster) {
-       nodes = [
-         {
-           type: 'image',
-           title: null,
-           url: resolve(h, poster),
-           alt: toString({children: nodes})
-         }
-       ];
-     }
-
-     // Link to the media resource.
-     return {
-       type: 'link',
-       // @ts-expect-error Types are broken.
-       title: node.properties.title || null,
-       url: resolve(h, src),
-       // @ts-expect-error Assume phrasing content.
-       children: nodes
-     }
-
-     function findLink() {
-       linkInFallbackContent = true;
-       return EXIT
-     }
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function p(h, node) {
-     const nodes = all$3(h, node);
-
-     if (nodes.length > 0) {
-       return h(node, 'paragraph', nodes)
-     }
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function q(h, node) {
-     const expected = h.quotes[h.qNesting % h.quotes.length];
-
-     h.qNesting++;
-     const contents = all$3(h, node);
-     h.qNesting--;
-
-     contents.unshift({type: 'text', value: expected.charAt(0)});
-
-     contents.push({
-       type: 'text',
-       value: expected.length > 1 ? expected.charAt(1) : expected
-     });
-
-     return contents
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Root} Root
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Root} node
-    */
-   function root$1(h, node) {
-     let children = all$3(h, node);
-
-     if (h.document || wrapNeeded(children)) {
-       children = wrap(children);
-     }
-
-     return h(node, 'root', children)
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function select(h, node) {
-     const values = findSelectedOptions(h, node);
-     let index = -1;
-     /** @type {Array.<string>} */
-     const results = [];
-     /** @type {[string, string|null]} */
-     let value;
-
-     while (++index < values.length) {
-       value = values[index];
-       results.push(value[1] ? value[1] + ' (' + value[0] + ')' : value[0]);
-     }
-
-     if (results.length > 0) {
-       return h(node, 'text', wrapText$1(h, results.join(', ')))
-     }
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function strong$1(h, node) {
-     return h(node, 'strong', all$3(h, node))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function tableCell(h, node) {
-     const wrap = h.wrapText;
-
-     h.wrapText = false;
-
-     const result = h(node, 'tableCell', all$3(h, node));
-
-     if (node.properties && (node.properties.rowSpan || node.properties.colSpan)) {
-       const data = result.data || (result.data = {});
-       if (node.properties.rowSpan) data.rowSpan = node.properties.rowSpan;
-       if (node.properties.colSpan) data.colSpan = node.properties.colSpan;
-     }
-
-     h.wrapText = wrap;
-
-     return result
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function tableRow(h, node) {
-     return h(node, 'tableRow', all$3(h, node))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    * @typedef {import('../types.js').MdastNode} MdastNode
-    * @typedef {import('../types.js').MdastTableContent} MdastTableContent
-    * @typedef {import('../types.js').MdastRowContent} MdastRowContent
-    * @typedef {import('../types.js').MdastPhrasingContent} MdastPhrasingContent
-    *
-    * @typedef Info
-    * @property {Array.<string|null>} align
-    * @property {boolean} headless
-    */
-
-   const thead$1 = convertElement('thead');
-   const tr$1 = convertElement('tr');
-   const cell$1 = convertElement(['th', 'td']);
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function table(h, node) {
-     if (h.inTable) {
-       return h(node, 'text', wrapText$1(h, toText(node)))
-     }
-
-     h.inTable = true;
-
-     const {headless, align} = inspect$1(node);
-     const rows = toRows$1(all$3(h, node), headless);
-     let columns = 1;
-     let rowIndex = -1;
-
-     while (++rowIndex < rows.length) {
-       const cells = rows[rowIndex].children;
-       let cellIndex = -1;
-
-       while (++cellIndex < cells.length) {
-         const cell = cells[cellIndex];
-
-         if (cell.data) {
-           const colSpan = Number.parseInt(String(cell.data.colSpan), 10) || 1;
-           const rowSpan = Number.parseInt(String(cell.data.rowSpan), 10) || 1;
-
-           if (colSpan > 1 || rowSpan > 1) {
-             let otherRowIndex = rowIndex - 1;
-
-             while (++otherRowIndex < rowIndex + rowSpan) {
-               let colIndex = cellIndex - 1;
-
-               while (++colIndex < cellIndex + colSpan) {
-                 if (!rows[otherRowIndex]) {
-                   // Don’t add rows that don’t exist.
-                   // Browsers don’t render them either.
-                   break
-                 }
-
-                 /** @type {Array.<MdastRowContent>} */
-                 const newCells = [];
-
-                 if (otherRowIndex !== rowIndex || colIndex !== cellIndex) {
-                   newCells.push({type: 'tableCell', children: []});
-                 }
-
-                 rows[otherRowIndex].children.splice(colIndex, 0, ...newCells);
-               }
-             }
-           }
-
-           // Clean the data fields.
-           if ('colSpan' in cell.data) delete cell.data.colSpan;
-           if ('rowSpan' in cell.data) delete cell.data.rowSpan;
-           if (Object.keys(cell.data).length === 0) delete cell.data;
-         }
-       }
-
-       if (cells.length > columns) columns = cells.length;
-     }
-
-     // Add extra empty cells.
-     rowIndex = -1;
-
-     while (++rowIndex < rows.length) {
-       const cells = rows[rowIndex].children;
-       let cellIndex = cells.length - 1;
-       while (++cellIndex < columns) {
-         cells.push({type: 'tableCell', children: []});
-       }
-     }
-
-     let alignIndex = align.length - 1;
-     while (++alignIndex < columns) {
-       align.push(null);
-     }
-
-     h.inTable = false;
-
-     return h(node, 'table', {align}, rows)
-   }
-
-   /**
-    * Infer whether the HTML table has a head and how it aligns.
-    *
-    * @param {Element} node
-    * @returns {Info}
-    */
-   function inspect$1(node) {
-     let headless = true;
-     let rowIndex = 0;
-     let cellIndex = 0;
-     /** @type {Array.<string|null>} */
-     const align = [null];
-
-     visit(node, 'element', (child) => {
-       if (child.tagName === 'table' && node !== child) {
-         return SKIP
-       }
-
-       // If there is a `thead`, assume there is a header row.
-       if (cell$1(child) && child.properties) {
-         if (!align[cellIndex]) {
-           align[cellIndex] = String(child.properties.align || '') || null;
-         }
-
-         // If there is a th in the first row, assume there is a header row.
-         if (headless && rowIndex < 2 && child.tagName === 'th') {
-           headless = false;
-         }
-
-         cellIndex++;
-       } else if (thead$1(child)) {
-         headless = false;
-       } else if (tr$1(child)) {
-         rowIndex++;
-         cellIndex = 0;
-       }
-     });
-
-     return {align, headless}
-   }
-
-   /**
-    * Ensure the rows are properly structured.
-    *
-    * @param {Array.<MdastNode>} children
-    * @param {boolean} headless
-    * @returns {Array.<MdastTableContent>}
-    */
-   function toRows$1(children, headless) {
-     let index = -1;
-     /** @type {Array.<MdastTableContent>} */
-     const nodes = [];
-     /** @type {Array.<MdastRowContent>|undefined} */
-     let queue;
-
-     // Add an empty header row.
-     if (headless) {
-       nodes.push({type: 'tableRow', children: []});
-     }
-
-     while (++index < children.length) {
-       const node = children[index];
-
-       if (node.type === 'tableRow') {
-         if (queue) {
-           node.children.unshift(...queue);
-           queue = undefined;
-         }
-
-         nodes.push(node);
-       } else {
-         if (!queue) queue = [];
-         // @ts-expect-error Assume row content.
-         queue.push(node);
-       }
-     }
-
-     if (queue) {
-       nodes[nodes.length - 1].children.push(...queue);
-     }
-
-     index = -1;
-
-     while (++index < nodes.length) {
-       nodes[index].children = toCells$1(nodes[index].children);
-     }
-
-     return nodes
-   }
-
-   /**
-    * Ensure the cells in a row are properly structured.
-    *
-    * @param {Array.<MdastNode>} children
-    * @returns {Array.<MdastRowContent>}
-    */
-   function toCells$1(children) {
-     /** @type {Array.<MdastRowContent>} */
-     const nodes = [];
-     let index = -1;
-     /** @type {MdastNode} */
-     let node;
-     /** @type {Array.<MdastPhrasingContent>|undefined} */
-     let queue;
-
-     while (++index < children.length) {
-       node = children[index];
-
-       if (node.type === 'tableCell') {
-         if (queue) {
-           node.children.unshift(...queue);
-           queue = undefined;
-         }
-
-         nodes.push(node);
-       } else {
-         if (!queue) queue = [];
-         // @ts-expect-error Assume phrasing content.
-         queue.push(node);
-       }
-     }
-
-     if (queue) {
-       node = nodes[nodes.length - 1];
-
-       if (!node) {
-         node = {type: 'tableCell', children: []};
-         nodes.push(node);
-       }
-
-       node.children.push(...queue);
-     }
-
-     return nodes
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Text} Text
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Text} node
-    */
-   function text$1(h, node) {
-     return h(node, 'text', wrapText$1(h, node.value))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function textarea(h, node) {
-     return h(node, 'text', wrapText$1(h, toText(node)))
-   }
-
-   /**
-    * @typedef {import('../types.js').Handle} Handle
-    * @typedef {import('../types.js').Element} Element
-    */
-
-   /**
-    * @type {Handle}
-    * @param {Element} node
-    */
-   function wbr(h, node) {
-     return h(node, 'text', '\u200B')
-   }
-
-   const handlers = {
-     root: root$1,
-     text: text$1,
-     comment,
-     doctype: ignore,
-
-     applet: ignore,
-     area: ignore,
-     basefont: ignore,
-     bgsound: ignore,
-     caption: ignore,
-     col: ignore,
-     colgroup: ignore,
-     command: ignore,
-     content: ignore,
-     datalist: ignore,
-     dialog: ignore,
-     element: ignore,
-     embed: ignore,
-     frame: ignore,
-     frameset: ignore,
-     isindex: ignore,
-     keygen: ignore,
-     link: ignore,
-     math: ignore,
-     menu: ignore,
-     menuitem: ignore,
-     meta: ignore,
-     nextid: ignore,
-     noembed: ignore,
-     noframes: ignore,
-     optgroup: ignore,
-     option: ignore,
-     param: ignore,
-     script: ignore,
-     shadow: ignore,
-     source: ignore,
-     spacer: ignore,
-     style: ignore,
-     svg: ignore,
-     template: ignore,
-     title: ignore,
-     track: ignore,
-
-     abbr: all$3,
-     acronym: all$3,
-     bdi: all$3,
-     bdo: all$3,
-     big: all$3,
-     blink: all$3,
-     button: all$3,
-     canvas: all$3,
-     cite: all$3,
-     data: all$3,
-     details: all$3,
-     dfn: all$3,
-     font: all$3,
-     ins: all$3,
-     label: all$3,
-     map: all$3,
-     marquee: all$3,
-     meter: all$3,
-     nobr: all$3,
-     noscript: all$3,
-     object: all$3,
-     output: all$3,
-     progress: all$3,
-     rb: all$3,
-     rbc: all$3,
-     rp: all$3,
-     rt: all$3,
-     rtc: all$3,
-     ruby: all$3,
-     slot: all$3,
-     small: all$3,
-     span: all$3,
-     sup: all$3,
-     sub: all$3,
-     tbody: all$3,
-     tfoot: all$3,
-     thead: all$3,
-     time: all$3,
-
-     address: wrapChildren,
-     article: wrapChildren,
-     aside: wrapChildren,
-     body: wrapChildren,
-     center: wrapChildren,
-     div: wrapChildren,
-     fieldset: wrapChildren,
-     figcaption: wrapChildren,
-     figure: wrapChildren,
-     form: wrapChildren,
-     footer: wrapChildren,
-     header: wrapChildren,
-     hgroup: wrapChildren,
-     html: wrapChildren,
-     legend: wrapChildren,
-     main: wrapChildren,
-     multicol: wrapChildren,
-     nav: wrapChildren,
-     picture: wrapChildren,
-     section: wrapChildren,
-
-     a,
-     audio: media,
-     b: strong$1,
-     base,
-     blockquote: blockquote$1,
-     br: br$1,
-     code: inlineCode$1,
-     dir: list$1,
-     dl,
-     dt: li,
-     dd: li,
-     del,
-     em,
-     h1: heading$1,
-     h2: heading$1,
-     h3: heading$1,
-     h4: heading$1,
-     h5: heading$1,
-     h6: heading$1,
-     hr,
-     i: em,
-     iframe,
-     img,
-     image: img,
-     input: input$1,
-     kbd: inlineCode$1,
-     li,
-     listing: code$1,
-     mark: em,
-     ol: list$1,
-     p,
-     plaintext: code$1,
-     pre: code$1,
-     q,
-     s: del,
-     samp: inlineCode$1,
-     select,
-     strike: del,
-     strong: strong$1,
-     summary: p,
-     table,
-     td: tableCell,
-     textarea,
-     th: tableCell,
-     tr: tableRow,
-     tt: inlineCode$1,
-     u: em,
-     ul: list$1,
-     var: inlineCode$1,
-     video: media,
-     wbr,
-     xmp: code$1
-   };
-
-   function ignore() {}
-
-   /**
-    * @typedef {import('./types.js').Node} Node
-    * @typedef {import('./types.js').Element} Element
-    * @typedef {import('./types.js').Text} Text
-    * @typedef {import('./types.js').Options} Options
-    * @typedef {import('./types.js').Context} Context
-    * @typedef {import('./types.js').Properties} Properties
-    * @typedef {import('./types.js').H} H
-    * @typedef {import('./types.js').HWithoutProps} HWithoutProps
-    * @typedef {import('./types.js').HWithProps} HWithProps
-    * @typedef {import('./types.js').MdastNode} MdastNode
-    * @typedef {import('./types.js').MdastRoot} MdastRoot
-    */
-
-   const block = convert(['heading', 'paragraph', 'root']);
-
-   /**
-    * @param {Node} tree
-    * @param {Options} [options]
-    */
-   function toMdast(tree, options = {}) {
-     /** @type {Object.<string, Element>} */
-     const byId = {};
-     /** @type {MdastNode|MdastRoot} */
-     let mdast;
-
-     /**
-      * @type {H}
-      */
-     const h = Object.assign(
-       /**
-        * @type {HWithProps & HWithoutProps}
-        */
-       (
-         /**
-          * @param {Node} node
-          * @param {string} type
-          * @param {Properties|string|Array.<Node>} [props]
-          * @param {string|Array.<Node>} [children]
-          */
-         (node, type, props, children) => {
-           /** @type {Properties|undefined} */
-           let properties;
-
-           if (typeof props === 'string' || Array.isArray(props)) {
-             children = props;
-             properties = {};
-           } else {
-             properties = props;
-           }
-
-           /** @type {Node} */
-           // @ts-expect-error Assume valid `type` and `children`/`value`.
-           const result = {type, ...properties};
-
-           if (typeof children === 'string') {
-             // @ts-expect-error: Looks like a literal.
-             result.value = children;
-           } else if (children) {
-             // @ts-expect-error: Looks like a parent.
-             result.children = children;
-           }
-
-           if (node.position) {
-             result.position = node.position;
-           }
-
-           return result
-         }
-       ),
-       {
-         nodeById: byId,
-         baseFound: false,
-         inTable: false,
-         wrapText: true,
-         /** @type {string|null} */
-         frozenBaseUrl: null,
-         qNesting: 0,
-         handlers: options.handlers
-           ? {...handlers, ...options.handlers}
-           : handlers,
-         document: options.document,
-         checked: options.checked || '[x]',
-         unchecked: options.unchecked || '[ ]',
-         quotes: options.quotes || ['"']
-       }
-     );
-
-     visit(tree, 'element', (node) => {
-       const id =
-         node.properties &&
-         'id' in node.properties &&
-         String(node.properties.id).toUpperCase();
-
-       if (id && !own$4.call(byId, id)) {
-         byId[id] = node;
-       }
-     });
-
-     // @ts-expect-error: does return a transformer, that does accept any node.
-     rehypeMinifyWhitespace({newlines: options.newlines === true})(tree);
-
-     const result = one$3(h, tree, undefined);
-
-     if (!result) {
-       mdast = {type: 'root', children: []};
-     } else if (Array.isArray(result)) {
-       mdast = {type: 'root', children: result};
-     } else {
-       mdast = result;
-     }
-
-     visit(mdast, 'text', ontext);
-
-     return mdast
-
-     /**
-      * Collapse text nodes, and fix whitespace.
-      * Most of this is taken care of by `rehype-minify-whitespace`, but
-      * we’re generating some whitespace too, and some nodes are in the end
-      * ignored.
-      * So clean up.
-      *
-      * @type {import('unist-util-visit/complex-types').BuildVisitor<MdastRoot, 'text'>}
-      */
-     function ontext(node, index, parent) {
-       /* c8 ignore next 3 */
-       if (index === null || !parent) {
-         return
-       }
-
-       const previous = parent.children[index - 1];
-
-       if (previous && previous.type === node.type) {
-         previous.value += node.value;
-         parent.children.splice(index, 1);
-
-         if (previous.position && node.position) {
-           previous.position.end = node.position.end;
-         }
-
-         // Iterate over the previous node again, to handle its total value.
-         return index - 1
-       }
-
-       node.value = node.value.replace(/[\t ]*(\r?\n|\r)[\t ]*/, '$1');
-
-       // We don’t care about other phrasing nodes in between (e.g., `[ asd ]()`),
-       // as there the whitespace matters.
-       if (parent && block(parent)) {
-         if (!index) {
-           node.value = node.value.replace(/^[\t ]+/, '');
-         }
-
-         if (index === parent.children.length - 1) {
-           node.value = node.value.replace(/[\t ]+$/, '');
-         }
-       }
-
-       if (!node.value) {
-         parent.children.splice(index, 1);
-         return index
-       }
-     }
-   }
-
-   var own$2 = {}.hasOwnProperty;
+   var own$1 = {}.hasOwnProperty;
 
    /**
     * @callback Handler
@@ -53370,8 +54648,8 @@ var MarkdownInput = (function (exports) {
        var fn = one.invalid;
        var handlers = one.handlers;
 
-       if (value && own$2.call(value, key)) {
-         fn = own$2.call(handlers, value[key]) ? handlers[value[key]] : one.unknown;
+       if (value && own$1.call(value, key)) {
+         fn = own$1.call(handlers, value[key]) ? handlers[value[key]] : one.unknown;
        }
 
        if (fn) {
@@ -53422,186 +54700,6 @@ var MarkdownInput = (function (exports) {
      }
 
      return base
-   }
-
-   /**
-    * @typedef {import('unist').Point} Point
-    * @typedef {import('../types.js').TrackFields} TrackFields
-    */
-
-   /**
-    * Functions to track output positions.
-    * This info isn’t used yet but suchs functionality allows line wrapping,
-    * and theoretically source maps (though, is there practical use in that?).
-    *
-    * @param {TrackFields} options_
-    */
-   function track(options_) {
-     // Defaults are used to prevent crashes when older utilities somehow activate
-     // this code.
-     /* c8 ignore next 5 */
-     const options = options_ || {};
-     const now = options.now || {};
-     let lineShift = options.lineShift || 0;
-     let line = now.line || 1;
-     let column = now.column || 1;
-
-     return {move, current, shift}
-
-     /**
-      * Get the current tracked info.
-      *
-      * @returns {{now: Point, lineShift: number}}
-      */
-     function current() {
-       return {now: {line, column}, lineShift}
-     }
-
-     /**
-      * Define an increased line shift (the typical indent for lines).
-      *
-      * @param {number} value
-      */
-     function shift(value) {
-       lineShift += value;
-     }
-
-     /**
-      * Move past a string.
-      *
-      * @param {string} value
-      * @returns {string}
-      */
-     function move(value = '') {
-       const chunks = value.split(/\r?\n|\r/g);
-       const tail = chunks[chunks.length - 1];
-       line += chunks.length - 1;
-       column =
-         chunks.length === 1 ? column + tail.length : 1 + tail.length + lineShift;
-       return value
-     }
-   }
-
-   /**
-    * @typedef {import('../types.js').Node} Node
-    * @typedef {import('../types.js').Parent} Parent
-    * @typedef {import('../types.js').Join} Join
-    * @typedef {import('../types.js').Context} Context
-    * @typedef {import('../types.js').TrackFields} TrackFields
-    */
-
-   /**
-    * @param {Parent} parent
-    * @param {Context} context
-    * @param {TrackFields} safeOptions
-    * @returns {string}
-    */
-   function containerFlow(parent, context, safeOptions) {
-     const indexStack = context.indexStack;
-     const children = parent.children || [];
-     const tracker = track(safeOptions);
-     /** @type {Array<string>} */
-     const results = [];
-     let index = -1;
-
-     indexStack.push(-1);
-
-     while (++index < children.length) {
-       const child = children[index];
-
-       indexStack[indexStack.length - 1] = index;
-
-       results.push(
-         tracker.move(
-           context.handle(child, parent, context, {
-             before: '\n',
-             after: '\n',
-             ...tracker.current()
-           })
-         )
-       );
-
-       if (child.type !== 'list') {
-         context.bulletLastUsed = undefined;
-       }
-
-       if (index < children.length - 1) {
-         results.push(tracker.move(between(child, children[index + 1])));
-       }
-     }
-
-     indexStack.pop();
-
-     return results.join('')
-
-     /**
-      * @param {Node} left
-      * @param {Node} right
-      * @returns {string}
-      */
-     function between(left, right) {
-       let index = context.join.length;
-
-       while (index--) {
-         const result = context.join[index](left, right, parent, context);
-
-         if (result === true || result === 1) {
-           break
-         }
-
-         if (typeof result === 'number') {
-           return '\n'.repeat(1 + result)
-         }
-
-         if (result === false) {
-           return '\n\n<!---->\n\n'
-         }
-       }
-
-       return '\n\n'
-     }
-   }
-
-   /**
-    * @callback Map
-    * @param {string} value
-    * @param {number} line
-    * @param {boolean} blank
-    * @returns {string}
-    */
-
-   const eol = /\r?\n|\r/g;
-
-   /**
-    * @param {string} value
-    * @param {Map} map
-    * @returns {string}
-    */
-   function indentLines(value, map) {
-     /** @type {Array<string>} */
-     const result = [];
-     let start = 0;
-     let line = 0;
-     /** @type {RegExpExecArray|null} */
-     let match;
-
-     while ((match = eol.exec(value))) {
-       one(value.slice(start, match.index));
-       result.push(match[0]);
-       start = match.index + match[0].length;
-       line++;
-     }
-
-     one(value.slice(start));
-
-     return result.join('')
-
-     /**
-      * @param {string} value
-      */
-     function one(value) {
-       result.push(map(value, line, !value));
-     }
    }
 
    /**
@@ -54218,92 +55316,6 @@ var MarkdownInput = (function (exports) {
      }
 
      return marker
-   }
-
-   /**
-    * @typedef {import('../types.js').Node} Node
-    * @typedef {import('../types.js').Parent} Parent
-    * @typedef {import('../types.js').SafeOptions} SafeOptions
-    * @typedef {import('../types.js').Context} Context
-    */
-
-   /**
-    * @param {Parent} parent
-    * @param {Context} context
-    * @param {SafeOptions} safeOptions
-    * @returns {string}
-    */
-   function containerPhrasing(parent, context, safeOptions) {
-     const indexStack = context.indexStack;
-     const children = parent.children || [];
-     /** @type {Array<string>} */
-     const results = [];
-     let index = -1;
-     let before = safeOptions.before;
-
-     indexStack.push(-1);
-     let tracker = track(safeOptions);
-
-     while (++index < children.length) {
-       const child = children[index];
-       /** @type {string} */
-       let after;
-
-       indexStack[indexStack.length - 1] = index;
-
-       if (index + 1 < children.length) {
-         // @ts-expect-error: hush, it’s actually a `zwitch`.
-         let handle = context.handle.handlers[children[index + 1].type];
-         if (handle && handle.peek) handle = handle.peek;
-         after = handle
-           ? handle(children[index + 1], parent, context, {
-               before: '',
-               after: '',
-               ...tracker.current()
-             }).charAt(0)
-           : '';
-       } else {
-         after = safeOptions.after;
-       }
-
-       // In some cases, html (text) can be found in phrasing right after an eol.
-       // When we’d serialize that, in most cases that would be seen as html
-       // (flow).
-       // As we can’t escape or so to prevent it from happening, we take a somewhat
-       // reasonable approach: replace that eol with a space.
-       // See: <https://github.com/syntax-tree/mdast-util-to-markdown/issues/15>
-       if (
-         results.length > 0 &&
-         (before === '\r' || before === '\n') &&
-         child.type === 'html'
-       ) {
-         results[results.length - 1] = results[results.length - 1].replace(
-           /(\r?\n|\r)$/,
-           ' '
-         );
-         before = ' ';
-
-         // To do: does this work to reset tracker?
-         tracker = track(safeOptions);
-         tracker.move(results.join(''));
-       }
-
-       results.push(
-         tracker.move(
-           context.handle(child, parent, context, {
-             ...tracker.current(),
-             before,
-             after
-           })
-         )
-       );
-
-       before = results[results.length - 1].slice(-1);
-     }
-
-     indexStack.pop();
-
-     return results.join('')
    }
 
    /**
@@ -55629,7 +56641,7 @@ var MarkdownInput = (function (exports) {
      context.handle = zwitch('type', {
        invalid,
        // @ts-expect-error: hush.
-       unknown: unknown$2,
+       unknown: unknown$1,
        // @ts-expect-error: hush.
        handlers: context.handlers
      });
@@ -55674,7 +56686,7 @@ var MarkdownInput = (function (exports) {
     * @type {Handle}
     * @param {Node} node
     */
-   function unknown$2(node) {
+   function unknown$1(node) {
      throw new Error('Cannot handle unknown node `' + node.type + '`')
    }
 
@@ -55877,7 +56889,7 @@ var MarkdownInput = (function (exports) {
     * @returns {boolean}
     */
    function markdownTableCellContent(code) {
-     return !markdownSpace(code) && code !== codes.verticalBar && !markdownLineEnding(code) && code !== codes.eof;
+     return !markdownSpace$1(code) && code !== codes.verticalBar && !markdownLineEnding$1(code) && code !== codes.eof;
    }
 
    /** @type {Resolver} */
@@ -56131,11 +57143,11 @@ var MarkdownInput = (function (exports) {
         * @type {State}
         */
        function cellStart(code) {
-         if (markdownLineEnding(code) || code === codes.eof) {
+         if (markdownLineEnding$1(code) || code === codes.eof) {
            return rowEnd(code);
          }
 
-         if (markdownSpace(code)) {
+         if (markdownSpace$1(code)) {
            effects.enter(types$1.whitespace);
            return eatSpace(code);
          }
@@ -56144,7 +57156,7 @@ var MarkdownInput = (function (exports) {
 
          /** @type {State} */
          function eatSpace(code) {
-           if (markdownSpace(code)) {
+           if (markdownSpace$1(code)) {
              effects.consume(code);
              return eatSpace;
            }
@@ -56211,13 +57223,13 @@ var MarkdownInput = (function (exports) {
 
        /** @type {State} */
        function cellEnd(code) {
-         if (markdownSpace(code)) {
+         if (markdownSpace$1(code)) {
            effects.enter(types$1.whitespace);
            return eatSpace(code);
          }
 
          align.push(_align);
-         if (markdownLineEnding(code) || code === codes.eof) {
+         if (markdownLineEnding$1(code) || code === codes.eof) {
            return rowEnd(code);
          }
 
@@ -56229,7 +57241,7 @@ var MarkdownInput = (function (exports) {
 
          /** @type {State} */
          function eatSpace(code) {
-           if (markdownSpace(code)) {
+           if (markdownSpace$1(code)) {
              effects.consume(code);
              return eatSpace;
            }
@@ -56352,10 +57364,10 @@ var MarkdownInput = (function (exports) {
         * @type {State}
         */
        function cell(code) {
-         if(code === codes.verticalBar || markdownLineEnding(code) || code === codes.eof) {
+         if(code === codes.verticalBar || markdownLineEnding$1(code) || code === codes.eof) {
            return cellEnd(code);
          }
-         if (markdownSpace(code)) {
+         if (markdownSpace$1(code)) {
            effects.enter(types$1.whitespace);
            return eatSpace(code);
          }
@@ -56369,7 +57381,7 @@ var MarkdownInput = (function (exports) {
 
          /** @type {State} */
          function eatSpace(code) {
-           if (markdownSpace(code)) {
+           if (markdownSpace$1(code)) {
              effects.consume(code);
              return eatSpace;
            }
@@ -56402,7 +57414,7 @@ var MarkdownInput = (function (exports) {
         * @type {State}
         */
        function cellEnd(code) {
-         if (markdownLineEnding(code) || code === codes.eof) {
+         if (markdownLineEnding$1(code) || code === codes.eof) {
            lastColCount = dividerCount > (leadingDivider + trailingDivider) || (leadingDivider && trailingDivider)
              ? lastColCount = dividerCount + 1 - (leadingDivider + trailingDivider)
              : 0;
@@ -56429,7 +57441,7 @@ var MarkdownInput = (function (exports) {
       */
      function tableContinues(self, code) {
        // Blank lines interrupts table (and can have no chars).
-       if (self.parser.lazy[self.now().line] || markdownLineEnding(code) || code === codes.eof) {
+       if (self.parser.lazy[self.now().line] || markdownLineEnding$1(code) || code === codes.eof) {
          return false;
        }
 
@@ -56900,14 +57912,11 @@ var MarkdownInput = (function (exports) {
          // @ts-expect-error: fixed in `markdown-table@3.0.1`.
          node.align
        );
+       // If headerless table rearrange output so delimiter row comes first
        if (node.children[0].type === 'tableRow') {
          const rows = serial.split('\n');
-         const first = String(rows.shift());
-         const align = String(rows.shift());
-         rows.unshift(first);
-         if (node.align?.some((el) => { return !!el; })) {
-             rows.unshift(align);
-         }
+         // Destructuring assignment, mutates original array
+         [rows[0], rows[1]] = [rows[1], rows[0]];
          serial = rows.join('\n');
        }
        return serial;
@@ -57030,53 +58039,6 @@ var MarkdownInput = (function (exports) {
    }
 
    /**
-    * @typedef {import('unist').Node} Node
-    * @typedef {import('unist').Parent} Parent
-    * @typedef {import('unist').Literal} Literal
-    * @typedef {Object.<string, unknown>} Props
-    * @typedef {Array.<Node>|string} ChildrenOrValue
-    *
-    * @typedef {(<T extends string, P extends Record<string, unknown>, C extends Node[]>(type: T, props: P, children: C) => {type: T, children: C} & P)} BuildParentWithProps
-    * @typedef {(<T extends string, P extends Record<string, unknown>>(type: T, props: P, value: string) => {type: T, value: string} & P)} BuildLiteralWithProps
-    * @typedef {(<T extends string, P extends Record<string, unknown>>(type: T, props: P) => {type: T} & P)} BuildVoidWithProps
-    * @typedef {(<T extends string, C extends Node[]>(type: T, children: C) => {type: T, children: C})} BuildParent
-    * @typedef {(<T extends string>(type: T, value: string) => {type: T, value: string})} BuildLiteral
-    * @typedef {(<T extends string>(type: T) => {type: T})} BuildVoid
-    */
-
-   var u = /**
-    * @type {BuildVoid & BuildVoidWithProps & BuildLiteral & BuildLiteralWithProps & BuildParent & BuildParentWithProps}
-    */ (
-     /**
-      * @param {string} type Type of node
-      * @param {Props|ChildrenOrValue} [props] Additional properties for node (or `children` or `value`)
-      * @param {ChildrenOrValue} [value] `children` or `value` of node
-      * @returns {Node}
-      */
-     function (type, props, value) {
-       /** @type {Node} */
-       var node = {type: String(type)};
-
-       if (
-         (value === undefined || value === null) &&
-         (typeof props === 'string' || Array.isArray(props))
-       ) {
-         value = props;
-       } else {
-         Object.assign(node, props);
-       }
-
-       if (Array.isArray(value)) {
-         node.children = value;
-       } else if (value !== undefined && value !== null) {
-         node.value = String(value);
-       }
-
-       return node
-     }
-   );
-
-   /**
     * @typedef {import('../types.js').H} H
     */
 
@@ -57089,7 +58051,7 @@ var MarkdownInput = (function (exports) {
      return h.wrapText ? value : value.replace(/\r?\n|\r/g, ' ')
    }
 
-   const own$1 = {}.hasOwnProperty;
+   const own = {}.hasOwnProperty;
 
    /**
     * @typedef {import('./types.js').H} H
@@ -57105,7 +58067,7 @@ var MarkdownInput = (function (exports) {
     * @param {Parent|undefined} parent
     * @returns {MdastNode|Array.<MdastNode>|void}
     */
-   function one$1(h, node, parent) {
+   function one(h, node, parent) {
      /** @type {Handle|undefined} */
      let fn;
 
@@ -57114,10 +58076,10 @@ var MarkdownInput = (function (exports) {
          return
        }
 
-       if (own$1.call(h.handlers, node.tagName)) {
+       if (own.call(h.handlers, node.tagName)) {
          fn = h.handlers[node.tagName];
        }
-     } else if (own$1.call(h.handlers, node.type)) {
+     } else if (own.call(h.handlers, node.type)) {
        fn = h.handlers[node.type];
      }
 
@@ -57125,21 +58087,21 @@ var MarkdownInput = (function (exports) {
        return fn(h, node, parent)
      }
 
-     return unknown$1(h, node)
+     return unknown(h, node)
    }
 
    /**
     * @type {Handle}
     * @param {Node} node
     */
-   function unknown$1(h, node) {
+   function unknown(h, node) {
      // @ts-expect-error: Looks like a literal.
      if (typeof node.value === 'string') {
        // @ts-expect-error: Looks like a literal.
        return h(node, 'text', wrapText(h, node.value))
      }
 
-     return all$1(h, node)
+     return all(h, node)
    }
 
    /**
@@ -57155,7 +58117,7 @@ var MarkdownInput = (function (exports) {
     * @param {Node} parent
     * @returns {Array.<MdastNode>}
     */
-   function all$1(h, parent) {
+   function all(h, parent) {
      /** @type {Array.<Node>} */
      // @ts-expect-error Assume `parent` is a parent.
      const nodes = parent.children || [];
@@ -57187,7 +58149,7 @@ var MarkdownInput = (function (exports) {
 
      while (++index < length) {
        // @ts-expect-error assume `parent` is a parent.
-       const result = one$1(h, nodes[index], parent);
+       const result = one(h, nodes[index], parent);
 
        if (Array.isArray(result)) {
          values.push(...result);
@@ -57228,7 +58190,7 @@ var MarkdownInput = (function (exports) {
      h.inTable = true;
 
      const {headless, align} = inspect(node);
-     const rows = toRows(all$1(h, node), headless);
+     const rows = toRows(all(h, node));
      if (!headless) {
        // @ts-ignore - FIXME: find out how to JSDoc extend Content
        rows[0].type = 'tableHeaderRow';
@@ -57348,20 +58310,14 @@ var MarkdownInput = (function (exports) {
     * Ensure the rows are properly structured.
     *
     * @param {Array.<MdastNode>} children
-    * @param {boolean} headless
     * @returns {Array.<MdastTableContent>}
     */
-   function toRows(children, headless) {
+   function toRows(children) {
      let index = -1;
      /** @type {Array.<MdastTableContent>} */
      const nodes = [];
      /** @type {Array.<MdastRowContent>|undefined} */
      let queue;
-
-     // Add an empty header row.
-     if (headless) {
-       nodes.push({type: 'tableRow', children: []});
-     }
 
      while (++index < children.length) {
        const node = children[index];
@@ -57484,7 +58440,7 @@ var MarkdownInput = (function (exports) {
     */
    function emphasisFactoryToMarkdown(cfg) {
      const tmp = {
-       unsafe: [{character: cfg.markdownSymbol, inConstruct: 'phrasing'}],
+       unsafe: [{character: cfg.markdownSymbol[0], inConstruct: 'phrasing'}],
        handlers: {}
      };
      // @ts-ignore - FIXME: How to JSDoc cast as we know it is not undefined
@@ -57499,7 +58455,7 @@ var MarkdownInput = (function (exports) {
       */
      function handleEmphasis(node, _, context, safeOptions) {
        const tracker = track(safeOptions);
-       const exit = context.enter('emphasis');
+       const exit = context.enter(cfg.mdastNode);
        let value = tracker.move(cfg.markdownSymbol);
        value += containerPhrasing(node, context, {
          ...tracker.current(),
@@ -57639,7 +58595,7 @@ var MarkdownInput = (function (exports) {
                ];
 
                // Between.
-               splice(
+               splice$1(
                  nextEvents,
                  nextEvents.length,
                  0,
@@ -57651,14 +58607,14 @@ var MarkdownInput = (function (exports) {
                );
 
                // Closing.
-               splice(nextEvents, nextEvents.length, 0, [
+               splice$1(nextEvents, nextEvents.length, 0, [
                  ['exit', text, context],
                  ['enter', events[index][1], context],
                  ['exit', events[index][1], context],
                  ['exit', emphasis, context]
                ]);
 
-               splice(events, open - 1, index - open + 3, nextEvents);
+               splice$1(events, open - 1, index - open + 3, nextEvents);
 
                index = open + nextEvents.length - 2;
                break
@@ -57725,113 +58681,6 @@ var MarkdownInput = (function (exports) {
    }
 
    /**
-    * @typedef {import('mdast').Root|import('mdast').Parent['children'][number]} MdastNode
-    * @typedef {import('./index.js').H} H
-    * @typedef {import('./index.js').Handler} Handler
-    * @typedef {import('./index.js').Content} Content
-    */
-
-   const own = {}.hasOwnProperty;
-
-   /**
-    * Transform an unknown node.
-    * @type {Handler}
-    * @param {MdastNode} node
-    */
-   function unknown(h, node) {
-     const data = node.data || {};
-
-     if (
-       'value' in node &&
-       !(
-         own.call(data, 'hName') ||
-         own.call(data, 'hProperties') ||
-         own.call(data, 'hChildren')
-       )
-     ) {
-       return h.augment(node, u('text', node.value))
-     }
-
-     return h(node, 'div', all(h, node))
-   }
-
-   /**
-    * @type {Handler}
-    * @param {MdastNode} node
-    */
-   function one(h, node, parent) {
-     const type = node && node.type;
-     /** @type {Handler} */
-     let fn;
-
-     // Fail on non-nodes.
-     if (!type) {
-       throw new Error('Expected node, got `' + node + '`')
-     }
-
-     if (own.call(h.handlers, type)) {
-       fn = h.handlers[type];
-     } else if (h.passThrough && h.passThrough.includes(type)) {
-       fn = returnNode;
-     } else {
-       fn = h.unknownHandler;
-     }
-
-     return (typeof fn === 'function' ? fn : unknown)(h, node, parent)
-   }
-
-   /**
-    * @type {Handler}
-    * @param {MdastNode} node
-    */
-   function returnNode(h, node) {
-     // @ts-expect-error: Pass through custom node.
-     return 'children' in node ? {...node, children: all(h, node)} : node
-   }
-
-   /**
-    * @param {H} h
-    * @param {MdastNode} parent
-    */
-   function all(h, parent) {
-     /** @type {Array<Content>} */
-     const values = [];
-
-     if ('children' in parent) {
-       const nodes = parent.children;
-       let index = -1;
-
-       while (++index < nodes.length) {
-         const result = one(h, nodes[index], parent);
-
-         if (result) {
-           if (index && nodes[index - 1].type === 'break') {
-             if (!Array.isArray(result) && result.type === 'text') {
-               result.value = result.value.replace(/^\s+/, '');
-             }
-
-             if (!Array.isArray(result) && result.type === 'element') {
-               const head = result.children[0];
-
-               if (head && head.type === 'text') {
-                 head.value = head.value.replace(/^\s+/, '');
-               }
-             }
-           }
-
-           if (Array.isArray(result)) {
-             values.push(...result);
-           } else {
-             values.push(result);
-           }
-         }
-       }
-     }
-
-     return values
-   }
-
-   /**
     * @typedef {import('micromark-util-types').Extension} MicromarkExtension
     * @typedef {import('micromark-util-types').HtmlExtension} MicromarkHtmlExtension
     * @typedef {import('mdast-util-from-markdown').Extension} MdastExtension
@@ -57872,10 +58721,10 @@ var MarkdownInput = (function (exports) {
            htmlNode: _cfg.htmlNode
        };
        out.mdastHandler[_cfg.mdastNode] = function (h, node) {
-           return h(node, _cfg.htmlNode, all(h, node));
+           return h(node, _cfg.htmlNode, all$4(h, node));
        };
        out.hastHandler[_cfg.htmlNode] = function (h, node) {
-           return h(node, _cfg.mdastNode, all$3(h, node));
+           return h(node, _cfg.mdastNode, all$2(h, node));
        };
        return out;
    }
@@ -57938,13 +58787,19 @@ var MarkdownInput = (function (exports) {
        const hast = fromHtml(html, {
            fragment: true
        });
+       /*
+           console.log('>>>>>>>>>>>>>>>>')
+           console.log(JSON.stringify(hast, null, 1))
+           console.log('>>>>>>>>>>>>>>>>')
+       */
        const mdast = toMdast(hast, {
            handlers: {
                table: extendedTable,
                ...underline.hastHandler,
                ...superscript.hastHandler,
                ...subscript.hastHandler,
-               ...strikethrough.hastHandler
+               ...strikethrough.hastHandler,
+               ...definitionListHastToMdast
            }
        });
        const md = toMarkdown(mdast, {
@@ -57953,7 +58808,8 @@ var MarkdownInput = (function (exports) {
                underline.mdastSerialization,
                superscript.mdastSerialization,
                subscript.mdastSerialization,
-               strikethrough.mdastSerialization
+               strikethrough.mdastSerialization,
+               defListToMarkdown
            ],
            bullet: '-',
            listItemIndent: 'one',
@@ -57976,14 +58832,16 @@ var MarkdownInput = (function (exports) {
                underline.markdownSyntax,
                superscript.markdownSyntax,
                subscript.markdownSyntax,
-               strikethrough.markdownSyntax
+               strikethrough.markdownSyntax,
+               defList
            ],
            htmlExtensions: [
                extendedTableHtml,
                underline.micromarkHtml,
                superscript.micromarkHtml,
                subscript.micromarkHtml,
-               strikethrough.micromarkHtml
+               strikethrough.micromarkHtml,
+               defListHtml
            ],
            allowDangerousHtml: true,
            noNonRenderedNewline: true

@@ -8,3 +8,10 @@
 [submodule "src/ts/Unified/mdast-hast-extension-emphasis-factory"]
 	path = src/ts/Unified/mdast-hast-extension-emphasis-factory
 	url = https://github.com/TRIAEIOU/mdast-hast-extension-emphasis-factory
+[submodule "src/ts/Unified/mdast-util-definition-list"]
+	path = src/ts/Unified/mdast-util-definition-list
+	url = https://github.com/TRIAEIOU/mdast-util-definition-list
+	branch = phrasing-description-handler
+[submodule "src/ts/Unified/hast-util-definition-list"]
+	path = src/ts/Unified/hast-util-definition-list
+	url = https://github.com/TRIAEIOU/hast-util-definition-list

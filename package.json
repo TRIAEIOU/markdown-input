@@ -1,0 +1,5 @@
+{
+  "devDependencies": {
+    "micromark-extension-definition-list": "^1.2.0"
+  }
+}

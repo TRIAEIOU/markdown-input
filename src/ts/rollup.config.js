@@ -22,9 +22,11 @@ function bundle (input_file, output_file, output_name) {
             && warning.message.startsWith(String.raw`@rollup/plugin-typescript TS2614: Module '"*.svelte"' has no exported member`))
         || (warning.pluginCode === undefined
             && warning.message.startsWith(String`Circular dependency:`))
+        || /Unified\/mdast-util-definition-list\/lib\/[^./]+\.test\.ts$/.test(warning.loc.file)
       )
         return;
       warn(warning);
+//      console.log(JSON.stringify(warning, null, 1))
     },
   };
 }
