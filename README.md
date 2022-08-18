@@ -2,6 +2,8 @@
 
 Anki addon that allows adding and editing notes in extended [CommonMark](https://spec.commonmark.org/) [Markdown](https://daringfireball.net/projects/markdown/), either directly in the editor fields ("field input mode", similar to the core plain and rich text edit interface) or by opening a separate window to edit a specific field ("dialog input mode").
 
+![Markdown input](https://raw.githubusercontent.com/TRIAEIOU/Markdown-input/main/Screenshots/screenshot.png)
+
 ## Warning
 
 - Markdown is not "another way to write HTML", it is a plain text format that has a determined translation to HTML (the format the Anki editor uses). The HTML generated is a subset of all HTML and the conversion HTML ⇒ Markdown is not unambiguous nor complete (i.e. there is risk for loss of information in the conversion).
@@ -100,6 +102,7 @@ Conbfiguration as follows:
 Configuration of the HTML ⇔ Markdown conversion is as follows:
 
 - `Table newline`: Character(s) to replace newline in tables. (default `¨`)
+- To customize the look of the finished HTML apply custom CSS styling (for instance of `<h1/2/3/etc>`, `<table>` `<ul/ol>` etc.).
 
 ### Editor
 
