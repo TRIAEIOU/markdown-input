@@ -16,7 +16,7 @@
 		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }",
 		"Last geometry": ""
 	},
-	"Showdown": {
+	"Converter": {
 		"table_newline": "¨"
 	},
 	"CodeMirror": {

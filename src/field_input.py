@@ -1,5 +1,5 @@
 import json
-from aqt import mw, gui_hooks
+from aqt import mw, gui_hooks, QKeySequence
 from aqt.utils import *
 from .constants import *
 
@@ -45,7 +45,7 @@ def configure(cfg: object):
     # Configure Showdown and CodeMirror - after script load but before cm instantiation
     gui_hooks.editor_did_init.append(lambda ed: ed.web.eval(f'''
         MarkdownInput.configure({json.dumps(config[FIELD_INPUT])});
-        MarkdownInput.converter_configure({json.dumps(config[SHOWDOWN])});
+        MarkdownInput.converter_configure({json.dumps(config[CONVERTER])});
         MarkdownInput.editor_configure({json.dumps(config[CODEMIRROR])});
     '''))
     

@@ -15,3 +15,11 @@
 [submodule "src/ts/Unified/hast-util-definition-list"]
 	path = src/ts/Unified/hast-util-definition-list
 	url = https://github.com/TRIAEIOU/hast-util-definition-list
+[submodule "src/ts/Unified/hast-util-to-mdast"]
+	path = src/ts/Unified/hast-util-to-mdast
+	url = https://github.com/TRIAEIOU/hast-util-to-mdast
+	branch = hast-util-phrasing
+[submodule "src/ts/Unified/mdast-util-to-hast"]
+	path = src/ts/Unified/mdast-util-to-hast
+	url = https://github.com/TRIAEIOU/mdast-util-to-hast
+	branch = optional-newlines

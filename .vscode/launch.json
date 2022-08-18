@@ -1,0 +1,38 @@
+{
+    // Detailed docs:
+    // https://code.visualstudio.com/docs/nodejs/nodejs-debugging
+    "version": "2.0.0",
+    "configurations": [
+        {
+            "name": "Debug typescript",
+            "type": "node",
+            "request": "launch",
+            "smartStep": false,
+            "sourceMaps": true,
+            "args": [
+                "${workspaceRoot}/src/ts/.test/.test-converter.ts"
+            ],
+            "runtimeArgs": [
+                // "--files"		-- Don't use => Use environment variable TS_NODE_FILES instead 
+                //"--conditions", "development", // micromark debug
+                "-r",
+                "ts-node/register/transpile-only",
+                "--loader",
+                "ts-node/esm",
+                "--experimental-specifier-resolution=node"
+            ],
+            "cwd": "${workspaceRoot}",
+            "internalConsoleOptions": "openOnSessionStart",
+            "env": {
+                "TS_NODE_FILES": "true", // Respect include/exclude in tsconfig.json => will read declaration files  (ts-node --files src\index.ts)
+                "DEBUG": "*" // micromark debug log
+            },
+            "skipFiles": [
+                "<node_internals>/**",
+                //"${workspaceRoot}/node_modules/**",
+            ],
+            "outputCapture": "std",
+            "stopOnEntry": false
+        }
+    ],
+}

@@ -11,7 +11,7 @@ async function set_html(html: string) {
 }
 
 async function get_html(): Promise<string> {
-    return await markdown_to_html(_codemirror.state.doc.toString())
+    return markdown_to_html(_codemirror.state.doc.toString())
 }
 
 export {configure as converter_configure} from "./converter";

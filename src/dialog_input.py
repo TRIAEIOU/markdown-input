@@ -2,12 +2,14 @@ import aqt, os
 import json, base64
 from aqt import mw, gui_hooks
 from aqt.utils import *
-from aqt.qt import QKeySequence
+from aqt.qt import QKeySequence, QDialog, QWidget, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
 if qtmajor == 6:
     from . import dialog_qt6 as dialog
 elif qtmajor == 5:
     from . import dialog_qt5 as dialog
 from .constants import *
+
+PYCMD_ONACCEPT = "ON_ACCEPT:"
 
 config = {}
 
@@ -48,7 +50,7 @@ class IM_dialog(QDialog):
         ''', QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "")))
 
     ###########################################################################
-    # Setup js → python message bridge (to shut Qt up b/c we don't use it)
+    # Setup js → python message bridge
     # Stolen from AnkiWebView
     ###########################################################################
     def setup_bridge(self, handler):
@@ -100,7 +102,10 @@ class IM_dialog(QDialog):
     # Bridge message receiver
     ###########################################################################
     def bridge_receiver(self, str = None):
-        pass
+        print(">>>bridge_receiver")
+        if str.startswith(PYCMD_ONACCEPT):
+            self.on_accept(str[len(PYCMD_ONACCEPT):])
+
 
 
     ###########################################################################
@@ -108,15 +113,16 @@ class IM_dialog(QDialog):
     ###########################################################################
     def accept(self) -> None:
         print(">>>dialog_input:accept")
-        global config
         if self.on_accept:
-            self.ui.web.page().runJavaScript('''(function () {
-                return MarkdownInput.get_html();
-            })();''', self.on_accept)
+            self.ui.web.page().runJavaScript(f'''(async function () {{
+                const html = await MarkdownInput.get_html();
+                pycmd('{PYCMD_ONACCEPT}' + html);
+            }})();''')
 
-        config[FIELD_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
+        global config
+        config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         mw.addonManager.writeConfig(__name__, config)
-        return super().accept()
+        super().accept()
 
     ###########################################################################
     # Main dialog reject
@@ -126,7 +132,7 @@ class IM_dialog(QDialog):
         global config
         config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         mw.addonManager.writeConfig(__name__, config)
-        QDialog.reject(self) 
+        super().reject()
 
 
 ###########################################################################
@@ -184,12 +190,13 @@ def edit_field(editor: aqt.editor.Editor, field: int = None):
     
     # Callback for accepted md dialog
     def dlg_result(html):
+        print(">>>dlg_result")
         if config[DIALOG_INPUT][SELECTION]:
             editor.web.eval(f'''(async function () {{
                 await MarkdownInputHelpers.set_selected_html({field}, {json.dumps(html)});
             }})();''')
         else:
-            editor.web.eval(f'''(function () {{
+            editor.web.eval(f'''(async function () {{
                 MarkdownInputHelpers.set_current_html({field}, {json.dumps(html)});
             }})();''')
 
@@ -215,17 +222,17 @@ def configure(cfg: object):
     config = cfg    
     # Called once per editor instance
     # Include js and set up
-    gui_hooks.webview_will_set_content.append(lambda web_content, context:
-        add_srcs(
-            web_content=web_content,
-            context=context
-        )
-    )
+    #gui_hooks.webview_will_set_content.append(lambda web_content, context:
+    #    add_srcs(
+    #        web_content=web_content,
+    #        context=context
+    #    )
+    #)
 
     # Called once per editor instance
     # Configure Showdown and CodeMirror - after script load but before cm instantiation
     gui_hooks.editor_did_init.append(lambda ed: ed.web.eval(f'''
-        MarkdownInput.converter_configure({json.dumps(config[SHOWDOWN])});
+        MarkdownInput.converter_configure({json.dumps(config[CONVERTER])});
         MarkdownInput.editor_configure({json.dumps(config[CODEMIRROR])});
     '''))
     

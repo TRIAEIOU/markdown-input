@@ -20,6 +20,7 @@ function get_current_html(index: number): string {
 }
 
 function set_current_html(index: number, html: string) {
+    console.log(index + ">>" + html)
     const editor = NoteEditor.instances[0];
     const ed_area = editor?.fields[index]?.editingArea;
     ed_area?.content.set(html);

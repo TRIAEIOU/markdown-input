@@ -18,5 +18,5 @@ CFG_LAST_GEOM = "Last geometry"
 
 CSS = "CSS"
 SHORTCUT = "Shortcut"
-SHOWDOWN = "Showdown"
+CONVERTER = "Converter"
 CODEMIRROR = "CodeMirror"

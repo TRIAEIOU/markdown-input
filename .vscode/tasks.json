@@ -1,12 +1,12 @@
 {
-"version": "2.0.0",
+    "version": "2.0.0",
     "tasks": [
         {
             "label": "Build TS",
             "type": "shell",
             "command": "node_modules/.bin/rollup -c",
             "options": {
-                "cwd": "${workspaceFolder}/src/ts"
+                "cwd": "${workspaceFolder}"
             }
         },
         {
@@ -14,7 +14,7 @@
             "type": "shell",
             "command": "node_modules/.bin/rollup -c",
             "options": {
-                "cwd": "${workspaceFolder}/src/ts"
+                "cwd": "${workspaceFolder}"
             }
         },
         {

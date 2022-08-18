@@ -1,6 +1,8 @@
+import svelte from "rollup-plugin-svelte";
 import {nodeResolve} from "@rollup/plugin-node-resolve";
 import typescript from "@rollup/plugin-typescript";
 import commonjs from "@rollup/plugin-commonjs";
+import { terser } from "rollup-plugin-terser";
 
 function bundle (input_file, output_file, output_name) {
   return {
@@ -16,13 +18,12 @@ function bundle (input_file, output_file, output_name) {
       typescript(),
       commonjs(),
       nodeResolve({preferBuiltins: false, browser: true}),
+      svelte({include: 'src/**/*.svelte'}),
+      terser()
     ],
     onwarn: (warning, warn) => { // Supress "errounous warnings"
-      if ((warning.pluginCode === 'TS2614'
-            && warning.message.startsWith(String.raw`@rollup/plugin-typescript TS2614: Module '"*.svelte"' has no exported member`))
-        || (warning.pluginCode === undefined
+      if ((warning.pluginCode === undefined
             && warning.message.startsWith(String`Circular dependency:`))
-        || /Unified\/mdast-util-definition-list\/lib\/[^./]+\.test\.ts$/.test(warning.loc.file)
       )
         return;
       warn(warning);
@@ -32,7 +33,7 @@ function bundle (input_file, output_file, output_name) {
 }
 
 export default [
-    bundle("./field_input.ts", "./../field_input.js", "MarkdownInput"),
-    bundle("./dialog_input.ts", "./../dialog_input.js", "MarkdownInput"),
-    bundle("./dialog_input_helpers.ts", "./../dialog_input_helpers.js", "MarkdownInputHelpers")
+    bundle("./src/ts/field_input.ts", "./src/field_input.js", "MarkdownInput"),
+    bundle("./src/ts/dialog_input.ts", "./src/dialog_input.js", "MarkdownInput"),
+    bundle("./src/ts/dialog_input_helpers.ts", "./src/dialog_input_helpers.js", "MarkdownInputHelpers")
 ]

@@ -12,13 +12,12 @@
         },
         "allowSyntheticDefaultImports": true,
         "allowJs": false,
-        "types": ["svelte", "node"],
+        "types": ["node"],
+//        "types": ["svelte", "node"],
         "plugins": [],
     },
     "exclude": [
       "node_modules",
-      "bower_components",
-      "jspm_packages",
-      "dist",
+      "./src/ts/Unified/mdast-util-definition-list/lib/*.test.ts"
     ]
 }
