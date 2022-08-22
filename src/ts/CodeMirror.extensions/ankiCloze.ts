@@ -22,17 +22,46 @@ const clozeSelections = (inc: boolean) => (view: EditorView) => {
         itr.next();
     }
 
-    let trs = [];
-    for (const r of selection.ranges) {
-        if (inc) { i++; }
-        if (r.empty) {
-            trs.push({changes: {from: r.from, to: r.from, insert: `{{c${i || 1}::}}`}});
+    const trs = [];
+    selection.ranges.forEach((rng, n) => {
+        if (inc) i++
+        if (rng.empty) {
+            trs.push({
+                changes: {
+                    from: rng.from, to: rng.from,
+                    insert: `{{c${i || 1}::}}`
+                }
+            });
         } else {
-            trs.push({changes: {from: r.from, to: r.from, insert: `{{c${i || 1}::`}});
-            trs.push({changes: {from: r.to, to: r.to, insert: '}}'}});
+            trs.push(
+                {
+                    changes: {
+                        from: rng.from, to: rng.from,
+                        insert: `{{c${i || 1}::`
+                    }
+                },
+                {
+                    changes: {
+                        from: rng.to, to: rng.to,
+                        insert: '}}'
+                    }
+                }
+            )
+            
         }
-    }
+    })
     view.dispatch(...trs);
+    const mrng = view.state.selection.main
+    const startl = `\{\{c${i}::`.length
+    view.dispatch({
+        selection: {
+            anchor: mrng.empty
+                ? mrng.from + startl
+                : mrng.head > mrng.anchor
+                    ? mrng.head + 2
+                    : mrng.head - startl
+        }
+    })
     return true;
   };
 
@@ -43,7 +72,7 @@ const clozeCurrent = clozeSelections(false);
 // Keyboard shortcuts
 const ankiClozeKeymap = [
     { key: 'Ctrl-Shift-c', run: clozeNext },
-    { key: 'Ctrl-Alt-c', run: clozeCurrent }
+    { key: 'Ctrl-Alt-Shift-c', run: clozeCurrent }
 ]
 
 // Create extension with current ordinal

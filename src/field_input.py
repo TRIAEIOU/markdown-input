@@ -21,7 +21,8 @@ def add_srcs(web_content: aqt.webview.WebContent, context: object):
     global config
     if not isinstance(context, aqt.editor.Editor):
         return
-    print(">>>field_input:add_srcs")
+    if DEBUG:
+        print(">>>field_input:add_srcs")
     addon = mw.addonManager.addonFromModule(__name__)
     web_content.head += f"""
         <script defer src="/_addons/{addon}/field_input.js"></script>

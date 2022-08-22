@@ -1,5 +1,4 @@
-import aqt, os
-import json, base64
+import aqt, os, json, base64, re
 from aqt import mw, gui_hooks
 from aqt.utils import *
 from aqt.qt import QKeySequence, QDialog, QWidget, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
@@ -21,7 +20,8 @@ class IM_dialog(QDialog):
     # Constructor (populates and shows dialog)
     ###########################################################################
     def __init__(self, html: str, parent: QWidget, on_accept: Callable = None, on_reject: Callable = None):
-        print(">>>dialog_input:IM_dialog:init")
+        if DEBUG:
+            print(">>>dialog_input:IM_dialog:init")
         global config
         QDialog.__init__(self, parent)
         self.ui = dialog.Ui_dialog()
@@ -41,7 +41,7 @@ class IM_dialog(QDialog):
         <body>
             <script src="dialog_input.js"></script>
             <script>
-                MarkdownInput.converter_configure({json.dumps(config[SHOWDOWN])});
+                MarkdownInput.converter_configure({json.dumps(config[CONVERTER])});
                 MarkdownInput.editor_configure({json.dumps(config[CODEMIRROR])});
                 MarkdownInput.set_html({json.dumps(html)});
             </script>
@@ -54,7 +54,8 @@ class IM_dialog(QDialog):
     # Stolen from AnkiWebView
     ###########################################################################
     def setup_bridge(self, handler):
-        print(">>>dialog_input:setup_bridge")
+        if DEBUG:
+            print(">>>dialog_input:setup_bridge")
         class Bridge(QObject):
             def __init__(self, handler: Callable[[str], Any]) -> None:
                 super().__init__()
@@ -102,7 +103,8 @@ class IM_dialog(QDialog):
     # Bridge message receiver
     ###########################################################################
     def bridge_receiver(self, str = None):
-        print(">>>bridge_receiver")
+        if DEBUG:
+            print(">>>bridge_receiver")
         if str.startswith(PYCMD_ONACCEPT):
             self.on_accept(str[len(PYCMD_ONACCEPT):])
 
@@ -112,7 +114,8 @@ class IM_dialog(QDialog):
     # Main dialog accept
     ###########################################################################
     def accept(self) -> None:
-        print(">>>dialog_input:accept")
+        if DEBUG:
+            print(">>>dialog_input:accept")
         if self.on_accept:
             self.ui.web.page().runJavaScript(f'''(async function () {{
                 const html = await MarkdownInput.get_html();
@@ -128,7 +131,8 @@ class IM_dialog(QDialog):
     # Main dialog reject
     ###########################################################################
     def reject(self):
-        print(">>>dialog_input:reject")
+        if DEBUG:
+            print(">>>dialog_input:reject")
         global config
         config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         mw.addonManager.writeConfig(__name__, config)
@@ -141,7 +145,8 @@ class IM_dialog(QDialog):
 def add_srcs(web_content: aqt.webview.WebContent, context: object):
     if not isinstance(context, aqt.editor.Editor):
         return
-    print(">>>dialog_input:add_srcs")
+    if DEBUG:
+        print(">>>dialog_input:add_srcs")
     addon = mw.addonManager.addonFromModule(__name__)
     web_content.head += f"""
         <script defer src="/_addons/{addon}/dialog_input_helpers.js"></script>
@@ -151,12 +156,14 @@ def add_srcs(web_content: aqt.webview.WebContent, context: object):
 # Open markdown dialog
 ###########################################################################
 def edit_field(editor: aqt.editor.Editor, field: int = None):
-    print(">>>dialog_input:edit_field")
+    if DEBUG:
+        print(">>>dialog_input:edit_field")
     global config
 
     # Run the md editor dialog with callback for accept
     def run_dlg(html):
-        print(">>>dialog_input:edit_field::run_dialog")
+        if DEBUG:
+            print(">>>dialog_input:edit_field::run_dialog")
         dlg = IM_dialog(html, editor.parentWindow, dlg_result)
         if config[DIALOG_INPUT][SHORTCUT_ACCEPT]:
             QShortcut(config[DIALOG_INPUT][SHORTCUT_ACCEPT], dlg).activated.connect(dlg.accept)
@@ -190,7 +197,8 @@ def edit_field(editor: aqt.editor.Editor, field: int = None):
     
     # Callback for accepted md dialog
     def dlg_result(html):
-        print(">>>dlg_result")
+        if DEBUG:
+            print(">>>dlg_result")
         if config[DIALOG_INPUT][SELECTION]:
             editor.web.eval(f'''(async function () {{
                 await MarkdownInputHelpers.set_selected_html({field}, {json.dumps(html)});

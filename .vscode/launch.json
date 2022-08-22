@@ -7,7 +7,7 @@
             "name": "Debug typescript",
             "type": "node",
             "request": "launch",
-            "smartStep": false,
+            "smartStep": true,
             "sourceMaps": true,
             "args": [
                 "${workspaceRoot}/src/ts/.test/.test-converter.ts"

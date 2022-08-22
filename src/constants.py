@@ -13,10 +13,13 @@ LAST_GEOM = "Last geometry"
 SELECTION = "Selection only"
 SHORTCUT_ACCEPT = "Shortcut accept"
 SHORTCUT_REJECT = "Shortcut reject"
-NEWLINE = "table_newline"
+NEWLINE = "Table newline"
+HARDBREAK = "Hard break"
 CFG_LAST_GEOM = "Last geometry"
 
 CSS = "CSS"
 SHORTCUT = "Shortcut"
 CONVERTER = "Converter"
 CODEMIRROR = "CodeMirror"
+
+DEBUG = False

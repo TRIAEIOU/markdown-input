@@ -17,7 +17,8 @@
 		"Last geometry": ""
 	},
 	"Converter": {
-		"table_newline": "¨"
+		"Table newline": "¨",
+		"Hard break": "spaces"
 	},
 	"CodeMirror": {
 		"keymap": [{
@@ -49,7 +50,7 @@
 				"scope": "editor search-panel",
 				"preventDefault": true
 			},{
-				"key": "Mod-Alt-c",
+				"key": "Mod-Alt-Shift-c",
 				"run": "clozeCurrent",
 				"preventDefault": true
 			},{

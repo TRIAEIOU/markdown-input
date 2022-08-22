@@ -30,6 +30,17 @@
             "dependsOn": [
                 "Build TS"
             ]
+        },
+        {
+            "label": "Create update.zip",
+            "dependsOn": [
+                "Build TS"
+            ],
+            "type": "shell",
+            "command": "Get-ChildItem -Path ./src/*.js, ./src/*.py, ./src/*.css, ./src/config.json, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua ./README.md -o ./update.txt",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            }
         }
     ]
 }
