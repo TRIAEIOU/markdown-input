@@ -1,6 +1,6 @@
-import type {Element as HastElement, ElementContent as HastElementContent, Content as HastContent, Text as HastText} from 'hast';
+import type {Element as HastElement} from 'hast';
 import {fromMarkdown as markdownToMdast} from 'mdast-util-from-markdown';
-import {toHast as mdastToHast, all as mdastAll} from 'mdast-util-to-hast';
+import {toHast as mdastToHast} from 'mdast-util-to-hast';
 import {toHtml as hastToHtml} from 'hast-util-to-html';
 import {fromHtml as hastFromHtml} from 'hast-util-from-html';
 import {toMdast as hastToMdast} from 'hast-util-to-mdast';
@@ -16,14 +16,10 @@ import {inlineMediaHastHandler, inlineMediaMdastHandler} from './Unified/inline-
 import {defList} from 'micromark-extension-definition-list';
 import {emStrongToIB, iBToEmStrong} from './Unified/em-strong-swap-i-b';
 import {breakSpaces} from './Unified/break-spaces';
-import {phrasing as hastPhrasing} from 'hast-util-phrasing';
 import {mdastParagraphToHastBr, hastBrToMdastParagraph} from './Unified/paragraph-break-swap';
 import {hastToMdastCorrectList, mdastToHastCorrectList} from './Unified/correct-list'
 import {hastToMdastTableNewline, mdastToHastTableNewline} from './Unified/table-newline';
 import {remove} from 'unist-util-remove'
-import {u} from 'unist-builder'
-import {split} from 'unist-util-split'
-import {text} from 'mdast-util-to-hast/lib/handlers/text'
 
 const underline = createInline({
     markdownSymbol: '_',
@@ -179,7 +175,9 @@ async function markdown_to_html(md: string): Promise<string> {
         allowDangerousHtml: true
     });
     // Strip out newlines
-    remove(hast, (nd) => {return nd?.type === 'text' && nd?.value === '\n'})
+    remove(hast, (nd) => {
+        return !nd.position && nd.type === 'text' && nd.value === '\n'
+    })
     let html = hastToHtml(hast, {
         allowDangerousHtml: true,
         allowDangerousCharacters: true

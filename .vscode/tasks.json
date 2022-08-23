@@ -10,37 +10,19 @@
             }
         },
         {
-            "label": "Build test",
+            "label": "Build update",
             "type": "shell",
-            "command": "node_modules/.bin/rollup -c",
+            "command": "(test-path ./update) ? (rm -R ./update/*) : (md ./update); Get-ChildItem -Path ./src/*.js, ./src/*.py, ./src/*.css, ./src/config.json, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./update/update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua ./README.md -o ./update/update.txt",
             "options": {
                 "cwd": "${workspaceFolder}"
             }
-        },
-        {
-            "label": "Build Showdown.next",
-            "type": "shell",
-            "command": "node_modules/.bin/grunt --force build-without-test",
-            "options": {
-                "cwd": "${env:CODEPATH}/Showdown.next"
-            }
-        },
+,       },
         {
             "label": "Build all",
             "dependsOn": [
-                "Build TS"
+                "Build TS",
+                "Build update"
             ]
-        },
-        {
-            "label": "Create update.zip",
-            "dependsOn": [
-                "Build TS"
-            ],
-            "type": "shell",
-            "command": "Get-ChildItem -Path ./src/*.js, ./src/*.py, ./src/*.css, ./src/config.json, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua ./README.md -o ./update.txt",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            }
         }
     ]
 }
