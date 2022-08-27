@@ -35,10 +35,9 @@ Conversion to/from HTML is done through unified functions `hast-util-from/to-htm
 
 ### Tables
 
-Standard GFM table syntax is suported:
+Standard GFM table syntax is supported:
 
 ``` Markdown
-
 | A     |   GFM |
 | :---- | ----: |
 | table |     ! |
@@ -139,4 +138,4 @@ It would seem logical to make the Field input editor a Svelte component which im
 
 ## Changelog
 
-- 2022-08-27: Add image paste support, bug fixes
+- 2022-08-27: Add image paste support, prevent focus from being stolen on focus in/out, bug fixes

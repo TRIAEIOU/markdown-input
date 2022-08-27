@@ -93,7 +93,7 @@
         {
             "label": "Build update",
             "type": "shell",
-            "command": "Write-host Building update... ; rm -R -Force ./dist/*; rm -R -Force ./bin/__pycache__; Get-ChildItem -Path ./bin/*, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./dist/update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua ./README.md -o ./dist/update.txt | Out-Null",
+            "command": "Write-host Building update... ; rm -R -Force ./dist/*; rm -R -Force ./bin/__pycache__; Get-ChildItem -Path ./bin/*, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./dist/update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua --abbreviations=${env:CODEPATH}/pandoc/empty ./README.md -o ./dist/update.txt | Out-Null",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
