@@ -18,10 +18,12 @@ Conversion to/from HTML is done through unified functions `hast-util-from/to-htm
 
 - Markdown uses `<p>` tags to mark paragraphs, in the Anki editor those are omitted and `<br>` tags are used "instead". The converter takes this into consideration (i.e. generates `<br>` HTML).
 - Markdown has a concept of lists being ["tight" or "loose"](https://spec.commonmark.org/0.30/#loose) - leading to text in the list items being wrapped in `<p>` tags or not, which in turn changes the ammount of padding that is rendered. It is unclear how to transform that in a meaningful way Markdown → HTML → Markdown. Therefore the HTML lists generated have a `markdown-tight` or `markdown-loose` class applied so they can be styled according to preference, example (needs to be tweaked):
+
   ``` CSS
   ul.markdown-loose > li, ol.markdown-loose > li {padding: 10px}
   ul.markdown-tight > li, ol.markdown-tight > li {padding: 0px}
   ```
+
 - Spec `*sample*`/`<em>sample</em>` and `**sample**`/`<strong>sample</strong>` are swapped to `<i>` and `<b>` to match the Anki editor (and spec `_sample_` has been rerouted to underline, see below).
 - GFM style tables that have been extended  (see below).
 - `~sample~` for subscript
@@ -134,3 +136,7 @@ I have probably forgotten to document some stuff in the readme, check back later
 ### Anki Svelte and CodeMirror 6 knowledge welcome
 
 It would seem logical to make the Field input editor a Svelte component which implements the EditingInputAPI. Unfortunately, for me 99% of programming time is spent trying to understand different frameworks and build environments and only 1% on the actual logic so at the moment I'll refrain from yet another framework. Hit me up if you are Anki-Svelte savvy and want to polish the addon (the thing is MIT license any way so you do whatever you want with it).
+
+## Changelog
+
+- 2022-08-27: Add image paste support, bug fixes

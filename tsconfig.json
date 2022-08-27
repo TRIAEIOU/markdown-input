@@ -5,10 +5,10 @@
         "moduleResolution": "node",
         "isolatedModules": true,
         "skipLibCheck": true,
-        "typeRoots": ["node_modules/@types", "@anki/ts/typings"],
+        "typeRoots": ["node_modules/@types", "anki/ts/typings"],
         "baseUrl": ".",
         "paths": {
-            "@anki/*": ["${env:CODEPATH}/Anki/anki-src/*"], // Only for typing
+            "anki/*": ["${env:CODEPATH}/Anki/anki-src/*"], // Only for typing
         },
         "allowSyntheticDefaultImports": true,
         "allowJs": false,
@@ -17,7 +17,6 @@
         "plugins": [],
     },
     "exclude": [
-      "node_modules",
-      "./src/ts/Unified/mdast-util-definition-list/lib/*.test.ts"
+      "node_modules"
     ]
 }

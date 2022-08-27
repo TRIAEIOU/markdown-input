@@ -1,8 +1,8 @@
-import svelte from "rollup-plugin-svelte";
-import { nodeResolve } from "@rollup/plugin-node-resolve";
-import typescript from "@rollup/plugin-typescript";
-import commonjs from "@rollup/plugin-commonjs";
-import { terser } from "rollup-plugin-terser";
+import svelte from "rollup-plugin-svelte"
+import {nodeResolve} from "@rollup/plugin-node-resolve"
+import typescript from "@rollup/plugin-typescript"
+import commonjs from "@rollup/plugin-commonjs"
+import {terser} from "rollup-plugin-terser"
 
 function bundle(input_file, output_file, output_name) {
   return {
@@ -29,11 +29,10 @@ function bundle(input_file, output_file, output_name) {
       warn(warning);
       //      console.log(JSON.stringify(warning, null, 1))
     },
-  };
+  }
 }
 
 export default [
-  bundle("./src/ts/field_input.ts", "./src/field_input.js", "MarkdownInput"),
-  bundle("./src/ts/dialog_input.ts", "./src/dialog_input.js", "MarkdownInput"),
-  bundle("./src/ts/dialog_input_helpers.ts", "./src/dialog_input_helpers.js", "MarkdownInputHelpers")
+  bundle("./src/ts/field_input.ts", "./bin/field_input.js", "MarkdownInput"),
+  bundle("./src/ts/dialog_input.ts", "./bin/dialog_input.js", "MarkdownInput"),
 ]

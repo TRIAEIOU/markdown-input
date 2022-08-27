@@ -1,6 +1,7 @@
-import type {Node, Parent} from 'unist'
+import type {Parent} from 'unist'
 import type {Paragraph as MdastParagraph} from 'mdast'
-import type {Element as HastElement, Root as HastRoot} from 'hast'
+import type {Element as HastElement, ElementContent as HastElementContent,
+    Root as HastRoot} from 'hast'
 import type {H as MdastH} from 'mdast-util-to-hast'
 import type {H as HastH} from 'hast-util-to-mdast'
 import {root} from 'hast-util-to-mdast/lib/handlers/root'
@@ -11,7 +12,7 @@ import {phrasing as hastPhrasing} from 'hast-util-phrasing'
 // Call core handler and modify returned hast
 // replacing `p-(p)` with `children - br - br - (p)`
 // and `(p) - end` with `children`
-function paragraphToBr(h: MdastH, nd: MdastParagraph, pt: Parent): Node[] {
+function paragraphToBr(h: MdastH, nd: MdastParagraph, pt: Parent): HastElementContent[] {
     const br: HastElement = {type: 'element', tagName: 'br', children: []}
     const hast = (<HastElement>mdastParagraph(h, nd)).children
     let nxt = 0
@@ -23,16 +24,15 @@ function paragraphToBr(h: MdastH, nd: MdastParagraph, pt: Parent): Node[] {
 
 // Called with both root and hast list items and mutates children
 function brToP(nd: HastElement, paraLast: boolean) {
-    const cds = [];
-    let buf = [];
-    let pstart = -1;
-    let brs = 0;
+    const cds = []
+    let buf = []
+    let pstart = -1
+    let brs = 0
 
     // Parse out paragraphs
     const len = nd.children.length
     nd.children.forEach((cd, i) => {
         if (hastPhrasing(cd)) {
-            buf.push(cd)
             if (pstart < 0) pstart = i
             if ((<HastElement>cd).tagName === 'br') brs++
             else {
@@ -42,12 +42,13 @@ function brToP(nd: HastElement, paraLast: boolean) {
                 }
                 brs = 0
             }
+            buf.push(cd)
         } else {
             if (pstart > -1) flush()
             brs = 0
             cds.push(cd)
         }
-    });
+    })
     // Push any open paragraph
     if (pstart > -1) {
         if (paraLast) flush()

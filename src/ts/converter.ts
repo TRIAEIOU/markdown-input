@@ -18,7 +18,7 @@ import {emStrongToIB, iBToEmStrong} from './Unified/em-strong-swap-i-b';
 import {breakSpaces} from './Unified/break-spaces';
 import {mdastParagraphToHastBr, hastBrToMdastParagraph} from './Unified/paragraph-break-swap';
 import {hastToMdastCorrectList, mdastToHastCorrectList} from './Unified/correct-list'
-import {hastToMdastTableNewline, mdastToHastTableNewline} from './Unified/table-newline';
+import {hastToMdastTableNewline, hastCellTableNewline} from './Unified/table-newline';
 import {remove} from 'unist-util-remove'
 
 const underline = createInline({
@@ -44,13 +44,8 @@ const strikethrough = createInline({
 const NEWLINE = 'Table newline'
 const HARDBREAK = 'Hard break'
 
-type Config = {
-    'Table newline'?: string,
-    'Hard break'?: 'spaces'|'backslash'
-}
-
 // Module scope configuration
-const _config = {};
+const config = {};
 
 /////////////////////////////////////////////////////////////////////////////
 // Parse out current cloze ordinal from string, 0 if none (i.e. increment one for next)
@@ -72,8 +67,9 @@ const TAIL_OPEN_RE = new RegExp(String.raw`<(?:ol|ul)[^>]*>`, 'gi');
 const TAIL_CLOSE_RE = new RegExp(String.raw`<\/(?:ol|ul)[^>]*>`, 'gi');
 const TAIL_LIST_SEARCH_RE = new RegExp(String.raw`((?:<\/li>\s*<\/(?:ul|ol)>\s*)+)$`, 'si');
 
-async function html_to_markdown(html:string): Promise<[string, number]> {
-
+function html_to_markdown(html:string): [string, number] {
+    if (!html) return ['', 0]
+    
     // Move trailing list close-clozes to last item
     function trailing_cloze(html: string) {
         return html.replace(MOVE_CLOZE_IN_RE, (match, cont, tail) => {
@@ -104,8 +100,8 @@ async function html_to_markdown(html:string): Promise<[string, number]> {
             ...iBToEmStrong,
             ...hastBrToMdastParagraph,
             ...hastToMdastCorrectList,
-            ...(_config[NEWLINE]
-                ? hastToMdastTableNewline(_config[NEWLINE])
+            ...(config[NEWLINE]
+                ? hastToMdastTableNewline(config[NEWLINE])
                 : {})
         }
     });
@@ -118,7 +114,7 @@ async function html_to_markdown(html:string): Promise<[string, number]> {
         defListToMarkdown,
         directiveToMarkdown,
     ];
-    if (_config[HARDBREAK] === "spaces") extensions.push(breakSpaces);
+    if (config[HARDBREAK] === "spaces") extensions.push(breakSpaces);
     const md = mdastToMarkdown(mdast, {
         extensions: extensions,
         bullet: '-',
@@ -135,7 +131,9 @@ async function html_to_markdown(html:string): Promise<[string, number]> {
 const MOVE_CLOZE_OUT_RE = new RegExp(String.raw`({{c\d+::)(.*?)}}((?:\s*<\/li>\s*<\/(?:ol|ul)>)+)`, 'gsi');
 const LIST_END_RE = new RegExp(String.raw`<\/(ol|ul)>`, 'gi');
 
-async function markdown_to_html(md: string): Promise<string> {
+function markdown_to_html(md: string): string {
+    if (!md) return ''
+
     const mdast = markdownToMdast(md, 'utf-8', {
         extensions: [
             extendedTableSyntax,
@@ -158,7 +156,13 @@ async function markdown_to_html(md: string): Promise<string> {
     });
     const hast = <HastElement>mdastToHast(mdast, {
         handlers: {
-            ...extendedTableToHast,
+            // Not the prettiest solution
+            table: (h, nd) => {
+                const el = extendedTableToHast(h, nd)
+                if (config[NEWLINE])
+                    hastCellTableNewline(el, config[NEWLINE])
+                return el
+            },
             ...underline.mdastHandler,
             ...superscript.mdastHandler,
             ...subscript.mdastHandler,
@@ -167,10 +171,7 @@ async function markdown_to_html(md: string): Promise<string> {
             ...emStrongToIB,
             ...inlineMediaMdastHandler,
             ...mdastParagraphToHastBr,
-            ...mdastToHastCorrectList,
-            ...(_config[NEWLINE]
-                ? mdastToHastTableNewline(_config[NEWLINE])
-                : {})
+            ...mdastToHastCorrectList
         },
         allowDangerousHtml: true
     });
@@ -208,9 +209,8 @@ async function markdown_to_html(md: string): Promise<string> {
     return html;
 }
 
-async function configure(cfg: Config) {
-    for (const k in cfg) _config[k] = cfg[k];
+function init(cfg: {}) {
+    for (const k in cfg) config[k] = cfg[k];
 }
 
-export type {Config}
-export {html_to_markdown, markdown_to_html, configure}
+export {html_to_markdown, markdown_to_html, init}

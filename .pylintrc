@@ -1,2 +1,46 @@
-[Master]
-init-hook='import sys; sys.path.append("${env:CODEPATH}\\Anki\\anki-src\\qt"); sys.path.append("${env:CODEPATH}\\Anki\\anki-src\\pylib")'
+[MASTER]
+persistent = no
+extension-pkg-whitelist=PyQt6
+ignore = forms,hooks_gen.py
+init-hook = 'import sys; sys.path.append("$env:CODEPATH/Anki/anki-src/qt/", "$env:CODEPATH/Anki/anki-src/pylib/")'
+
+[TYPECHECK]
+ignored-modules=win32file,pywintypes,socket,win32pipe,winrt,pyaudio
+ignored-classes=
+  BrowserColumns,
+  BrowserRow,
+  SearchNode,
+  ConfigKey,
+  OpChanges,
+  UnburyDeckRequest,
+  CardAnswer,
+  QueuedCards,
+  ChangeNotetypeRequest,
+  CustomStudyRequest,
+  Cram,
+  ScheduleCardsAsNewRequest,
+  CsvColumn,
+  CsvMetadata,
+
+[REPORTS]
+output-format=colorized
+
+[MESSAGES CONTROL]
+disable=C,R,
+  fixme,
+  unused-wildcard-import,
+  attribute-defined-outside-init,
+  redefined-builtin,
+  wildcard-import,
+  broad-except,
+  bare-except,
+  unused-argument,
+  unused-variable,
+  redefined-outer-name,
+  global-statement,
+  protected-access,
+  arguments-differ,
+  arguments-renamed,
+  missing-function-docstring,
+  missing-module-docstring,
+  trailing-whitespace,

@@ -2,25 +2,119 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "Build TS",
+            "label": "Create output dirs",
             "type": "shell",
-            "command": "node_modules/.bin/rollup -c",
+            "command": "Write-host Creating output directories... ; md -Force ./bin, ./dist | Out-Null",
             "options": {
                 "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "Build clean",
+            "type": "shell",
+            "command": "Write-host Building clean... ; rm -R -Force ./dist/*, ./bin/*",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "Build TS",
+            "type": "shell",
+            "command": "Write-host Building TS... ; node_modules/.bin/rollup -c",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "Create output dirs"
+            ],
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "Build PY",
+            "type": "shell",
+            "command": "Write-host Building PY... ; ls ./src/py/*.py | ? { -not (Test-Path ('./bin/' + $_.Name) -PathType Leaf) -or (Test-Path ('./bin/' + $_.Name) -OlderThan $_.LastWriteTime) } | % {$_.FullName} | cp -Force -Destination ./bin | Out-Null",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "Create output dirs"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
+            "label": "Build config",
+            "type": "shell",
+            "command": "Write-host Building config... ; cp ./src/config/* ./bin | Out-Null",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "Create output dirs"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
             }
         },
         {
             "label": "Build update",
             "type": "shell",
-            "command": "(test-path ./update) ? (rm -R ./update/*) : (md ./update); Get-ChildItem -Path ./src/*.js, ./src/*.py, ./src/*.css, ./src/config.json, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./update/update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua ./README.md -o ./update/update.txt",
+            "command": "Write-host Building update... ; rm -R -Force ./dist/*; rm -R -Force ./bin/__pycache__; Get-ChildItem -Path ./bin/*, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./dist/update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua ./README.md -o ./dist/update.txt | Out-Null",
             "options": {
                 "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "Create output dirs"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
             }
-,       },
+        },
         {
             "label": "Build all",
             "dependsOn": [
                 "Build TS",
+                "Build PY",
+                "Build config",
                 "Build update"
             ]
         }

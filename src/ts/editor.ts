@@ -9,22 +9,13 @@ import {RegExpCursor, SearchCursor, SearchQuery, closeSearchPanel, findNext, fin
 import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
 import {markdown} from "@codemirror/lang-markdown"
 import {ankiCloze, ankiClozeKeymap, clozeCurrent, clozeNext} from "./CodeMirror.extensions/ankiCloze"
-
-type Config = {
-  keymap?: {
-    key: string,
-    shift?: Command,
-    run?: Command,
-    scope?: string,
-    preventDefault?: boolean
-  }[]
-}
+import {ankiImagePaste} from "./CodeMirror.extensions/ankiImagePaste"
 
 // Name to function lookup
 const cm_functions = {'clozeCurrent': clozeCurrent, 'clozeNext': clozeNext, 'RegExpCursor': RegExpCursor, 'SearchCursor': SearchCursor, 'SearchQuery': SearchQuery, 'closeSearchPanel': closeSearchPanel, 'findNext': findNext, 'findPrevious': findPrevious, 'getSearchQuery': getSearchQuery, 'gotoLine': gotoLine, 'highlightSelectionMatches': highlightSelectionMatches, 'openSearchPanel': openSearchPanel, 'replaceAll': replaceAll, 'replaceNext': replaceNext, 'search': search, 'searchKeymap': searchKeymap, 'selectMatches': selectMatches, 'selectNextOccurrence': selectNextOccurrence, 'selectSelectionMatches': selectSelectionMatches, 'setSearchQuery': setSearchQuery, 'blockComment': blockComment, 'blockUncomment': blockUncomment, 'copyLineDown': copyLineDown, 'copyLineUp': copyLineUp, 'cursorCharBackward': cursorCharBackward, 'cursorCharForward': cursorCharForward, 'cursorCharLeft': cursorCharLeft, 'cursorCharRight': cursorCharRight, 'cursorDocEnd': cursorDocEnd, 'cursorDocStart': cursorDocStart, 'cursorGroupBackward': cursorGroupBackward, 'cursorGroupForward': cursorGroupForward, 'cursorGroupLeft': cursorGroupLeft, 'cursorGroupRight': cursorGroupRight, 'cursorLineBoundaryBackward': cursorLineBoundaryBackward, 'cursorLineBoundaryForward': cursorLineBoundaryForward, 'cursorLineDown': cursorLineDown, 'cursorLineEnd': cursorLineEnd, 'cursorLineStart': cursorLineStart, 'cursorLineUp': cursorLineUp, 'cursorMatchingBracket': cursorMatchingBracket, 'cursorPageDown': cursorPageDown, 'cursorPageUp': cursorPageUp, 'cursorSubwordBackward': cursorSubwordBackward, 'cursorSubwordForward': cursorSubwordForward, 'cursorSyntaxLeft': cursorSyntaxLeft, 'cursorSyntaxRight': cursorSyntaxRight, 'defaultKeymap': defaultKeymap, 'deleteCharBackward': deleteCharBackward, 'deleteCharForward': deleteCharForward, 'deleteGroupBackward': deleteGroupBackward, 'deleteGroupForward': deleteGroupForward, 'deleteLine': deleteLine, 'deleteToLineEnd': deleteToLineEnd, 'deleteToLineStart': deleteToLineStart, 'deleteTrailingWhitespace': deleteTrailingWhitespace, 'emacsStyleKeymap': emacsStyleKeymap, 'history': history, 'historyField': historyField, 'historyKeymap': historyKeymap, 'indentLess': indentLess, 'indentMore': indentMore, 'indentSelection': indentSelection, 'indentWithTab': indentWithTab, 'insertBlankLine': insertBlankLine, 'insertNewline': insertNewline, 'insertNewlineAndIndent': insertNewlineAndIndent, 'insertTab': insertTab, 'invertedEffects': invertedEffects, 'isolateHistory': isolateHistory, 'lineComment': lineComment, 'lineUncomment': lineUncomment, 'moveLineDown': moveLineDown, 'moveLineUp': moveLineUp, 'redo': redo, 'redoDepth': redoDepth, 'redoSelection': redoSelection, 'selectAll': selectAll, 'selectCharBackward': selectCharBackward, 'selectCharForward': selectCharForward, 'selectCharLeft': selectCharLeft, 'selectCharRight': selectCharRight, 'selectDocEnd': selectDocEnd, 'selectDocStart': selectDocStart, 'selectGroupBackward': selectGroupBackward, 'selectGroupForward': selectGroupForward, 'selectGroupLeft': selectGroupLeft, 'selectGroupRight': selectGroupRight, 'selectLine': selectLine, 'selectLineBoundaryBackward': selectLineBoundaryBackward, 'selectLineBoundaryForward': selectLineBoundaryForward, 'selectLineDown': selectLineDown, 'selectLineEnd': selectLineEnd, 'selectLineStart': selectLineStart, 'selectLineUp': selectLineUp, 'selectMatchingBracket': selectMatchingBracket, 'selectPageDown': selectPageDown, 'selectPageUp': selectPageUp, 'selectParentSyntax': selectParentSyntax, 'selectSubwordBackward': selectSubwordBackward, 'selectSubwordForward': selectSubwordForward, 'selectSyntaxLeft': selectSyntaxLeft, 'selectSyntaxRight': selectSyntaxRight, 'simplifySelection': simplifySelection, 'splitLine': splitLine, 'standardKeymap': standardKeymap, 'toggleBlockComment': toggleBlockComment, 'toggleBlockCommentByLine': toggleBlockCommentByLine, 'toggleComment': toggleComment, 'toggleLineComment': toggleLineComment, 'transposeChars': transposeChars, 'undo': undo, 'undoDepth': undoDepth, 'undoSelection': undoSelection}
 
 // Configuration for CM instances
-let config:Config = {
+let _config = {
   keymap: []
 }
 
@@ -48,7 +39,7 @@ function create_state(doc: string, ord: number) {
       highlightSelectionMatches(),
       // @ts-ignore FIXME: what is correct TS for below?
       keymap.of([
-        ...config.keymap,
+        ..._config.keymap,
         ...ankiClozeKeymap,
         ...closeBracketsKeymap,
         ...defaultKeymap,
@@ -58,47 +49,45 @@ function create_state(doc: string, ord: number) {
       ]),
       EditorView.lineWrapping,
       markdown(),
-      ankiCloze({ordinal: ord})
+      ankiCloze({ordinal: ord}),
+      ankiImagePaste()
     ]
-  });
+  })
 }
 
 function create(parent: Element, doc: string, ord: number, on_change: Function = undefined) {
+
   function _dispatch(tr: Transaction) {
-    const res = this.update([tr]);
-    if (!tr.changes.empty) { on_change(this.state.doc.toString()); }
-    return res;
+    const res = this.update([tr])
+    if (!tr.changes.empty) {on_change(this.state.doc.toString());}
+    return res
   }
 
-  if (on_change) {
-    return new EditorView({
-      state: create_state(doc, ord),
-      parent: parent,
-      dispatch: _dispatch
-    });
-  }
-  
-  return new EditorView({
+  const cfg = {
     state: create_state(doc, ord),
-    parent: parent
-  });
-
+    parent: parent   
+  }
+  if (on_change) cfg['dispatch'] = _dispatch
+  const cm = new EditorView(cfg)
+  return cm
 }
 
-function set_doc(cm: EditorView, doc: string, ord: number) {
-  return cm.setState(create_state(doc, ord));
+function set_doc(cm: EditorView, doc: string, ord: number, pos: 'start'|'end') {
+  cm.setState(create_state(doc, ord))
+  if (pos === 'end')
+    cm.dispatch({ selection: { anchor: doc.length } })
 }
 
-function configure(cfg: object) {
-  config.keymap = [];
-  cfg['keymap']?.forEach((sc: { [x: string]: any; shift: string | number; run: string | number; scope: any; preventDefault: any }) => {
-    const tmp = {key: sc['key']};
-    if('shift' in sc) tmp['shift'] = cm_functions[sc.shift];
-    if('run' in sc) tmp['run'] = cm_functions[sc.run];
-    if('scope' in sc) tmp['scope'] = sc.scope;
-    if('preventDefault' in sc) tmp['preventDefault'] = sc.preventDefault;
-    config.keymap.push(tmp);
-  });
+function init(cfg: object) {
+  _config.keymap = []
+  cfg['keymap']?.forEach((sc: any) => {
+    const tmp = {key: sc['key']}
+    if('shift' in sc) tmp['shift'] = cm_functions[sc.shift]
+    if('run' in sc) tmp['run'] = cm_functions[sc.run]
+    if('scope' in sc) tmp['scope'] = sc.scope
+    if('preventDefault' in sc) tmp['preventDefault'] = sc.preventDefault
+    _config.keymap.push(tmp)
+  })
 }
 
-export {create, set_doc, configure}
+export {create, set_doc, init}

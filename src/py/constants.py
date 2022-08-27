@@ -20,6 +20,4 @@ CFG_LAST_GEOM = "Last geometry"
 CSS = "CSS"
 SHORTCUT = "Shortcut"
 CONVERTER = "Converter"
-CODEMIRROR = "CodeMirror"
-
-DEBUG = False
+EDITOR = "CodeMirror"

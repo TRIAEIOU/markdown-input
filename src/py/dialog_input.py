@@ -1,16 +1,17 @@
 import aqt, os, json, base64, re
 from aqt import mw, gui_hooks
 from aqt.utils import *
-from aqt.qt import QKeySequence, QDialog, QWidget, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
+from aqt.qt import QDialog, QWidget, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
 if qtmajor == 6:
     from . import dialog_qt6 as dialog
 elif qtmajor == 5:
     from . import dialog_qt5 as dialog
 from .constants import *
+from .utils import clip_img_to_md
 
-PYCMD_ONACCEPT = "ON_ACCEPT:"
+BRIDGECOMMAND_ONACCEPT = "ON_ACCEPT:"
 
-config = {}
+_config = {}
 
 ###########################################################################
 # Main dialog to edit markdown
@@ -20,9 +21,7 @@ class IM_dialog(QDialog):
     # Constructor (populates and shows dialog)
     ###########################################################################
     def __init__(self, html: str, parent: QWidget, on_accept: Callable = None, on_reject: Callable = None):
-        if DEBUG:
-            print(">>>dialog_input:IM_dialog:init")
-        global config
+        global _config
         QDialog.__init__(self, parent)
         self.ui = dialog.Ui_dialog()
         self.ui.setupUi(self)
@@ -31,18 +30,18 @@ class IM_dialog(QDialog):
         self.ui.btns.accepted.connect(self.accept)
         self.ui.btns.rejected.connect(self.reject)
 
-        self.setup_bridge(self.bridge_receiver)
+        self.setup_bridge(self.bridge)
         self.ui.web.setHtml(f'''
         <html>
         <head>
+            <script src="dialog_input.js"></script>
             <link rel=stylesheet href="cm_styles.css">
-            <style>{config[DIALOG_INPUT][CSS]}</style>
+            <style>{_config[DIALOG_INPUT][CSS]}</style>
         </head>
         <body>
-            <script src="dialog_input.js"></script>
             <script>
-                MarkdownInput.converter_configure({json.dumps(config[CONVERTER])});
-                MarkdownInput.editor_configure({json.dumps(config[CODEMIRROR])});
+                MarkdownInput.converter_init({json.dumps(_config[CONVERTER])});
+                MarkdownInput.editor_init({json.dumps(_config[EDITOR])});
                 MarkdownInput.set_html({json.dumps(html)});
             </script>
         </body>
@@ -54,8 +53,6 @@ class IM_dialog(QDialog):
     # Stolen from AnkiWebView
     ###########################################################################
     def setup_bridge(self, handler):
-        if DEBUG:
-            print(">>>dialog_input:setup_bridge")
         class Bridge(QObject):
             def __init__(self, handler: Callable[[str], Any]) -> None:
                 super().__init__()
@@ -102,11 +99,15 @@ class IM_dialog(QDialog):
     ###########################################################################
     # Bridge message receiver
     ###########################################################################
-    def bridge_receiver(self, str = None):
-        if DEBUG:
-            print(">>>bridge_receiver")
-        if str.startswith(PYCMD_ONACCEPT):
-            self.on_accept(str[len(PYCMD_ONACCEPT):])
+    def bridge(self, str = None):
+        if str.startswith(BRIDGECOMMAND_ONACCEPT):
+            self.on_accept(str[len(BRIDGECOMMAND_ONACCEPT):])
+
+        elif str == "clipboard_image_to_markdown":
+            img = clip_img_to_md()
+            return img
+
+
 
 
 
@@ -114,65 +115,43 @@ class IM_dialog(QDialog):
     # Main dialog accept
     ###########################################################################
     def accept(self) -> None:
-        if DEBUG:
-            print(">>>dialog_input:accept")
         if self.on_accept:
-            self.ui.web.page().runJavaScript(f'''(async function () {{
-                const html = await MarkdownInput.get_html();
-                pycmd('{PYCMD_ONACCEPT}' + html);
+            self.ui.web.page().runJavaScript(f'''(function () {{
+                const html = MarkdownInput.get_html();
+                pycmd('{BRIDGECOMMAND_ONACCEPT}' + html);
             }})();''')
 
-        global config
-        config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
-        mw.addonManager.writeConfig(__name__, config)
+        global _config
+        _config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
+        mw.addonManager.writeConfig(__name__, _config)
         super().accept()
 
     ###########################################################################
     # Main dialog reject
     ###########################################################################
     def reject(self):
-        if DEBUG:
-            print(">>>dialog_input:reject")
-        global config
-        config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
-        mw.addonManager.writeConfig(__name__, config)
+        global _config
+        _config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
+        mw.addonManager.writeConfig(__name__, _config)
         super().reject()
-
-
-###########################################################################
-# Include needed helper scripts in editor webview header
-# Called once for the editor
-def add_srcs(web_content: aqt.webview.WebContent, context: object):
-    if not isinstance(context, aqt.editor.Editor):
-        return
-    if DEBUG:
-        print(">>>dialog_input:add_srcs")
-    addon = mw.addonManager.addonFromModule(__name__)
-    web_content.head += f"""
-        <script defer src="/_addons/{addon}/dialog_input_helpers.js"></script>
-    """
 
 ###########################################################################
 # Open markdown dialog
 ###########################################################################
 def edit_field(editor: aqt.editor.Editor, field: int = None):
-    if DEBUG:
-        print(">>>dialog_input:edit_field")
-    global config
+    global _config
 
     # Run the md editor dialog with callback for accept
     def run_dlg(html):
-        if DEBUG:
-            print(">>>dialog_input:edit_field::run_dialog")
         dlg = IM_dialog(html, editor.parentWindow, dlg_result)
-        if config[DIALOG_INPUT][SHORTCUT_ACCEPT]:
-            QShortcut(config[DIALOG_INPUT][SHORTCUT_ACCEPT], dlg).activated.connect(dlg.accept)
-        if config[DIALOG_INPUT][SHORTCUT_REJECT]:
-            QShortcut(config[DIALOG_INPUT][SHORTCUT_REJECT], dlg).activated.connect(dlg.reject)
+        if _config[DIALOG_INPUT][SHORTCUT_ACCEPT]:
+            QShortcut(_config[DIALOG_INPUT][SHORTCUT_ACCEPT], dlg).activated.connect(dlg.accept)
+        if _config[DIALOG_INPUT][SHORTCUT_REJECT]:
+            QShortcut(_config[DIALOG_INPUT][SHORTCUT_REJECT], dlg).activated.connect(dlg.reject)
 
-        if config[DIALOG_INPUT][SIZE_MODE].lower() == 'last':
-            dlg.restoreGeometry(base64.b64decode(config[DIALOG_INPUT][LAST_GEOM]))
-        elif match:= re.match(r'^(\d+)x(\d+)', config[DIALOG_INPUT][SIZE_MODE]):
+        if _config[DIALOG_INPUT][SIZE_MODE].lower() == 'last':
+            dlg.restoreGeometry(base64.b64decode(_config[DIALOG_INPUT][LAST_GEOM]))
+        elif match:= re.match(r'^(\d+)x(\d+)', _config[DIALOG_INPUT][SIZE_MODE]):
             par_geom = editor.parentWindow.geometry()
             geom = QRect(par_geom)
             scr_geom = mw.app.primaryScreen().geometry()
@@ -197,62 +176,41 @@ def edit_field(editor: aqt.editor.Editor, field: int = None):
     
     # Callback for accepted md dialog
     def dlg_result(html):
-        if DEBUG:
-            print(">>>dlg_result")
-        if config[DIALOG_INPUT][SELECTION]:
-            editor.web.eval(f'''(async function () {{
-                await MarkdownInputHelpers.set_selected_html({field}, {json.dumps(html)});
+        if _config[DIALOG_INPUT][SELECTION]:
+            editor.web.eval(f'''(function () {{
+                MarkdownInput.set_selected_html({field}, {json.dumps(html)});
             }})();''')
         else:
-            editor.web.eval(f'''(async function () {{
-                MarkdownInputHelpers.set_current_html({field}, {json.dumps(html)});
+            editor.web.eval(f'''(function () {{
+                MarkdownInput.set_current_html({field}, {json.dumps(html)});
             }})();''')
 
 
     if field == None:
         field = editor.currentField if editor.currentField != None else editor.last_field_index
     if field != None: # Get content to edit
-        if config[DIALOG_INPUT][SELECTION]: # Extend selection to complete lines and use this
+        if _config[DIALOG_INPUT][SELECTION]: # Extend selection to complete lines and use this
             editor.web.evalWithCallback(f'''(function () {{
-                return MarkdownInputHelpers.get_selected_html({field});
+                return MarkdownInput.get_selected_html({field});
             }})();
             ''', run_dlg)
         else: # Use entire content
             editor.web.evalWithCallback(f'''(function () {{
-                return MarkdownInputHelpers.get_current_html({field});
+                return MarkdownInput.get_current_html({field});
             }})();''', run_dlg)
 
 
 ###########################################################################
 # Configure and activate dialog Markdown input
-def configure(cfg: object):
-    global config
-    config = cfg    
-    # Called once per editor instance
-    # Include js and set up
-    #gui_hooks.webview_will_set_content.append(lambda web_content, context:
-    #    add_srcs(
-    #        web_content=web_content,
-    #        context=context
-    #    )
-    #)
-
-    # Called once per editor instance
-    # Configure Showdown and CodeMirror - after script load but before cm instantiation
-    gui_hooks.editor_did_init.append(lambda ed: ed.web.eval(f'''
-        MarkdownInput.converter_configure({json.dumps(config[CONVERTER])});
-        MarkdownInput.editor_configure({json.dumps(config[CODEMIRROR])});
-    '''))
-    
-    # Called once per editor every note load
-    # Configure refresh of Markdown input fields on note load
-    gui_hooks.editor_will_load_note.append(lambda _js, _note, _ed: _js + r"MarkdownInput.update();")
+def init(cfg: object):
+    global _config
+    _config = cfg    
     
     gui_hooks.editor_did_init_shortcuts.append(lambda shortcuts, editor: 
         shortcuts.append([
-            QKeySequence(config[DIALOG_INPUT][SHORTCUT]),
+            QKeySequence(_config[DIALOG_INPUT][SHORTCUT]),
             lambda ed=editor: edit_field(ed)
         ])
     )
-    gui_hooks.webview_will_set_content.append(add_srcs)
+    #gui_hooks.webview_will_set_content.append(add_srcs)
 
