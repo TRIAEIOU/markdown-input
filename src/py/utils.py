@@ -1,4 +1,4 @@
-import os
+import os, datetime
 from aqt import QImage, mw, QApplication, QClipboard
 from anki.utils import namedtmp
 from anki.collection import Config
@@ -11,7 +11,7 @@ def clip_img_to_md() -> str:
 
     if mime.hasImage():
         im = QImage(mime.imageData())
-        uname = namedtmp("paste")
+        uname = namedtmp(datetime.datetime.now().strftime('paste-%y.%m.%d-%H.%M.%S'))
         if mw.col.get_config_bool(Config.Bool.PASTE_IMAGES_AS_PNG):
             ext = ".png"
             im.save(uname + ext, None, 50)
