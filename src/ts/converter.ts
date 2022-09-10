@@ -23,14 +23,12 @@ import {hastToMdastCorrectList, mdastToHastCorrectList} from './Unified/correct-
 import {hastToMdastTableNewline, hastCellTableNewline} from './Unified/table-newline'
 import {remove} from 'unist-util-remove'
 import {table as gfmTableHandler} from 'mdast-util-to-hast/lib/handlers/table'
-import {expand_cloze, collapse_cloze} from './Unified/cloze-lists'
 
 const HARDBREAK = 'Hard break'
 const TABLE_STYLE = "Table style"
 const NEWLINE = 'Table newline'
 const DEF_LIST = "Definition lists"
 const INLINE_MEDIA = "Inline media"
-const CLOZE_LISTS = "Cloze lists"
 const INLINES = "Inlines"
 const MARKDOWN = "Markdown format"
 
@@ -39,7 +37,8 @@ const config = {
     hast_to_mdast: {
         handlers: {
             ...iBToEmStrong,
-            ...hastBrToMdastParagraph
+            ...hastBrToMdastParagraph,
+            ...hastToMdastCorrectList
         }
     },
     mdast_to_markdown: {
@@ -52,7 +51,8 @@ const config = {
     mdast_to_hast: {
         handlers: {
             ...emStrongToIB,
-            ...mdastParagraphToHastBr    
+            ...mdastParagraphToHastBr,
+            ...mdastToHastCorrectList    
         }
     }
 };
@@ -81,7 +81,6 @@ function html_to_markdown(html:string): [string, number] {
     if (!html) return ['', 0]
     const hast = hastFromHtml(html);
     const mdast = hastToMdast(hast, { handlers: config.hast_to_mdast.handlers });
-    if (config.mdast_to_markdown[CLOZE_LISTS]) collapse_cloze(mdast)
     const md = mdastToMarkdown(mdast, config.mdast_to_markdown); 
     return [md, parse_cloze(md)];
 }
@@ -98,7 +97,6 @@ function markdown_to_html(md: string): string {
         extensions: config.markdown_to_mdast.extensions,
         mdastExtensions: config.markdown_to_mdast.mdastExtensions
     });
-    if (config.mdast_to_markdown[CLOZE_LISTS]) expand_cloze(mdast)
     const hast = <HastElement>mdastToHast(mdast, {
         handlers: config.mdast_to_hast.handlers,
         allowDangerousHtml: true
@@ -119,7 +117,6 @@ function markdown_to_html(md: string): string {
 // Setup converter MD ⇔ HTML from config.json input
 function init(cfg: {}) {
     // Setup converters
-    config[CLOZE_LISTS] = cfg[CLOZE_LISTS]
     if (cfg[MARKDOWN]) {
         for (const [k, v] of Object.entries(cfg[MARKDOWN]))
             config.mdast_to_markdown[k] = v
@@ -144,12 +141,6 @@ function init(cfg: {}) {
     }
     if (cfg[HARDBREAK]?.toLowerCase() === "spaces")
         config.mdast_to_markdown.extensions.push(breakSpaces)
-    if (cfg[CLOZE_LISTS]) {
-        for (const [k, v] of Object.entries(hastToMdastCorrectList))
-            config.hast_to_mdast.handlers[k] = v
-        for (const [k, v] of Object.entries(mdastToHastCorrectList))
-            config.mdast_to_hast.handlers[k] = v
-    }
     if (cfg[TABLE_STYLE]?.toLowerCase() === 'extended') {
         config.mdast_to_hast.handlers['table'] = cfg[NEWLINE]
             ?   (h, nd) => {

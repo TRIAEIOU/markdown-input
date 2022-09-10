@@ -19,7 +19,7 @@ function bundle(input_file, output_file, output_name) {
       commonjs(),
       nodeResolve({ preferBuiltins: false, browser: true }),
       svelte({ include: 'src/**/*.svelte' }),
-      //terser()
+      terser()
     ],
     onwarn: (warning, warn) => { // Supress "errounous warnings"
       if ((warning.pluginCode === undefined
