@@ -17,8 +17,36 @@
 		"Last geometry": ""
 	},
 	"Converter": {
+		"Markdown format": {
+			"bullet": "-",
+			"listItemIndent": "one",
+			"ruleRepetition": 10,
+			"tightDefinitions": true,
+			"fences": true
+		},
+		"Definition lists": true,
+		"Inline media": true,
+		"Cloze lists": true,
+		"Table style": "extended",
 		"Table newline": "¨",
-		"Hard break": "spaces"
+		"Hard break": "spaces",
+		"Inlines": [{
+				"markdownSymbol": "_",
+				"mdastNode": "underline",
+				"htmlNode": "u"
+			},{
+				"markdownSymbol": "^",
+				"mdastNode": "superscript",
+				"htmlNode": "sup"
+			},{
+				"markdownSymbol": "~",
+				"mdastNode": "subscript",
+				"htmlNode": "sub"
+			},{
+				"markdownSymbol": "~~",
+				"mdastNode": "strikethrough",
+				"htmlNode": "del"
+		}]
 	},
 	"CodeMirror": {
 		"keymap": [{
