@@ -160,5 +160,3 @@ function init(cfg: {}) {
 export {init as converter_init} from "./converter"
 export {init as editor_init} from "./editor"
 export {toggle, update, init}
-// Include utils used by dialog_input.ts
-export {get_current_html, set_current_html, get_selected_html, set_selected_html} from './dialog_input_utils'

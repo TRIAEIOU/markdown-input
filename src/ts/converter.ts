@@ -11,7 +11,7 @@ import {extendedTableSyntax, extendedTableFromMarkdown, extendedTableToMarkdown,
 import {gfmTableFromMarkdown, gfmTableToMarkdown} from 'mdast-util-gfm-table'
 import {gfmTable} from 'micromark-extension-gfm-table'
 import {Configuration, createInline} from 'mdast-hast-extension-inline-factory'
-import {directive} from 'micromark-extension-directive';
+import {directive} from 'micromark-extension-directive'
 import {directiveFromMarkdown, directiveToMarkdown} from 'mdast-util-directive'
 'micromark-extension-directive/lib/html'
 import {inlineMediaHastHandler, inlineMediaMdastHandler} from './Unified/inline-media'
@@ -23,6 +23,7 @@ import {hastToMdastCorrectList, mdastToHastCorrectList} from './Unified/correct-
 import {hastToMdastTableNewline, hastCellTableNewline} from './Unified/table-newline'
 import {remove} from 'unist-util-remove'
 import {table as gfmTableHandler} from 'mdast-util-to-hast/lib/handlers/table'
+import {tableBlockInlineHtmlHastHandler} from './Unified/tableBlockInlineHtml'
 
 const HARDBREAK = 'Hard break'
 const TABLE_STYLE = "Table style"
@@ -38,7 +39,8 @@ const config = {
         handlers: {
             ...iBToEmStrong,
             ...hastBrToMdastParagraph,
-            ...hastToMdastCorrectList
+            ...hastToMdastCorrectList,
+            ...tableBlockInlineHtmlHastHandler
         }
     },
     mdast_to_markdown: {
@@ -55,40 +57,40 @@ const config = {
             ...mdastToHastCorrectList    
         }
     }
-};
+}
 
 /////////////////////////////////////////////////////////////////////////////
 // Parse out current cloze ordinal from string, 0 if none (i.e. increment one for next)
-const CLOZE_ORD_RE = new RegExp(String.raw`{{c(\d+)::`, 'g');
+const CLOZE_ORD_RE = new RegExp(String.raw`{{c(\d+)::`, 'g')
 function parse_cloze(str:string): number {
-    let ord: number = 0;
-    let match: RegExpExecArray | null;
+    let ord: number = 0
+    let match: RegExpExecArray | null
     while ((match = CLOZE_ORD_RE.exec(str)) !== null) {
-        const o = parseInt(match[1]);
-        if (o > ord) ord = o;
+        const o = parseInt(match[1])
+        if (o > ord) ord = o
     }
-    return ord;
+    return ord
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Convert HTML to markdown, including preparsing
-const MOVE_CLOZE_IN_RE = new RegExp(`({{c\d+::)(.*?)}}`, 'gsi');
-const TAIL_OPEN_RE = new RegExp(String.raw`<(?:ol|ul)[^>]*>`, 'gi');
-const TAIL_CLOSE_RE = new RegExp(String.raw`<\/(?:ol|ul)[^>]*>`, 'gi');
-const TAIL_LIST_SEARCH_RE = new RegExp(String.raw`((?:<\/li>\s*<\/(?:ul|ol)>\s*)+)$`, 'si');
+const MOVE_CLOZE_IN_RE = new RegExp(`({{c\d+::)(.*?)}}`, 'gsi')
+const TAIL_OPEN_RE = new RegExp(String.raw`<(?:ol|ul)[^>]*>`, 'gi')
+const TAIL_CLOSE_RE = new RegExp(String.raw`<\/(?:ol|ul)[^>]*>`, 'gi')
+const TAIL_LIST_SEARCH_RE = new RegExp(String.raw`((?:<\/li>\s*<\/(?:ul|ol)>\s*)+)$`, 'si')
 
 function html_to_markdown(html:string): [string, number] {
     if (!html) return ['', 0]
-    const hast = hastFromHtml(html);
-    const mdast = hastToMdast(hast, { handlers: config.hast_to_mdast.handlers });
+    const hast = hastFromHtml(html)
+    const mdast = hastToMdast(hast, { handlers: config.hast_to_mdast.handlers })
     const md = mdastToMarkdown(mdast, config.mdast_to_markdown); 
-    return [md, parse_cloze(md)];
+    return [md, parse_cloze(md)]
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Convert markdown to HTML, including postprocessing
-const MOVE_CLOZE_OUT_RE = new RegExp(String.raw`({{c\d+::)(.*?)}}((?:\s*<\/li>\s*<\/(?:ol|ul)>)+)`, 'gsi');
-const LIST_END_RE = new RegExp(String.raw`<\/(ol|ul)>`, 'gi');
+const MOVE_CLOZE_OUT_RE = new RegExp(String.raw`({{c\d+::)(.*?)}}((?:\s*<\/li>\s*<\/(?:ol|ul)>)+)`, 'gsi')
+const LIST_END_RE = new RegExp(String.raw`<\/(ol|ul)>`, 'gi')
 
 function markdown_to_html(md: string): string {
     if (!md) return ''
@@ -96,11 +98,11 @@ function markdown_to_html(md: string): string {
     const mdast = markdownToMdast(md, 'utf-8', {
         extensions: config.markdown_to_mdast.extensions,
         mdastExtensions: config.markdown_to_mdast.mdastExtensions
-    });
+    })
     const hast = <HastElement>mdastToHast(mdast, {
         handlers: config.mdast_to_hast.handlers,
         allowDangerousHtml: true
-    });
+    })
     // Strip out newlines
     remove(hast, (nd) => {
         return !nd.position && nd.type === 'text' && nd.value === '\n'
@@ -108,9 +110,9 @@ function markdown_to_html(md: string): string {
     let html = hastToHtml(hast, {
         allowDangerousHtml: true,
         allowDangerousCharacters: true
-    });
+    })
 
-    return html;
+    return html
 }
 
 /////////////////////////////////////////////////////////////////////////////

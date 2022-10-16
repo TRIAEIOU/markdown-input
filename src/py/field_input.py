@@ -1,5 +1,5 @@
 import json, tempfile
-from aqt import mw, gui_hooks, QKeySequence, operations
+from aqt import mw, gui_hooks, QKeySequence
 from aqt.utils import *
 from .constants import *
 from .utils import clip_img_to_md

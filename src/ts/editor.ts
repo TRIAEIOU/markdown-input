@@ -1,6 +1,6 @@
 import {EditorView, keymap, highlightSpecialChars, drawSelection, rectangularSelection, crosshairCursor, highlightActiveLine, dropCursor, Command} from "@codemirror/view"
 import {EditorState, Transaction} from "@codemirror/state"
-import {indentOnInput, bracketMatching} from "@codemirror/language"
+import {indentOnInput, bracketMatching, indentUnit} from "@codemirror/language"
 //import {defaultKeymap, indentWithTab, history, historyKeymap} from "@codemirror/commands"
 import {blockComment, blockUncomment, copyLineDown, copyLineUp, cursorCharBackward, cursorCharForward, cursorCharLeft, cursorCharRight, cursorDocEnd, cursorDocStart, cursorGroupBackward, cursorGroupForward, cursorGroupLeft, cursorGroupRight, cursorLineBoundaryBackward, cursorLineBoundaryForward, cursorLineDown, cursorLineEnd, cursorLineStart, cursorLineUp, cursorMatchingBracket, cursorPageDown, cursorPageUp, cursorSubwordBackward, cursorSubwordForward, cursorSyntaxLeft, cursorSyntaxRight, defaultKeymap, deleteCharBackward, deleteCharForward, deleteGroupBackward, deleteGroupForward, deleteLine, deleteToLineEnd, deleteToLineStart, deleteTrailingWhitespace, emacsStyleKeymap, history, historyField, historyKeymap, indentLess, indentMore, indentSelection, indentWithTab, insertBlankLine, insertNewline, insertNewlineAndIndent, insertTab, invertedEffects, isolateHistory, lineComment, lineUncomment, moveLineDown, moveLineUp, redo, redoDepth, redoSelection, selectAll, selectCharBackward, selectCharForward, selectCharLeft, selectCharRight, selectDocEnd, selectDocStart, selectGroupBackward, selectGroupForward, selectGroupLeft, selectGroupRight, selectLine, selectLineBoundaryBackward, selectLineBoundaryForward, selectLineDown, selectLineEnd, selectLineStart, selectLineUp, selectMatchingBracket, selectPageDown, selectPageUp, selectParentSyntax, selectSubwordBackward, selectSubwordForward, selectSyntaxLeft, selectSyntaxRight, simplifySelection, splitLine, standardKeymap, toggleBlockComment, toggleBlockCommentByLine, toggleComment, toggleLineComment, transposeChars, undo, undoDepth, undoSelection} from "@codemirror/commands"
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
@@ -10,6 +10,7 @@ import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
 import {markdown} from "@codemirror/lang-markdown"
 import {ankiCloze, ankiClozeKeymap, clozeCurrent, clozeNext} from "./CodeMirror.extensions/ankiCloze"
 import {ankiImagePaste} from "./CodeMirror.extensions/ankiImagePaste"
+import {joinLines, joinLinesKeymap} from "./CodeMirror.extensions/joinLines"
 
 // Name to function lookup
 const cm_functions = {'clozeCurrent': clozeCurrent, 'clozeNext': clozeNext, 'RegExpCursor': RegExpCursor, 'SearchCursor': SearchCursor, 'SearchQuery': SearchQuery, 'closeSearchPanel': closeSearchPanel, 'findNext': findNext, 'findPrevious': findPrevious, 'getSearchQuery': getSearchQuery, 'gotoLine': gotoLine, 'highlightSelectionMatches': highlightSelectionMatches, 'openSearchPanel': openSearchPanel, 'replaceAll': replaceAll, 'replaceNext': replaceNext, 'search': search, 'searchKeymap': searchKeymap, 'selectMatches': selectMatches, 'selectNextOccurrence': selectNextOccurrence, 'selectSelectionMatches': selectSelectionMatches, 'setSearchQuery': setSearchQuery, 'blockComment': blockComment, 'blockUncomment': blockUncomment, 'copyLineDown': copyLineDown, 'copyLineUp': copyLineUp, 'cursorCharBackward': cursorCharBackward, 'cursorCharForward': cursorCharForward, 'cursorCharLeft': cursorCharLeft, 'cursorCharRight': cursorCharRight, 'cursorDocEnd': cursorDocEnd, 'cursorDocStart': cursorDocStart, 'cursorGroupBackward': cursorGroupBackward, 'cursorGroupForward': cursorGroupForward, 'cursorGroupLeft': cursorGroupLeft, 'cursorGroupRight': cursorGroupRight, 'cursorLineBoundaryBackward': cursorLineBoundaryBackward, 'cursorLineBoundaryForward': cursorLineBoundaryForward, 'cursorLineDown': cursorLineDown, 'cursorLineEnd': cursorLineEnd, 'cursorLineStart': cursorLineStart, 'cursorLineUp': cursorLineUp, 'cursorMatchingBracket': cursorMatchingBracket, 'cursorPageDown': cursorPageDown, 'cursorPageUp': cursorPageUp, 'cursorSubwordBackward': cursorSubwordBackward, 'cursorSubwordForward': cursorSubwordForward, 'cursorSyntaxLeft': cursorSyntaxLeft, 'cursorSyntaxRight': cursorSyntaxRight, 'defaultKeymap': defaultKeymap, 'deleteCharBackward': deleteCharBackward, 'deleteCharForward': deleteCharForward, 'deleteGroupBackward': deleteGroupBackward, 'deleteGroupForward': deleteGroupForward, 'deleteLine': deleteLine, 'deleteToLineEnd': deleteToLineEnd, 'deleteToLineStart': deleteToLineStart, 'deleteTrailingWhitespace': deleteTrailingWhitespace, 'emacsStyleKeymap': emacsStyleKeymap, 'history': history, 'historyField': historyField, 'historyKeymap': historyKeymap, 'indentLess': indentLess, 'indentMore': indentMore, 'indentSelection': indentSelection, 'indentWithTab': indentWithTab, 'insertBlankLine': insertBlankLine, 'insertNewline': insertNewline, 'insertNewlineAndIndent': insertNewlineAndIndent, 'insertTab': insertTab, 'invertedEffects': invertedEffects, 'isolateHistory': isolateHistory, 'lineComment': lineComment, 'lineUncomment': lineUncomment, 'moveLineDown': moveLineDown, 'moveLineUp': moveLineUp, 'redo': redo, 'redoDepth': redoDepth, 'redoSelection': redoSelection, 'selectAll': selectAll, 'selectCharBackward': selectCharBackward, 'selectCharForward': selectCharForward, 'selectCharLeft': selectCharLeft, 'selectCharRight': selectCharRight, 'selectDocEnd': selectDocEnd, 'selectDocStart': selectDocStart, 'selectGroupBackward': selectGroupBackward, 'selectGroupForward': selectGroupForward, 'selectGroupLeft': selectGroupLeft, 'selectGroupRight': selectGroupRight, 'selectLine': selectLine, 'selectLineBoundaryBackward': selectLineBoundaryBackward, 'selectLineBoundaryForward': selectLineBoundaryForward, 'selectLineDown': selectLineDown, 'selectLineEnd': selectLineEnd, 'selectLineStart': selectLineStart, 'selectLineUp': selectLineUp, 'selectMatchingBracket': selectMatchingBracket, 'selectPageDown': selectPageDown, 'selectPageUp': selectPageUp, 'selectParentSyntax': selectParentSyntax, 'selectSubwordBackward': selectSubwordBackward, 'selectSubwordForward': selectSubwordForward, 'selectSyntaxLeft': selectSyntaxLeft, 'selectSyntaxRight': selectSyntaxRight, 'simplifySelection': simplifySelection, 'splitLine': splitLine, 'standardKeymap': standardKeymap, 'toggleBlockComment': toggleBlockComment, 'toggleBlockCommentByLine': toggleBlockCommentByLine, 'toggleComment': toggleComment, 'toggleLineComment': toggleLineComment, 'transposeChars': transposeChars, 'undo': undo, 'undoDepth': undoDepth, 'undoSelection': undoSelection}
@@ -37,6 +38,7 @@ function create_state(doc: string, ord: number) {
       crosshairCursor(),
       highlightActiveLine(),
       highlightSelectionMatches(),
+      indentUnit.of("    "),
       // @ts-ignore FIXME: what is correct TS for below?
       keymap.of([
         ..._config.keymap,
@@ -45,12 +47,14 @@ function create_state(doc: string, ord: number) {
         ...defaultKeymap,
         indentWithTab,
         ...historyKeymap,
-        ...completionKeymap
+        ...completionKeymap,
+        ...joinLinesKeymap
       ]),
       EditorView.lineWrapping,
       markdown(),
       ankiCloze({ordinal: ord}),
-      ankiImagePaste()
+      ankiImagePaste(),
+      joinLines()
     ]
   })
 }

@@ -40,7 +40,7 @@ function hastCellTableNewline(cell: any, sym: string) {
                     if (i !== tlen - 1) cds.push(br)
                 })
             } else {
-                if (_nd.children.length) replace(_nd)
+                if (_nd.children?.length) replace(_nd)
                 cds.push(_nd)
             }
         })
