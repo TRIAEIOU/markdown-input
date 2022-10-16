@@ -16,6 +16,8 @@
 
 Conversion to/from HTML is done through unified functions `hast-util-from/to-html` `hast-util-to-mdast`/`mdast-util-to-hast` and `mdast-util-to/from-markdown` which are [CommonMark](https://spec.commonmark.org/) compliant with the following changes and extensions:
 
+- Configurable hard break (`<br>`) conversion as `backslash` or `spaces` (default spaces). Markdown ⇒ HTML takes both versions.
+- Configurable HTML ⇒ Markdown conversion of lists (bullets, indent)
 - Markdown uses `<p>` tags to mark paragraphs, in the Anki editor those are omitted and `<br>` tags are used "instead". The converter takes this into consideration (i.e. generates `<br>` HTML).
 - Markdown has a concept of lists being ["tight" or "loose"](https://spec.commonmark.org/0.30/#loose) - leading to text in the list items being wrapped in `<p>` tags or not, which in turn changes the ammount of padding that is rendered. It is unclear how to transform that in a meaningful way Markdown → HTML → Markdown. Therefore the HTML lists generated have a `markdown-tight` or `markdown-loose` class applied so they can be styled according to preference, example (needs to be tweaked):
 
@@ -24,18 +26,20 @@ Conversion to/from HTML is done through unified functions `hast-util-from/to-htm
   ul.markdown-tight > li, ol.markdown-tight > li {padding: 0px}
   ```
 
-- Spec `*sample*`/`<em>sample</em>` and `**sample**`/`<strong>sample</strong>` are swapped to `<i>` and `<b>` to match the Anki editor (and spec `_sample_` has been rerouted to underline, see below).
-- GFM style tables that have been extended  (see below).
-- `~sample~` for subscript
-- `^sample^` for superscript
-- `_sample_` for underline (spec Markdown is `<em>` which renders as italic).
-- GFM strikethrough (`~~sample~~`) for strikthrough text (note: GFM also allows single `~` but that has been rerouted to subscript, see above).
-- Directive defined for [Inline Media](https://ankiweb.net/shared/info/683715045), e.g. `:audio(im-xyz.ogg){loop auto_front}`/`:video(im-xyz.ogg){loop auto_front height=200}`
-- [Defintion lists](https://github.com/wataru-chocola/mdast-util-definition-list) (not available in the core Anki editor).
+- Spec `*sample*`/`<em>sample</em>` and `**sample**`/`<strong>sample</strong>` are swapped to `<i>` and `<b>` to match the Anki editor.
+- Configurable Markdown inline/span syntax, defaults are:
+  - `~sample~` for subscript
+  - `^sample^` for superscript
+  - `_sample_` for underline (spec Markdown is `<em>` which renders as italic, if you remove the underline entry it will revert to spec Markdown).
+  - GFM strikethrough (`~~sample~~`) for strikthrough text (note: GFM also allows single `~` but that has been assigned to subscript per default, see above).
+- Directive defined for [Inline Media](https://ankiweb.net/shared/info/683715045), e.g. `:audio(im-xyz.ogg){loop auto_front}`/`:video(im-xyz.ogg){loop auto_front height=200}` - enabled by default.
+- [Defintion lists](https://github.com/wataru-chocola/mdast-util-definition-list) (not available in the core Anki editor) - enabled by default.
 
 ### Tables
 
-Standard GFM table syntax is supported:
+Configurable table styles: `extended`, `gfm` and `none`:
+
+#### GFM table syntax
 
 ``` Markdown
 | A     |   GFM |
@@ -43,7 +47,9 @@ Standard GFM table syntax is supported:
 | table |     ! |
 ```
 
-And has been extended to allow headerless tables:
+#### Extended table syntax
+
+GFM style extended to also allow headerless tables (no `<thead>` generated):
 
 ``` Markdown
 | :--: | ----: |
@@ -58,11 +64,9 @@ and
 | with | rows  |
 ```
 
-will both result in tables without a `<thead>` being generated.
-
-- GFM tables do not allow newlines inside them. Per default trema (`¨`) will be replaced by a hard line break inside table cells (`<br>` is too cumbersome to write), the symbol can be configure in `json.config`, set to `""` to remove the functionality.
+- Tables do not allow newlines inside them, configurable character to be replaced by hard line break (`<br>`) inside table cells (default trema: `¨`, set to `""`) as I find `<br>`  too cumbersome to write.
 - Optional fencing pipes (i.e. at start and end of each row).
-- Align none, left, right and center.
+- Align none, left, right and center as per GFM format.
 
 ## Editor
 
@@ -71,18 +75,17 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - Markdown syntax highlighting and auto fill (continue lists, autoindent etc.)
 - Undo history
 - Multiple drawable selections
-- Search and replace, `Ctrl+F`, currently only in the dialog input as the Anki editor eats a lot of the shortcuts.
+- Search and replace, `Ctrl+F`, per default only in dialog input as the Anki editor eats `Ctrl+F`, set to other shortcut in config or remap the Anki editor shortcuts with [Customize Keyboard Shortcuts](https://ankiweb.net/shared/info/24411424) for example.
 - Insert cloze deletions (see below)
 
 ### Cloze deletions
 
-Cloze deletions are inserted as in the rich text editor with the following addition:
-
-- Closing `}}` are "moved up" to end of last item in lists (and conversly moved out to include the closing `</li></ul|ol>` tags).
+Cloze deletions are inserted as in the rich text editor.
 - Keyboard shortcuts:
   - Cloze without increment: `Ctrl+Alt+Shift+C`
   - Cloze with increment: `Ctrl+Shift+C` (with multiple selections this will cloze each incrementally)
 - If you feel the cloze deletion tags end up in the wrong place please make sure you understand how Markdown is converted to HTML (notably line breaks and empty lines).
+- Enabling `Cloze lists` in the config will *try* to move `}}` "up" to end of last item in lists (and conversly moved out to include the closing `</li></ul|ol>` tags) - currently a little buggy.
 
 ## Configuration
 
@@ -138,5 +141,5 @@ It would seem logical to make the Field input editor a Svelte component which im
 
 ## Changelog
 
-- 2022-08-27: Add image paste support, prevent focus from being stolen on focus in/out, bug fixes
-- 2022-10-16: Make dialog mode non-modal (and allow multiple dialogs open), add `Ctrl-Shift-j` to join lines, bug fixes
+- 2022-08-27: Add image paste support, prevent focus from being stolen on focus in/out, bug fixes.
+- 2022-10-16: Make dialog mode non-modal (and allow multiple dialogs open), add `Ctrl-Shift-j` to join lines, make inline Markdown syntax configurable, make several options configurable, bug fixes.
