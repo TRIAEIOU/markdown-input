@@ -14,7 +14,7 @@ function correctMdastList(h: HastH, nd: Element, pt: HastParent) {
     const cds = []
     nd.children.forEach((cd: HastElement, i) => {
       if (cd.tagName === 'ul' || cd.tagName === 'ol') {
-        if (i) cds[i - 1].children.push(cd)
+        if (i) cds[cds.length - 1].children?.push(cd)
         else cds.push({type: 'element', tagName: 'li', children: [cd]})
       } else cds.push(cd)
     })

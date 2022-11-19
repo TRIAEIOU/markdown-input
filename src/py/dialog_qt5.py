@@ -18,7 +18,7 @@ class Ui_dialog(object):
         dialog.setLayoutDirection(QtCore.Qt.LeftToRight)
         dialog.setAutoFillBackground(False)
         dialog.setSizeGripEnabled(True)
-        dialog.setModal(True)
+        dialog.setModal(False)
         self.verticalLayout_2 = QtWidgets.QVBoxLayout(dialog)
         self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.web = QtWebEngineWidgets.QWebEngineView(dialog)
