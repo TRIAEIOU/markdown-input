@@ -24,7 +24,6 @@ class IM_dialog(QDialog):
         global _config, _dlgs
         QDialog.__init__(self)
         _dlgs[hex(id(self))] = self
-        print(">>>" + str(_dlgs))
         self.ui = dialog.Ui_dialog()
         self.ui.setupUi(self)
         self.ui.btns.accepted.connect(self.accept)
@@ -72,7 +71,7 @@ class IM_dialog(QDialog):
             @pyqtSlot(str, result=str)  # type: ignore
             def cmd(self, str: str) -> Any:
                 return json.dumps(self._handler(str))
-        
+
         self._bridge = Bridge(handler)
         self._channel = QWebChannel(self.ui.web)
         self._channel.registerObject("py", self._bridge)
@@ -96,9 +95,9 @@ class IM_dialog(QDialog):
                             cb(JSON.parse(res));
                         }
                     }
-                
+
                     channel.objects.py.cmd(arg, resultCB);
-                    return false;                   
+                    return false;
                 }
                 pycmd("domDone");
             });
@@ -133,7 +132,7 @@ class IM_dialog(QDialog):
             #note = aqt.mw.col.get_note(self.nid)
             #note.fields[self.fid] = html
             #aqt.mw.col.update_note(note)
-        
+
         self.ui.web.page().runJavaScript(f'''(function () {{
             return MarkdownInput.get_html();
         }})();''', save_field)
@@ -156,6 +155,8 @@ class IM_dialog(QDialog):
 def edit_field(editor: aqt.editor.Editor):
     global _config
 
+    if editor.currentField == None:
+        return
     dlg = IM_dialog(editor, editor.note, editor.currentField)
     if _config[DIALOG_INPUT][SHORTCUT_ACCEPT]:
         QShortcut(_config[DIALOG_INPUT][SHORTCUT_ACCEPT], dlg).activated.connect(dlg.accept)
@@ -170,7 +171,7 @@ def edit_field(editor: aqt.editor.Editor):
         scr_geom = aqt.mw.app.primaryScreen().geometry()
 
         geom.setWidth(int(match.group(1)))
-        geom.setHeight(int(match.group(2)))    
+        geom.setHeight(int(match.group(2)))
         if geom.width() > scr_geom.width():
             geom.setWidth(scr_geom.width())
         if geom.height() > scr_geom.height():
@@ -187,19 +188,23 @@ def edit_field(editor: aqt.editor.Editor):
 
     dlg.show()
 
-    
 
 ###########################################################################
 # Configure and activate dialog Markdown input
 def init(cfg: object):
     global _config
-    _config = cfg    
-    
-    aqt.gui_hooks.editor_did_init_shortcuts.append(lambda shortcuts, editor: 
-        shortcuts.append([
-            QKeySequence(_config[DIALOG_INPUT][SHORTCUT]),
-            lambda ed=editor: edit_field(ed)
-        ])
-    )
+    def editor_btn(buttons, editor):
+        btn = editor.addButton(
+            os.path.join(ADDON_PATH, "gfx", "markdown.png"),
+            "md_dlg_btn",
+            edit_field,
+            tip=f"Markdown Input ({_config[DIALOG_INPUT][SHORTCUT]})",
+            keys=_config[DIALOG_INPUT][SHORTCUT]
+            )
+        buttons.append(btn)
+        return buttons
+
+    _config = cfg
+    aqt.gui_hooks.editor_did_init_buttons.append(editor_btn)
     #gui_hooks.webview_will_set_content.append(add_srcs)
 

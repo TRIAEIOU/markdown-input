@@ -1,10 +1,9 @@
 {
 	"Field input": {
 		"Shortcut": "Ctrl+M",
+		"Rich text shortcut": "Ctrl+Alt+X",
 		"Default field state": "rich text",
-		"Restore state on toggle": false,
-		"Hide plain text on toggle": true,
-		"Hide rich text on toggle": true,
+		"Cycle rich text/Markdown": true,
 		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }"
 	},
 	"Dialog input": {
@@ -26,7 +25,6 @@
 		},
 		"Definition lists": true,
 		"Inline media": true,
-		"Cloze lists": true,
 		"Table style": "extended",
 		"Table newline": "¨",
 		"Hard break": "spaces",

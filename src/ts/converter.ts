@@ -26,12 +26,12 @@ import {table as gfmTableHandler} from 'mdast-util-to-hast/lib/handlers/table'
 import {tableBlockInlineHtmlHastHandler} from './Unified/tableBlockInlineHtml'
 
 const HARDBREAK = 'Hard break'
-const TABLE_STYLE = "Table style"
+const TABLE_STYLE = 'Table style'
 const NEWLINE = 'Table newline'
-const DEF_LIST = "Definition lists"
-const INLINE_MEDIA = "Inline media"
-const INLINES = "Inlines"
-const MARKDOWN = "Markdown format"
+const DEF_LIST = 'Definition lists'
+const INLINE_MEDIA = 'Inline media'
+const INLINES = 'Inlines'
+const MARKDOWN = 'Markdown format'
 
 // Module scope configuration
 const config = {
@@ -54,7 +54,7 @@ const config = {
         handlers: {
             ...emStrongToIB,
             ...mdastParagraphToHastBr,
-            ...mdastToHastCorrectList    
+            ...mdastToHastCorrectList
         }
     }
 }
@@ -73,25 +73,18 @@ function parse_cloze(str:string): number {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Convert HTML to markdown, including preparsing
-const MOVE_CLOZE_IN_RE = new RegExp(`({{c\d+::)(.*?)}}`, 'gsi')
-const TAIL_OPEN_RE = new RegExp(String.raw`<(?:ol|ul)[^>]*>`, 'gi')
-const TAIL_CLOSE_RE = new RegExp(String.raw`<\/(?:ol|ul)[^>]*>`, 'gi')
-const TAIL_LIST_SEARCH_RE = new RegExp(String.raw`((?:<\/li>\s*<\/(?:ul|ol)>\s*)+)$`, 'si')
-
+// Convert HTML to markdown
 function html_to_markdown(html:string): [string, number] {
     if (!html) return ['', 0]
     const hast = hastFromHtml(html)
     const mdast = hastToMdast(hast, { handlers: config.hast_to_mdast.handlers })
-    const md = mdastToMarkdown(mdast, config.mdast_to_markdown); 
+    // Strip spec mdastToMarkdown eof newline
+    const md = mdastToMarkdown(mdast, config.mdast_to_markdown).slice(0, -1)
     return [md, parse_cloze(md)]
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Convert markdown to HTML, including postprocessing
-const MOVE_CLOZE_OUT_RE = new RegExp(String.raw`({{c\d+::)(.*?)}}((?:\s*<\/li>\s*<\/(?:ol|ul)>)+)`, 'gsi')
-const LIST_END_RE = new RegExp(String.raw`<\/(ol|ul)>`, 'gi')
-
+// Convert markdown to HTML
 function markdown_to_html(md: string): string {
     if (!md) return ''
 
@@ -173,7 +166,7 @@ function init(cfg: {}) {
         config.markdown_to_mdast.extensions.push(gfmTable)
         config.markdown_to_mdast.mdastExtensions.push(gfmTableFromMarkdown)
     }
-    
+
     for (const inline of cfg[INLINES]) {
         const ext = createInline(<Configuration>inline)
         for (const [k, v] of Object.entries(ext.hastHandler))

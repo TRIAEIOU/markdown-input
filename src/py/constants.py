@@ -1,3 +1,5 @@
+import os
+
 FIELD_INPUT = 'Field input'
 TOGGLE_STATE = 'Shortcut field input'
 FIELD_DEFAULT = 'Default field state'
@@ -19,5 +21,8 @@ CFG_LAST_GEOM = "Last geometry"
 
 CSS = "CSS"
 SHORTCUT = "Shortcut"
+RICH_SHORTCUT = "Rich text shortcut"
 CONVERTER = "Converter"
 EDITOR = "CodeMirror"
+
+ADDON_PATH = os.path.dirname(__file__)

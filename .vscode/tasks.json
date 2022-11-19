@@ -4,7 +4,7 @@
         {
             "label": "Create output dirs",
             "type": "shell",
-            "command": "Write-host Creating output directories... ; md -Force ./bin, ./dist | Out-Null",
+            "command": "Write-host Creating output directories... ; md -Force ./bin/gfx, ./dist | Out-Null",
             "options": {
                 "cwd": "${workspaceFolder}"
             },
@@ -91,6 +91,25 @@
             }
         },
         {
+            "label": "Build graphics",
+            "type": "shell",
+            "command": "Write-host Building graphics... ; cp ./src/gfx/* ./bin/gfx | Out-Null",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "dependsOn": [
+                "Create output dirs"
+            ],
+            "presentation": {
+                "echo": false,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared",
+                "showReuseMessage": true,
+                "clear": false
+            }
+        },
+        {
             "label": "Build update",
             "type": "shell",
             "command": "Write-host Building update... ; rm -R -Force ./dist/*; rm -R -Force ./bin/__pycache__; Get-ChildItem -Path ./bin/*, ./README.md, ./LICENSE | Compress-Archive -Force -DestinationPath ./dist/update.zip; pandoc -t ${env:CODEPATH}/pandoc/anki-addon.lua --abbreviations=${env:CODEPATH}/pandoc/empty ./README.md -o ./dist/update.txt | Out-Null",
@@ -115,6 +134,7 @@
                 "Build TS",
                 "Build PY",
                 "Build config",
+                "Build graphics",
                 "Build update"
             ]
         }
