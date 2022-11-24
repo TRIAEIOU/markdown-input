@@ -71,6 +71,7 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
   - Configurable default state for editor fields (`rich text` or `markdown`, default `rich text`).
   - Configurable behaviour of "field input mode" shortcut, cycle between rich text and Markdown or just toggle Markdown input. (default cycle: `true`)
   - Configurable shortcut to toggle rich text input. (default `Ctrl+Alt+X`)
+  - Configurable shortcuts to move to next/previous input (since tab is a valid Markdown character it will not work to "tab out" of a markdown input). (default `Ctrl+PgDown` and `Ctrl+PgUp`)
 - "Dialog input mode"
   - Configurable dialog size (`parent`, `last` or `WidthxHeight`, default `parent`)
   - Open the entire field or only the selection in editor for Markdown input. (default selection only: `false`)

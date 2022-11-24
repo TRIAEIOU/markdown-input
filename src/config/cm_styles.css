@@ -10,6 +10,7 @@ div.cm-editor {
     overflow: auto;
 }
 
-div.markdown-input {
-    border: 1px solid var(--faint-border);
+div.markdown-input:not([hidden]) ~ div.rich-text-input {
+    padding-top: 5px;
+    border-top: 5px double var(--faint-border);
 }

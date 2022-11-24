@@ -2,6 +2,8 @@
 	"Field input": {
 		"Shortcut": "Ctrl+M",
 		"Rich text shortcut": "Ctrl+Alt+X",
+		"Next field": "Ctrl+PgDown",
+		"Previous field": "Ctrl+PgUp",
 		"Default field state": "rich text",
 		"Cycle rich text/Markdown": true,
 		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }"

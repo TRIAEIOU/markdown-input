@@ -22,6 +22,8 @@ CFG_LAST_GEOM = "Last geometry"
 CSS = "CSS"
 SHORTCUT = "Shortcut"
 RICH_SHORTCUT = "Rich text shortcut"
+NEXT_SHORTCUT = "Next field"
+PREV_SHORTCUT = "Previous field"
 CONVERTER = "Converter"
 EDITOR = "CodeMirror"
 

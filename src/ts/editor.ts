@@ -1,5 +1,5 @@
 import {EditorView, keymap, highlightSpecialChars, drawSelection, rectangularSelection, crosshairCursor, highlightActiveLine, dropCursor, Command} from "@codemirror/view"
-import {EditorState, Extension, Transaction} from "@codemirror/state"
+import {EditorState, Extension, Transaction, EditorSelection, SelectionRange} from "@codemirror/state"
 import {indentOnInput, bracketMatching, indentUnit} from "@codemirror/language"
 import {blockComment, blockUncomment, copyLineDown, copyLineUp, cursorCharBackward, cursorCharForward, cursorCharLeft, cursorCharRight, cursorDocEnd, cursorDocStart, cursorGroupBackward, cursorGroupForward, cursorGroupLeft, cursorGroupRight, cursorLineBoundaryBackward, cursorLineBoundaryForward, cursorLineDown, cursorLineEnd, cursorLineStart, cursorLineUp, cursorMatchingBracket, cursorPageDown, cursorPageUp, cursorSubwordBackward, cursorSubwordForward, cursorSyntaxLeft, cursorSyntaxRight, defaultKeymap, deleteCharBackward, deleteCharForward, deleteGroupBackward, deleteGroupForward, deleteLine, deleteToLineEnd, deleteToLineStart, deleteTrailingWhitespace, emacsStyleKeymap, history, historyField, historyKeymap, indentLess, indentMore, indentSelection, indentWithTab, insertBlankLine, insertNewline, insertNewlineAndIndent, insertTab, invertedEffects, isolateHistory, lineComment, lineUncomment, moveLineDown, moveLineUp, redo, redoDepth, redoSelection, selectAll, selectCharBackward, selectCharForward, selectCharLeft, selectCharRight, selectDocEnd, selectDocStart, selectGroupBackward, selectGroupForward, selectGroupLeft, selectGroupRight, selectLine, selectLineBoundaryBackward, selectLineBoundaryForward, selectLineDown, selectLineEnd, selectLineStart, selectLineUp, selectMatchingBracket, selectPageDown, selectPageUp, selectParentSyntax, selectSubwordBackward, selectSubwordForward, selectSyntaxLeft, selectSyntaxRight, simplifySelection, splitLine, standardKeymap, toggleBlockComment, toggleBlockCommentByLine, toggleComment, toggleLineComment, transposeChars, undo, undoDepth, undoSelection} from "@codemirror/commands"
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
@@ -77,6 +77,16 @@ function create_editor(parent: Element, input?: (doc: string) => void, events?: 
   return cm
 }
 
+function get_selections(cm: MDIEditorView) {
+  return cm.state.selection.ranges
+}
+
+function set_selections(cm: MDIEditorView, ranges: readonly SelectionRange[]) {
+  cm.dispatch({
+    selection: EditorSelection.create(ranges)
+  })
+}
+
 function init(cfg: object) {
   _config.keymap = []
   cfg['keymap']?.forEach((sc: any) => {
@@ -90,4 +100,4 @@ function init(cfg: object) {
 }
 
 export type {MDIEditorView}
-export {create_editor, init}
+export {create_editor, init, get_selections, set_selections}

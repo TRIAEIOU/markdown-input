@@ -10,9 +10,12 @@ declare var NoteEditor: {
 import type { EditorFieldAPI, EditingInputAPI } from "anki/ts/editor/EditorField.svelte"
 // @ts-ignore FIXME: how to import correctly?
 import type { RichTextInputAPI } from "anki/ts/editor/rich-text-input"
-import { create_editor } from "./editor"
+// @ts-ignore FIXME: how to import correctly?
+import type { PlainTextInputAPI } from "anki/ts/editor/plain-text-input"
+import { create_editor, get_selections, set_selections } from "./editor"
 import type { MDIEditorView } from "./editor"
 import { html_to_markdown, markdown_to_html } from "./converter"
+import { SelectionRange } from "@codemirror/state"
 
 const FIELD_DEFAULT = 'Default field state'
 const MD = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" fill="none" viewBox="0 0 208 128" xmlns="http://www.w3.org/2000/svg"><g fill="#000"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></g></svg>'
@@ -29,6 +32,7 @@ interface MDInputAPI {
     container: HTMLElement,
     editor: MDIEditorView,
     badge: HTMLSpanElement,
+    refocus: readonly SelectionRange[],
     toggle(): void
 }
 
@@ -36,9 +40,98 @@ interface MDInputElement extends HTMLElement {
     markdown_input: MDInputAPI
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Get the rich text input of a field
 function rich_edit(field: EditorFieldAPI): RichTextInputAPI | undefined {
     return  (get(field.editingArea.editingInputs) as EditingInputAPI[])
             .find(input => input?.name === "rich-text")
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Get the plain text input of a field
+function plain_edit(field: EditorFieldAPI): PlainTextInputAPI | undefined {
+    return  (get(field.editingArea.editingInputs) as EditingInputAPI[])
+            .find(input => input?.name === "plain-text")
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Return wether an input element is hidden by attribute or class
+function hidden(el: HTMLElement) {
+    if (!el) return undefined
+    return Boolean(el.hidden || el.classList.contains('hidden'))
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Get ancestor matching a selector
+function ancestor(descendant: HTMLElement, selector: string) {
+    while (descendant && !descendant.matches(selector))
+            descendant = descendant.parentElement
+    return descendant
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Focus the editor of a an input element
+function focus(input: HTMLElement) {
+    if (!input || input.hidden) return false
+    let editor
+    if (input.querySelector('.markdown-input > .cm-editor'))
+        editor  = (ancestor(input, '.editor-field') as MDInputElement)
+            ?.markdown_input?.editor
+    else editor = input.querySelector('.CodeMirror > div > textarea') as HTMLElement
+        || input.querySelector('.rich-text-editable')?.shadowRoot.querySelector('anki-editable')
+
+    editor?.focus()
+    return Boolean(editor)
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Cycle to next field or first if none active
+async function cycle_next() {
+    const active = ancestor(document.activeElement as HTMLElement, '.editing-area > div')
+    // Check for inputs in current field
+    let input = older(active)
+    // No inputs in current field, find prev field
+    if (!input) {
+        let fld_root = ancestor(active, '.editor-field')
+            .parentElement as HTMLElement
+        while (fld_root && !input) {
+            fld_root = fld_root.nextElementSibling as HTMLElement
+            input = fld_root?.querySelector('.editing-area')?.firstElementChild as HTMLElement
+            if (hidden(input)) input = older(input)
+        }
+    }
+    focus(input)
+
+    function older(fld: HTMLElement) {
+        let nxt = fld?.nextElementSibling as HTMLElement
+        while (hidden(nxt)) nxt = nxt.nextElementSibling as HTMLElement
+        return nxt
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Cycle to prev field or first if none active
+async function cycle_prev() {
+    const active = ancestor(document.activeElement as HTMLElement, '.editing-area > div')
+    // Check for inputs in current field
+    let input = younger(active)
+    // No inputs in current field, find prev field
+    if (!input) {
+        let fld_root = ancestor(active, '.editor-field')
+            .parentElement as HTMLElement
+        while (fld_root && !input) {
+            fld_root = fld_root.previousElementSibling as HTMLElement
+            input = fld_root?.querySelector('.editing-area')?.lastElementChild as HTMLElement
+            if (hidden(input)) input = younger(input)
+        }
+    }
+    focus(input)
+
+    function younger(fld: HTMLElement) {
+        let prv = fld?.previousElementSibling as HTMLElement
+        while (hidden(prv)) prv = prv.previousElementSibling as HTMLElement
+        return prv
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -69,21 +162,6 @@ async function add_editor(field: EditorFieldAPI, hidden: boolean): Promise<MDInp
                         fields.scrollLeft += 0.03 * evt.deltaX
                         break
                 }
-            },
-            focusin(evt: FocusEvent) {
-                if(editor['unsubscribe']) {
-                    editor['unsubscribe']()
-                    editor['unsubscribe'] = null
-                }
-            },
-            focusout(evt: FocusEvent) {
-                if(!editor['unsubscribe']
-                    && !editor.dom.parentElement.hidden) {
-                        editor['unsubscribe'] = field.editingArea.content.subscribe(html => {
-                            const [md, ord] = html_to_markdown(html)
-                            editor.set_doc(md, ord, "end")
-                        })
-                }
             }
         }
     )
@@ -91,6 +169,7 @@ async function add_editor(field: EditorFieldAPI, hidden: boolean): Promise<MDInp
         container: ed_area_el.insertBefore(container, ed_area_el.firstElementChild),
         badge: ed_area_el.parentElement.querySelector('.markdown-input-badge span') as HTMLSpanElement,
         editor: editor,
+        refocus: undefined,
         toggle: () => { toggle(field) }
     }
     field_el.markdown_input = markdown_input
@@ -172,7 +251,7 @@ async function load_note() {
 
         // "Old field" with focus, refocus (i.e. keep state)
         } else if (el.contains(document.activeElement)) {
-            el.markdown_input.editor.focus()
+            el.markdown_input?.editor.focus()
             focused = true
         }
 
@@ -183,19 +262,65 @@ async function load_note() {
     }
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Handle focus events for subscribing/unsubscribing and overriding focus-trap
+async function focusin(evt: FocusEvent) {
+    const tgt = evt.target as HTMLElement
+    const el = ancestor(tgt, '.editor-field') as MDInputElement
+    if (!el.markdown_input) return
+
+    // We focus MD CM, unsubscribe
+    if (tgt.classList.contains('cm-content')) {
+        if (el.markdown_input.editor['unsubscribe']) {
+            el.markdown_input.editor['unsubscribe']()
+            el.markdown_input.editor['unsubscribe'] = null
+        }
+    // We should take back focus when focusing back into document
+    } else if (el.markdown_input.refocus !== undefined
+        && el.markdown_input?.container.hidden === false
+    ) {
+        set_selections(el.markdown_input.editor, el.markdown_input.refocus)
+        el.markdown_input.refocus = undefined
+        el.markdown_input.editor.focus() // Event recursion
+    // Focus is somewhere else, subscribe
+    } else {
+        if (!el.markdown_input.editor['unsubscribe']
+            && !el.markdown_input.editor.dom.parentElement.hidden
+        ) {
+            const cont = await NoteEditor.instances[0].fields
+                .find(async f => (await f.element) === el)
+                .editingArea.content
+            el.markdown_input.editor['unsubscribe'] = cont.subscribe(html => {
+                    const [md, ord] = html_to_markdown(html)
+                    el.markdown_input.editor.set_doc(md, ord, "end")
+            })
+        }
+
+    }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Store selection when focusing out from markdown-input
+async function focusout(evt: FocusEvent) {
+    const tgt = evt.target as HTMLElement
+    const tgt_el = ancestor(tgt, '.editor-field')
+    if (tgt.classList?.contains('cm-content')
+        && tgt_el !== ancestor(evt.relatedTarget as HTMLElement, '.editor-field'))
+        (tgt_el as MDInputElement).markdown_input.refocus =
+            get_selections((tgt_el as MDInputElement).markdown_input.editor)
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Setup event listeners and configuration - create CM instances only on demand
 function init(cfg: {}) {
     for (const key in cfg) _config[key] = cfg[key];
-
-    // Ugly hack to retake focus from Anki Svelte focus trap on refocus
-    addEventListener('focus', evt => {
-        const ae = document?.activeElement
-        if (ae?.classList.contains('focus-trap')) {
-            const mi = (ae.parentElement as MDInputElement).markdown_input
-            if (mi?.container?.hidden === false) mi.editor.focus()
-        }
-    })
+    if (!document['mdi_focus_added']) {
+        document.addEventListener('focusin', focusin)
+        document.addEventListener('focusout', focusout)
+        document['mdi_focus_added'] = true
+    }
 }
 
 export { init as converter_init } from "./converter"
 export { init as editor_init } from "./editor"
-export { toggle, toggle_rich, load_note, init }
+export { toggle, toggle_rich, cycle_next, cycle_prev, load_note, init }
