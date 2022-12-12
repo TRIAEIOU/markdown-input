@@ -2,7 +2,7 @@
 
 [Anki](https://github.com/ankitects/anki) [addon](https://github.com/TRIAEIOU/Markdown-input) that allows adding and editing notes in extended [CommonMark](https://spec.commonmark.org/) [Markdown](https://daringfireball.net/projects/markdown/), either directly in the editor fields ("field input mode", similar to the core rich and plain text edit interface) or by opening a separate window to edit a specific field ("dialog input mode").
 
-![Markdown input](https://github.com/TRIAEIOU/Markdown-input/blob/main/Screenshots/screen.png?raw=true)
+![Markdown input](https://github.com/TRIAEIOU/Markdown-input/raw/main/Screenshots/screen.png?raw=true)
 
 ## Warning
 
