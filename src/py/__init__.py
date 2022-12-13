@@ -18,17 +18,22 @@ if strvercmp(config.get('version', '0.0.0'), '1.2.0') < 0:
     config['Field input'].pop('Hide rich text on toggle', None)
     config['Converter'].pop('Cloze lists', None)
 
-if strvercmp(config.get('version', '0.0.0'), '1.2.1') < 0:
-    if config.get('Rich text shortcut', None) == None:
-        config['Rich text shortcut'] = 'Ctrl+Alt+X'
-    if config.get('Next field', None) == None:
-        config['Next field'] = 'Ctrl+PgDown'
-    if config.get('Previous field', None) == None:
-        config['Previous field'] = 'Ctrl+PgUp'
-    if config.get('Default field state', None) == None:
-        config['Default field state'] = 'rich text'
-    if config.get('Cycle rich text/Markdown', None) == None:
-        config['Cycle rich text/Markdown'] = True
+if strvercmp(config.get('version', '0.0.0'), '1.2.2') < 0:
+    config.pop('Rich text shortcut', None)
+    config.pop('Next field', None)
+    config.pop('Previous field', None)
+    config.pop('Default field state', None)
+    config.pop('Cycle rich text/Markdown', None)
+    if config['Field input'].get('Rich text shortcut', None) == None:
+        config['Field input']['Rich text shortcut'] = 'Ctrl+Alt+X'
+    if config['Field input'].get('Next field', None) == None:
+        config['Field input']['Next field'] = 'Ctrl+PgDown'
+    if config['Field input'].get('Previous field', None) == None:
+        config['Field input']['Previous field'] = 'Ctrl+PgUp'
+    if config['Field input'].get('Default field state', None) == None:
+        config['Field input']['Default field state'] = 'rich text'
+    if config['Field input'].get('Cycle rich text/Markdown', None) == None:
+        config['Field input']['Cycle rich text/Markdown'] = True
 
 if strvercmp(config.get('version', '0.0.0'), VERSION) < 0:
     config['version'] = VERSION
