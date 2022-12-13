@@ -1,0 +1,29 @@
+div.markdown-input.hidden {
+    display: none;
+}
+
+div.cm-editor {
+    height: 100%;
+}
+
+.cm-scroller {
+    overflow: auto;
+}
+
+div.markdown-input:not([hidden]) ~ div.rich-text-input {
+    padding-top: 5px;
+    border-top: 5px double var(--faint-border);
+}
+
+span.markdown-input-badge {
+    opacity: .4;
+}
+
+span.markdown-input-badge:hover {
+    opacity: 1;
+}
+
+span.markdown-input-badge div {
+    display: contents;
+    --icon-align: text-top;
+}
