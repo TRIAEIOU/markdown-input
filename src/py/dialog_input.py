@@ -37,7 +37,7 @@ class IM_dialog(QDialog):
         <html>
         <head>
             <script src="dialog_input.js"></script>
-            <link rel=stylesheet href="cm_styles.css">
+            <link rel=stylesheet href=".css">
             <style>{_config[DIALOG_INPUT][CSS]}</style>
         </head>
         <body>

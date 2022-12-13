@@ -18,8 +18,8 @@ import { html_to_markdown, markdown_to_html } from "./converter"
 import { SelectionRange } from "@codemirror/state"
 
 const FIELD_DEFAULT = 'Default field state'
-const MD = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" fill="none" viewBox="0 0 208 128" xmlns="http://www.w3.org/2000/svg"><g fill="#000"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></g></svg>'
-const MD_SOLID = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 128"><path d="M193 128H15a15 15 0 0 1-15-15V15A15 15 0 0 1 15 0h178a15 15 0 0 1 15 15v98a15 15 0 0 1-15 15zM50 98V59l20 25 20-25v39h20V30H90L70 55 50 30H30v68zm134-34h-20V30h-20v34h-20l30 35z"/></svg>'
+const MD = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" fill="none" viewBox="0 0 208 128" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></g></svg>'
+const MD_SOLID = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 128"><g fill="currentColor"><path d="M193 128H15a15 15 0 0 1-15-15V15A15 15 0 0 1 15 0h178a15 15 0 0 1 15 15v98a15 15 0 0 1-15 15zM50 98V59l20 25 20-25v39h20V30H90L70 55 50 30H30v68zm134-34h-20V30h-20v34h-20l30 35z"/></g></svg>'
 
 const _config = {
     'Default field state': 'rich text',
@@ -231,9 +231,11 @@ async function load_note() {
         // Add icon if non-existent
         if (!el.querySelector('div.markdown-input-badge')) {
             const badge = document.createElement('span')
-            badge.innerHTML = `<div class="markdown-input-badge" onclick="MarkdownInput.toggle(${index});" style="display: inline;"><span title="Toggle Markdown Editor (${_config['Shortcut']})" dropdown="false">${MD}</span></div>`
-            const rtb = el.querySelector('span.field-state')
-            rtb.insertBefore(badge, rtb.firstElementChild)
+            badge.classList.add('markdown-input-badge')
+            badge.onclick = () => toggle(field)
+            badge.innerHTML = `<div><span title="Toggle Markdown Editor (${_config['Shortcut']})" class="badge" dropdown="false">${MD}</span></div>`
+            const fsel = el.querySelector('span.field-state')
+            fsel.insertBefore(badge, fsel.firstElementChild)
         }
 
         // "New" field and markdown as default

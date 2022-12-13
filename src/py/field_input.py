@@ -31,7 +31,7 @@ def add_srcs(web_content: aqt.webview.WebContent, context: object):
     # Defer script to allow bridgeCommand to be defined
     web_content.head += f"""
         <script src="/_addons/{addon}/field_input.js"></script>
-        <link rel=stylesheet href="/_addons/{addon}/cm_styles.css">
+        <link rel=stylesheet href="/_addons/{addon}/mdi.css">
         <style>{_config[FIELD_INPUT][CSS]}</style>
     """
     # Configure Unified and CodeMirror - after script load but before cm instantiation
