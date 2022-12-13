@@ -1,6 +1,6 @@
 # Markdown input
 
-[Anki](https://github.com/ankitects/anki) [addon](https://github.com/TRIAEIOU/Markdown-input) that allows adding and editing notes in extended [CommonMark](https://spec.commonmark.org/) [Markdown](https://daringfireball.net/projects/markdown/), either directly in the editor fields ("field input mode", similar to the core rich and plain text edit interface) or by opening a separate window to edit a specific field ("dialog input mode").
+Anki ([GitHub](https://github.com/ankitects/anki)) addon ([GitHub](https://github.com/TRIAEIOU/Markdown-input)) that allows adding and editing notes in extended [CommonMark](https://spec.commonmark.org/) [Markdown](https://daringfireball.net/projects/markdown/), either directly in the editor fields ("field input mode", similar to the core rich and plain text edit interface) or by opening a separate window to edit a specific field ("dialog input mode").
 
 ![Markdown input](https://github.com/TRIAEIOU/Markdown-input/raw/main/Screenshots/screen.png?raw=true)
 
@@ -96,3 +96,4 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - 2022-08-27: Add image paste support, prevent focus from being stolen on focus in/out, bug fixes.
 - 2022-10-16: Make dialog mode non-modal (and allow multiple dialogs open), add `Ctrl-Shift-j` to join lines, make inline Markdown syntax configurable, make several options configurable, bug fixes.
 - 2022-11-20: Make rich and plain text input editable while Markdown input is visible and adjust `config.json` appropriately, add buttons/badges, restructure configuration.
+- 2022-12-13: Correct update json.config bug.

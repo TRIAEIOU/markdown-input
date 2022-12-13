@@ -7,7 +7,7 @@ from .constants import *
 mw.addonManager.setWebExports(__name__, r"(.*(css|js|map))")
 config = mw.addonManager.getConfig(__name__)
 
-if strvercmp(config.get('version', '1.1.0'), '1.2.0') < 0:
+if strvercmp(config.get('version', '0.0.0'), '1.2.0') < 0:
     msg_box = QMessageBox(mw)
     msg_box.setWindowTitle('Addon "Markdown input" updated')
     msg_box.setText("""<div style="text-align: left;">"Markdown input" addon has been updated, potentially changing the behaviour depending on your current configuration for the addon.<ul><li>The configurations "Restore state on toggle", "Hide plain text on toggle" and "Hide rich text on toggle" for "Field input" have been replaced with "Cycle rich text/Markdown" (making the Markdown shortcut either cycle between rich text and Markdown or simply show/hide the Markdown input).</li><li>"Cloze lists" for "Converter" has been removed.</li></ul>Please see the addon page (https://ankiweb.net/shared/info/904999275) for details.</div>""")
@@ -17,6 +17,18 @@ if strvercmp(config.get('version', '1.1.0'), '1.2.0') < 0:
     config['Field input'].pop('Hide plain text on toggle', None)
     config['Field input'].pop('Hide rich text on toggle', None)
     config['Converter'].pop('Cloze lists', None)
+
+if strvercmp(config.get('version', '0.0.0'), '1.2.1') < 0:
+    if config.get('Rich text shortcut', None) == None:
+        config['Rich text shortcut'] = 'Ctrl+Alt+X'
+    if config.get('Next field', None) == None:
+        config['Next field'] = 'Ctrl+PgDown'
+    if config.get('Previous field', None) == None:
+        config['Previous field'] = 'Ctrl+PgUp'
+    if config.get('Default field state', None) == None:
+        config['Default field state'] = 'rich text'
+    if config.get('Cycle rich text/Markdown', None) == None:
+        config['Cycle rich text/Markdown'] = True
 
 if strvercmp(config.get('version', '0.0.0'), VERSION) < 0:
     config['version'] = VERSION

@@ -232,7 +232,7 @@ async function load_note() {
         if (!el.querySelector('div.markdown-input-badge')) {
             const badge = document.createElement('span')
             badge.innerHTML = `<div class="markdown-input-badge" onclick="MarkdownInput.toggle(${index});" style="display: inline;"><span title="Toggle Markdown Editor (${_config['Shortcut']})" dropdown="false">${MD}</span></div>`
-            const rtb = el.querySelector('span.rich-text-badge')
+            const rtb = el.querySelector('span.field-state')
             rtb.insertBefore(badge, rtb.firstElementChild)
         }
 
