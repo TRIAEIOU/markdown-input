@@ -229,7 +229,7 @@ async function load_note() {
         index++
         const el = await field.element as MDInputElement
         // Add icon if non-existent
-        if (!el.querySelector('div.markdown-input-badge')) {
+        if (!el.querySelector('span.markdown-input-badge')) {
             const badge = document.createElement('span')
             badge.classList.add('markdown-input-badge')
             badge.onclick = () => toggle(field)
