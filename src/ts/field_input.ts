@@ -221,45 +221,48 @@ async function toggle_rich(field: number | EditorFieldAPI) {
 // Update MD content in all visible MD input on note load
 // Add MD icons to all field
 async function load_note() {
-    const editor = await NoteEditor.instances[0]
-    const flds = await editor.fields
-    let index = -1
-    let focused = false
-    for (const field of flds) {
-        index++
-        const el = await field.element as MDInputElement
-        // Add icon if non-existent
-        if (!el.querySelector('span.markdown-input-badge')) {
-            const badge = document.createElement('span')
-            badge.classList.add('markdown-input-badge')
-            badge.onclick = () => toggle(field)
-            badge.innerHTML = `<div><span title="Toggle Markdown Editor (${_config['Shortcut']})" class="badge" dropdown="false">${MD}</span></div>`
-            const fsel = el.querySelector('span.field-state')
-            fsel.insertBefore(badge, fsel.firstElementChild)
-        }
+    const { default: anki_editable_iterator } = await import("./anki_editable_iterator")
+    for await (const [editable, i] of anki_editable_iterator()) {
+        const editor = await NoteEditor.instances[0]
+        const flds = await editor.fields
+        let index = -1
+        let focused = false
+        for (const field of flds) {
+            index++
+            const el = await field.element as MDInputElement
+            // Add icon if non-existent
+            if (!el.querySelector('span.markdown-input-badge')) {
+                const badge = document.createElement('span')
+                badge.classList.add('markdown-input-badge')
+                badge.onclick = () => toggle(field)
+                badge.innerHTML = `<div><span title="Toggle Markdown Editor (${_config['Shortcut']})" class="badge" dropdown="false">${MD}</span></div>`
+                const fsel = el.querySelector('span.field-state')
+                fsel.insertBefore(badge, fsel.firstElementChild)
+            }
 
-        // "New" field and markdown as default
-        if (!el.markdown_input && _config[FIELD_DEFAULT] === 'markdown') {
-            el.markdown_input = await add_editor(field, false)
-            // Hide rich text if visible
-            if (rich_edit(field)?.focusable)
-                    (el.querySelector('span.rich-text-badge') as HTMLElement).click()
+            // "New" field and markdown as default
+            if (!el.markdown_input && _config[FIELD_DEFAULT] === 'markdown') {
+                el.markdown_input = await add_editor(field, false)
+                // Hide rich text if visible
+                if (rich_edit(field)?.focusable)
+                        (el.querySelector('span.rich-text-badge') as HTMLElement).click()
 
-            // Focus first new field if not already focused
-            if (!focused) {
-                el.markdown_input.editor.focus()
+                // Focus first new field if not already focused
+                if (!focused) {
+                    el.markdown_input.editor.focus()
+                    focused = true
+                }
+
+            // "Old field" with focus, refocus (i.e. keep state)
+            } else if (el.contains(document.activeElement)) {
+                el.markdown_input?.editor.focus()
                 focused = true
             }
 
-        // "Old field" with focus, refocus (i.e. keep state)
-        } else if (el.contains(document.activeElement)) {
-            el.markdown_input?.editor.focus()
-            focused = true
-        }
-
-        if (el?.markdown_input?.container.hidden === false) {
-            const [md, ord] = html_to_markdown(get(field.editingArea.content) as string)
-            el.markdown_input.editor.set_doc(md, ord, 'end');
+            if (el?.markdown_input?.container.hidden === false) {
+                const [md, ord] = html_to_markdown(get(field.editingArea.content) as string)
+                el.markdown_input.editor.set_doc(md, ord, 'end');
+            }
         }
     }
 }
