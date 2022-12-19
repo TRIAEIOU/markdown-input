@@ -10,16 +10,17 @@ function bundle(input_file, output_file, output_name) {
     output: {
       file: output_file,
       format: "iife",
+      inlineDynamicImports: false,
       name: output_name,
       globals: {}
     },
-    external: [],
+    external: ["anki", "svelte"],
     plugins: [
       typescript(),
       commonjs(),
       nodeResolve({ preferBuiltins: false, browser: true }),
       svelte({ include: 'src/**/*.svelte' }),
-      terser({format: {comments: false}})
+      //terser({format: {comments: false}})
     ],
     onwarn: (warning, warn) => { // Supress "errounous warnings"
       if ((warning.pluginCode === undefined
