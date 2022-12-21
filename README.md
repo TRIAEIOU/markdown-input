@@ -98,3 +98,4 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - 2022-11-20: Make rich and plain text input editable while Markdown input is visible and adjust `config.json` appropriately, add buttons/badges, restructure configuration.
 - 2022-12-13: Correct update `json.config` bug.
 - 2022-12-16: Fix multiple badges bug.
+- 2022-12-20: Fix *nix field input mode bug, macOS unverified.

@@ -1,11 +1,6 @@
 import { get } from "svelte/store"
 // @ts-ignore FIXME: how to import correctly?
 import type { NoteEditorAPI } from "anki/ts/editor/NoteEditor.svelte"
-declare var NoteEditor: {
-    context: any,
-    lifecycle: any,
-    instances: NoteEditorAPI[]
-}
 // @ts-ignore FIXME: how to import correctly?
 import type { EditorFieldAPI, EditingInputAPI } from "anki/ts/editor/EditorField.svelte"
 // @ts-ignore FIXME: how to import correctly?
@@ -38,6 +33,16 @@ interface MDInputAPI {
 
 interface MDInputElement extends HTMLElement {
     markdown_input: MDInputAPI
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Get NoteEditor
+const editor = (): {
+    context: any,
+    lifecycle: any,
+    instances: NoteEditorAPI[]
+} => {
+    return require('anki/NoteEditor')
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -181,7 +186,7 @@ async function add_editor(field: EditorFieldAPI, hidden: boolean): Promise<MDInp
 // Toggle md input
 async function toggle(field: number | EditorFieldAPI) {
     field = typeof (field) === 'number'
-        ? await NoteEditor.instances[0].fields[field]
+        ? await editor().instances[0].fields[field]
         : field
     const el = await field.element
     const mi = (el.markdown_input || await add_editor(field, true)) as MDInputAPI
@@ -209,7 +214,7 @@ async function toggle(field: number | EditorFieldAPI) {
 /////////////////////////////////////////////////////////////////////////////
 // Toggle rich text input
 async function toggle_rich(field: number | EditorFieldAPI) {
-    field = typeof (field) === 'number' ? await NoteEditor.instances[0].fields[field] : field
+    field = typeof (field) === 'number' ? await editor().instances[0].fields[field] : field
     const el = await field.element as MDInputElement
     const rich = el.querySelector('span.rich-text-badge') as HTMLElement
     rich.click()
@@ -221,8 +226,8 @@ async function toggle_rich(field: number | EditorFieldAPI) {
 // Update MD content in all visible MD input on note load
 // Add MD icons to all field
 async function load_note() {
-    const editor = await NoteEditor.instances[0]
-    const flds = await editor.fields
+    const ed = await editor().instances[0]
+    const flds = await ed.fields
     let index = -1
     let focused = false
     for (const field of flds) {
@@ -289,7 +294,7 @@ async function focusin(evt: FocusEvent) {
         if (!el.markdown_input.editor['unsubscribe']
             && !el.markdown_input.editor.dom.parentElement.hidden
         ) {
-            const cont = await NoteEditor.instances[0].fields
+            const cont = await editor().instances[0].fields
                 .find(async f => (await f.element) === el)
                 .editingArea.content
             el.markdown_input.editor['unsubscribe'] = cont.subscribe(html => {
