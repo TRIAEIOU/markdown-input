@@ -1,7 +1,7 @@
 {
     "compilerOptions": { // Credit: https://github.com/kleinerpirat
         "module": "esnext",
-        "target": "ES6",
+        "target": "es2018",
         "moduleResolution": "node",
         "isolatedModules": true,
         "skipLibCheck": true,

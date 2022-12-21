@@ -87,6 +87,7 @@
 				"preventDefault": true
 			}
 		]
-	}
+	},
+	"version": "-1"
 
 }

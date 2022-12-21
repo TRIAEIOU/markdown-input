@@ -27,7 +27,7 @@ PREV_SHORTCUT = "Previous field"
 CONVERTER = "Converter"
 EDITOR = "CodeMirror"
 ADDON_PATH = os.path.dirname(__file__)
-VERSION = "1.2.3"
+VERSION = "1.2.4"
 
 def strvercmp(left: str, right: str) -> int:
     """Compares semantic version strings.\n
