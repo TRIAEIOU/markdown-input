@@ -13,8 +13,8 @@ import { html_to_markdown, markdown_to_html } from "./converter"
 import { SelectionRange } from "@codemirror/state"
 
 const FIELD_DEFAULT = 'Default field state'
-const MD = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" fill="none" viewBox="0 0 208 128" xmlns="http://www.w3.org/2000/svg"><g fill="currentColor"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></g></svg>'
-const MD_SOLID = '<svg style="vertical-align:baseline;margin-right:5px;" height="12" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 208 128"><g fill="currentColor"><path d="M193 128H15a15 15 0 0 1-15-15V15A15 15 0 0 1 15 0h178a15 15 0 0 1 15 15v98a15 15 0 0 1-15 15zM50 98V59l20 25 20-25v39h20V30H90L70 55 50 30H30v68zm134-34h-20V30h-20v34h-20l30 35z"/></g></svg>'
+const MD = '<!--?xml version="1.0" encoding="UTF-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-md-hollow" width="24" height="24" viewBox="0 0 208 128"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></svg>'
+const MD_SOLID = '<!--?xml version="1.0" encoding="UTF-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-md-solid" width="24" height="24" viewBox="0 0 208 128"><path d="M193 128H15a15 15 0 0 1-15-15V15A15 15 0 0 1 15 0h178a15 15 0 0 1 15 15v98a15 15 0 0 1-15 15zM50 98V59l20 25 20-25v39h20V30H90L70 55 50 30H30v68zm134-34h-20V30h-20v34h-20l30 35z"/></svg>'
 
 const _config = {
     'Default field state': 'rich text',
@@ -172,7 +172,7 @@ async function add_editor(field: EditorFieldAPI, hidden: boolean): Promise<MDInp
     )
     const markdown_input = {
         container: ed_area_el.insertBefore(container, ed_area_el.firstElementChild),
-        badge: ed_area_el.parentElement.querySelector('.markdown-input-badge span') as HTMLSpanElement,
+        badge: ed_area_el.parentElement.querySelector('.markdown-input-badge span span') as HTMLSpanElement,
         editor: editor,
         refocus: undefined,
         toggle: () => { toggle(field) }
@@ -206,7 +206,7 @@ async function toggle(field: number | EditorFieldAPI) {
 
     async function hide(mi: MDInputAPI) {
         mi.container.hidden = true
-        mi.badge.innerHTML = MD;
+        mi.badge.innerHTML = MD
         field.editingArea.refocus()
     }
 }
@@ -235,12 +235,14 @@ async function load_note() {
         const el = await field.element as MDInputElement
         // Add icon if non-existent
         if (!el.querySelector('span.markdown-input-badge')) {
-            const badge = document.createElement('span')
-            badge.classList.add('markdown-input-badge')
-            badge.onclick = () => toggle(field)
-            badge.innerHTML = `<div><span title="Toggle Markdown Editor (${_config['Shortcut']})" class="badge" dropdown="false">${MD}</span></div>`
+            const root = el.querySelector('.rich-text-badge').cloneNode(true) as HTMLElement
+            root.classList.replace('rich-text-badge', 'markdown-input-badge')
+            root.onclick = () => toggle(field)
+            const badge = root.querySelector('.badge') as HTMLElement
+            badge.title = `Toggle Markdown Editor (${_config['Shortcut']})`
+            badge.querySelector('span').innerHTML = MD
             const fsel = el.querySelector('span.field-state')
-            fsel.insertBefore(badge, fsel.firstElementChild)
+            fsel.insertBefore(root, fsel.firstElementChild)
         }
 
         // "New" field and markdown as default
@@ -283,7 +285,7 @@ async function focusin(evt: FocusEvent) {
             el.markdown_input.editor['unsubscribe'] = null
         }
     // We should take back focus when focusing back into document
-    } else if (el.markdown_input.refocus !== undefined
+    } else if (el.markdown_input?.refocus !== undefined
         && el.markdown_input?.container.hidden === false
     ) {
         set_selections(el.markdown_input.editor, el.markdown_input.refocus)
@@ -294,15 +296,16 @@ async function focusin(evt: FocusEvent) {
         if (!el.markdown_input.editor['unsubscribe']
             && !el.markdown_input.editor.dom.parentElement.hidden
         ) {
-            const cont = await editor().instances[0].fields
-                .find(async f => (await f.element) === el)
-                .editingArea.content
-            el.markdown_input.editor['unsubscribe'] = cont.subscribe(html => {
-                    const [md, ord] = html_to_markdown(html)
-                    el.markdown_input.editor.set_doc(md, ord, "end")
-            })
+            for (const fld of await editor().instances[0].fields) {
+                if ((await fld.element) === el) {
+                    el.markdown_input.editor['unsubscribe'] = fld.editingArea.content.subscribe(html => {
+                        const [md, ord] = html_to_markdown(html)
+                        el.markdown_input.editor.set_doc(md, ord, "end")
+                    })
+                    break
+                }
+            }
         }
-
     }
 }
 

@@ -99,3 +99,4 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - 2022-12-13: Correct update `json.config` bug.
 - 2022-12-16: Fix multiple badges bug.
 - 2022-12-20: Fix field input mode bug for *nix (tested in VM `Ubuntu 22.04 LTS`) and macOS (tested in a really slow VM `High Sierra`).
+- 2022-12-22: Badge rework and bug fix
