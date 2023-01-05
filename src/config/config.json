@@ -6,7 +6,7 @@
 		"Previous field": "Ctrl+PgUp",
 		"Default field state": "rich text",
 		"Cycle rich text/Markdown": true,
-		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }"
+		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; background-color: var(--canvas-elevated); color: var(--fg);} .night-mode .cm-editor .cm-activeLine { background-color: var(--fg-faint); }"
 	},
 	"Dialog input": {
 		"Shortcut": "Ctrl+Alt+M",

@@ -5,6 +5,7 @@ import type { EditorFieldAPI, EditingInputAPI } from "anki/ts/editor/EditorField
 import type { RichTextInputAPI } from "anki/ts/editor/rich-text-input"
 // @ts-ignore FIXME: how to import correctly?
 import type { PlainTextInputAPI } from "anki/ts/editor/plain-text-input"
+import { ancestor } from "./utils"
 
 /////////////////////////////////////////////////////////////////////////////
 // Get the rich text input of a field
@@ -22,17 +23,9 @@ function plain_edit(field: EditorFieldAPI): PlainTextInputAPI | undefined {
 
 /////////////////////////////////////////////////////////////////////////////
 // Return wether an input element is hidden by attribute or class
-function hidden(el: HTMLElement) {
+function visible(el: HTMLElement) {
     if (!el) return undefined
-    return Boolean(el.hidden || el.classList.contains('hidden'))
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Get ancestor matching a selector
-function ancestor(descendant: HTMLElement, selector: string) {
-    while (descendant && !descendant.matches(selector))
-            descendant = descendant.parentElement
-    return descendant
+    return !Boolean(el.hidden || ancestor(el, '.hidden'))
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,31 +50,28 @@ interface CustomInputElement extends HTMLElement {
  * @member {string} title display title (i.e. spaces etc. allowed)
  * @member {string} [shortcut] keyboard shortcut to toggle input visibility
  * @member {boolean} [default_show] set to true to make input visible per default
- * @member {function(container: HTMLDivElement): Any} create_editor function to call to instantiate the input. Will be called with the HTML div that should be set as input parent and must return the instance.
+ * @member {function(container: HTMLDivElement, onchange: (html: string): void): Any} create_editor function to call to instantiate the input. Will be called with the HTML div that should be set as input parent and a callback function to be called to update the other inputs. Must return the instance.
+ * @member {function(editor: any): void} focus function to call to focus an editor instance
  * @member {function(editor: any, html: string): void} set_content function to call to set the content of an editor instance (i.e. on update from another input). Will be called with the editor instance and the new content HTML string.
  * @member {function(editor: any): any[]} save_selection function to call to get the selection reference of an editor instance; not the contents of the selection but whatever data structure is needed to be able to recreate the selection (to restore selection when focusing out of the window and back). Will be called with the editor instance and must return an array of data.
  * @member {function(editor: any, selections: any []): void} restore_selection function to call to restore a selection previously saved. Will be called with the editor instance and the array of earlier saved data.
  * @member {function(editor: any):} [onshow] function that will be called when a specific editor instance is shown (i.e. unhidden). Will be called with the editor instance.
  * @member {function(editor: any):} [onhide] function that will be called when a specific editor instance is hidden (i.e. unshown). Will be called with the editor instance.
- * @member badge editor field badges.
- * @member {string} badge.active svg HTML tag to be displayed when the editor is visible.
- * @member {string} badge.inactive svg HTML tag to be displayed when the editor is hidden.
+ * @member {string} badge svg HTML tag to be used as badge.
  */
 interface CustomInputConfiguration {
     class: string,
     title: string,
     shortcut?: string,
     default_show?: boolean,
-    create_editor: (container: HTMLDivElement) => any,
+    create_editor: (container: HTMLDivElement, onchange: (html: string) => void) => any,
+    focus: (editor: any) => void,
     set_content: (editor: any, html: string) => void,
     save_selection: (editor: any) => any[],
     restore_selection: (editor: any, selections: any[]) => void,
     onshow?: Function,
     onhide?: Function,
-    badge?: {
-        active: string,
-        inactive: string
-    }
+    badge?: string
 }
 
 /**
@@ -104,6 +94,7 @@ class CustomInput {
         }
     }[]
     protected name: string
+    protected observer: MutationObserver
 
     /**
      * Create a new custom input type
@@ -116,8 +107,8 @@ class CustomInput {
         this.cfg = options
         this.name = this.cfg.class.replace('-', '_')
         if (!document[this.name]) {
-            document.addEventListener('focusin', this.focusin)
-            document.addEventListener('focusout', this.focusout)
+            document.addEventListener('focusin', (evt: FocusEvent) => this.focusin(evt))
+            document.addEventListener('focusout', (evt: FocusEvent) => this.focusin(evt))
             document[this.name] = true
         }
     }
@@ -130,38 +121,52 @@ class CustomInput {
         this.flds = await this.note_editor.fields
         let focused = false
         for (const field of this.flds) {
-            const el = await field.element as CustomInputElement
+            const editing_container = await field.element as CustomInputElement // await necessary
+            const badge_container = ancestor(editing_container, '.field-container').querySelector('.field-state')
             // Add badge if non-existent
-            if (!el.querySelector(`span.${this.cfg.class}-badge`)) {
-                const root = el.querySelector('.rich-text-badge').cloneNode(true) as HTMLElement
-                root.classList.replace('rich-text-badge', `${this.cfg.class}-badge`)
-                root.onclick = () => this.toggle(field)
-                const badge = root.querySelector('.badge') as HTMLElement
-                badge.title = `Toggle ${this.cfg.title}`
-                if (this.cfg.shortcut) badge.title += ` (${this.cfg.shortcut})`
-                badge.querySelector('span').innerHTML = this.cfg.badge.inactive
-                const fsel = el.querySelector('span.field-state')
-                fsel.insertBefore(root, fsel.firstElementChild)
+            if (!badge_container.querySelector(`.${this.cfg.class}-badge`)) {
+                const plain_badge = badge_container.querySelector('.plain-text-badge')
+                const md_badge = plain_badge.cloneNode(true) as HTMLElement
+                md_badge.classList.replace('plain-text-badge', `${this.cfg.class}-badge`)
+                md_badge.onclick = () => this.toggle(field)
+                md_badge['observer'] =
+                    new MutationObserver((muts: MutationRecord[], obs: MutationObserver) => {
+                        muts.forEach(mut => {
+                            if ((mut.target as HTMLElement).classList.contains('visible'))
+                                md_badge.classList.add('visible')
+                            else
+                                md_badge.classList.remove('visible')
+                        })
+                })
+                md_badge['observer'].observe(plain_badge, {attributeFilter: ['class']})
+                const visual = md_badge.querySelector('.badge') as HTMLElement
+                visual.title = `Toggle ${this.cfg.title}`
+                if (this.cfg.shortcut) visual.title += ` (${this.cfg.shortcut})`
+                visual.querySelector('span').innerHTML = this.cfg.badge
+                badge_container.insertBefore(md_badge, badge_container.firstElementChild)
+
             }
 
             // "New" field and markdown as default
-            if (!el[this.name] && this.cfg.default_show) {
-                el[this.name] = await this.add_editor(field)
+            if (!editing_container[this.name] && this.cfg.default_show) {
+                const ci = await this.add_editor(field)
                 if (this.cfg.onshow) this.cfg.onshow()
 
                 // Focus first new field if not already focused
                 if (!focused) {
-                    el[this.name].editor.focus()
+                    this.cfg.focus(ci.editor)
                     focused = true
                 }
+                editing_container[this.name] = ci
 
             // "Old field" with focus, refocus (i.e. keep state)
-            } else if (el.contains(document.activeElement)) {
-                el[this.name]?.editor.focus()
+            } else if (editing_container.contains(document.activeElement)) {
+                this.cfg.focus(editing_container[this.name].editor)
                 focused = true
             }
 
-            if (el[this.name]?.container.hidden === false) this.cfg.set_content(el[this.name].editor, get(field.editingArea.content) as string)
+            if (editing_container[this.name]?.container.hidden === false)
+                this.cfg.set_content(editing_container[this.name].editor, get(field.editingArea.content) as string)
         }
     }
 
@@ -182,20 +187,22 @@ class CustomInput {
             ? this.flds[field]
             : field
         const ci = (await this.add_editor(field)) as CustomInputAPI
-        if (ci.container.hidden && this.cfg.onshow) this.cfg.onshow()
-        else if (!ci.container.hidden && this.cfg.onhide) this.cfg.onhide()
-        ci.container.hidden ? show(ci) : hide(ci)
+        if (!visible(ci.container) && this.cfg.onshow) this.cfg.onshow()
+        else if (visible(ci.container)&& this.cfg.onhide) this.cfg.onhide()
+        visible(ci.container) === true
+            ? hide.call(this, ci)
+            : show.call(this, ci)
 
-        async function show(ci: CustomInputAPI) {
-            this.cfg.set_content(get(field.editingArea.content) as string)
-            ci.container.hidden = false
-            ci.badge.innerHTML = this.cfg.badge.active
-            ci.editor.focus()
+        async function show(ci: CustomInputAPI, cfg: CustomInputConfiguration) {
+            this.cfg.set_content(ci.editor, get(field.editingArea.content) as string)
+            ci.container.classList.remove('hidden')
+            ci.badge.parentElement.parentElement.classList.add('highlighted')
+            this.cfg.focus(ci.editor)
         }
 
         async function hide(ci: CustomInputAPI) {
-            ci.container.hidden = true
-            ci.badge.innerHTML = this.cfg.badge.inactive
+            ci.container.classList.add('hidden')
+            ci.badge.parentElement.parentElement.classList.remove('highlighted')
             field.editingArea.refocus()
         }
     }
@@ -205,15 +212,17 @@ class CustomInput {
     public async toggle_rich(field: number | EditorFieldAPI) {
         field = typeof (field) === 'number' ? this.flds[field] : field
         const el = await field.element as CustomInputElement
-        const rich = el.querySelector('span.rich-text-badge') as HTMLElement
-        rich.click()
-        if(rich_edit(field).focusable) el[this.name].editor.focus()
+        const rich = el.querySelector('.rich-text-input').parentElement
+        if (rich.classList.contains('hidden')) {
+            rich.classList.remove('hidden')
+            this.cfg.focus(el[this.name].editor)
+        } else rich.classList.add('hidden')
     }
 
     /////////////////////////////////////////////////////////////////////////////
     // Focus the editor (custom, plain or rich text) of a an input element
     protected focus(input: HTMLElement) {
-        if (!input || input.hidden) return false
+        if (!visible(input)) return false
         let editor
         if (input.querySelector(`.${this.cfg.class}`))
             editor  = (ancestor(input, '.editor-field') as CustomInputElement)
@@ -233,19 +242,19 @@ class CustomInput {
         let input = older(active)
         // No inputs in current field, find prev field
         if (!input) {
-            let fld_root = ancestor(active, '.editor-field')
+            let fld_root = ancestor(active, '.field-container')
                 .parentElement as HTMLElement
             while (fld_root && !input) {
                 fld_root = fld_root.nextElementSibling as HTMLElement
                 input = fld_root?.querySelector('.editing-area')?.firstElementChild as HTMLElement
-                if (hidden(input)) input = older(input)
+                if (!visible(input)) input = older(input)
             }
         }
-        this.focus(input)
+        if (input) this.focus(input)
 
         function older(fld: HTMLElement) {
             let nxt = fld?.nextElementSibling as HTMLElement
-            while (hidden(nxt)) nxt = nxt.nextElementSibling as HTMLElement
+            while (visible(nxt) === false) nxt = nxt.nextElementSibling as HTMLElement
             return nxt
         }
     }
@@ -258,41 +267,48 @@ class CustomInput {
         let input = younger(active)
         // No inputs in current field, find prev field
         if (!input) {
-            let fld_root = ancestor(active, '.editor-field')
+            let fld_root = ancestor(active, '.field-container')
                 .parentElement as HTMLElement
             while (fld_root && !input) {
                 fld_root = fld_root.previousElementSibling as HTMLElement
                 input = fld_root?.querySelector('.editing-area')?.lastElementChild as HTMLElement
-                if (hidden(input)) input = younger(input)
+                if (!visible(input)) input = younger(input)
             }
         }
-        this.focus(input)
+        if (input) this.focus(input)
 
         function younger(fld: HTMLElement) {
             let prv = fld?.previousElementSibling as HTMLElement
-            while (hidden(prv)) prv = prv.previousElementSibling as HTMLElement
+            while (visible(prv) === false) prv = prv.previousElementSibling as HTMLElement
             return prv
         }
     }
 
     /////////////////////////////////////////////////////////////////////////////
-    // Add editor to field
+    // Add editor to field storing editor data on
+    // `NoteEditor.instances[0].fields[X]`/`.editor-field`
     protected async add_editor(field: EditorFieldAPI): Promise<CustomInputAPI> {
-        const field_el = await field.element as CustomInputElement
-        const ed_area_el = field_el.querySelector('div.editing-area')
-        if (field_el[this.name]) return field_el[this.name]
-        const container = document.createElement('div')
-        container.classList.add(this.cfg.class)
-        container.hidden = true
-        const editor = this.cfg.create_editor(container)
+        const editing_field = await field.element as CustomInputElement
+        const editing_area = editing_field.querySelector('div.editing-area')
+        if (editing_field[this.name]) return editing_field[this.name]
+        const wrapper = editing_area.querySelector('.plain-text-input').parentElement.cloneNode(false) as HTMLDivElement
+        wrapper.classList.add('hidden')
+        const inner = document.createElement('div')
+        inner.classList.add(this.cfg.class)
+        wrapper.appendChild(inner)
+        const editor = this.cfg.create_editor(
+            inner,
+            (html: string) => { field.editingArea.content.set(html) }
+        )
+
         const custom_input = {
-            container: ed_area_el.insertBefore(container, ed_area_el.firstElementChild),
-            badge: ed_area_el.parentElement.querySelector(`.${this.cfg.class}-badge span span`) as HTMLSpanElement,
+            container: editing_area.insertBefore(wrapper, editing_area.firstElementChild),
+            badge: ancestor(editing_field, '.field-container').querySelector(`.${this.cfg.class}-badge span span`) as HTMLSpanElement,
             editor: editor,
             stored_selection: undefined,
             toggle: () => { this.toggle(field) }
         }
-        field_el[this.name] = custom_input
+        editing_field[this.name] = custom_input
 
         return custom_input
     }
@@ -301,30 +317,30 @@ class CustomInput {
     // Handle focus events for subscribing/unsubscribing and overriding focus-trap
     protected async focusin(evt: FocusEvent) {
         const tgt = evt.target as HTMLElement
-        const el = ancestor(tgt, '.editor-field') as CustomInputElement
-        if (!el[this.name]) return
+        const tgt_fld = ancestor(tgt, '.editor-field') as CustomInputElement
+        const ci = tgt_fld?.[this.name] as CustomInputAPI
+        if (!ci) return
 
-        // We focus custom input, unsubscribe
+        // We focus this custom input, unsubscribe
         if (ancestor(tgt, `.${this.cfg.class}`)) {
-            if (el[this.name].editor['unsubscribe']) {
-                el[this.name].editor['unsubscribe']()
-                el[this.name].editor['unsubscribe'] = null
+            if (ci.editor['unsubscribe']) {
+                ci.editor['unsubscribe']()
+                ci.editor['unsubscribe'] = null
             }
         // We should take back focus when focusing back into document
-        } else if (el[this.name]?.refocus !== undefined
-            && el[this.name]?.container.hidden === false
-        ) {
-            this.cfg.restore_selection(el[this.name].editor, el[this.name].stored_selection)
-            el[this.name].stored_selection = undefined
-            el[this.name].editor.focus() // Event recursion
+        } else if (ci.stored_selection !== undefined && visible(ci.container)) {
+            this.cfg.restore_selection(ci.editor, ci.stored_selection)
+            ci.stored_selection = undefined
+            this.cfg.focus(ci.editor) // Event recursion
         // Focus is somewhere else, subscribe
         } else {
-            if (!el[this.name].editor['unsubscribe']
-                && !el[this.name].container.hidden
-            ) {
+            if (!ci.editor['unsubscribe'] && visible(ci.container)) {
                 for (const fld of this.flds) {
-                    if (fld.element === el) {
-                        el[this.name].editor['unsubscribe'] = fld.editingArea.content.subscribe(this.cfg.set_content)
+                    if (await fld.element === tgt_fld) { // await neccessary
+                        const unsub = fld.editingArea.content.subscribe((html: string) => {
+                            this.cfg.set_content(ci.editor, html)
+                        })
+                        tgt_fld[this.name].editor['unsubscribe'] = unsub
                         break
                     }
                 }

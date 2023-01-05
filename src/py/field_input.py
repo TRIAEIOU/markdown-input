@@ -77,6 +77,6 @@ def init(cfg):
     global _config
     _config = cfg
     gui_hooks.webview_will_set_content.append(lambda wc, ctx: add_srcs(wc, ctx))
-    gui_hooks.editor_will_load_note.append(lambda _js, _note, _ed: _js + r"MarkdownInput.load_note()")
-    gui_hooks.editor_did_init_shortcuts.append(append_shortcuts)
+    gui_hooks.editor_will_load_note.append(lambda _js, _note, _ed: _js + r"MarkdownInput.update_all()")
+#    gui_hooks.editor_did_init_shortcuts.append(append_shortcuts)
     gui_hooks.webview_did_receive_js_message.append(bridge)
