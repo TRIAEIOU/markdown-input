@@ -22,7 +22,7 @@ const _config = {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Add Markdown Input data to editor field
+// Add Markdown Input data to editor field (`div.editor-field`)
 interface MDInputAPI {
     container: HTMLElement,
     editor: MDIEditorView,
@@ -67,7 +67,7 @@ function hidden(el: HTMLElement) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Get ancestor matching a selector
+// Get ancestor matching a selector or undefined if not found
 function ancestor(descendant: HTMLElement, selector: string) {
     while (descendant && !descendant.matches(selector))
             descendant = descendant.parentElement
@@ -75,9 +75,9 @@ function ancestor(descendant: HTMLElement, selector: string) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Focus the editor of a an input element
+// Focus the editor of an editing input element (i.e. rich, plain or markdown)
 function focus(input: HTMLElement) {
-    if (!input || input.hidden) return false
+    if (!input || hidden(input)) return false
     let editor
     if (input.querySelector('.markdown-input > .cm-editor'))
         editor  = (ancestor(input, '.editor-field') as MDInputElement)
@@ -90,7 +90,7 @@ function focus(input: HTMLElement) {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Cycle to next field or first if none active
+// Cycle to next input in field then next field or first input in first field if none active
 async function cycle_next() {
     const active = ancestor(document.activeElement as HTMLElement, '.editing-area > div')
     // Check for inputs in current field
@@ -323,7 +323,7 @@ async function focusout(evt: FocusEvent) {
 /////////////////////////////////////////////////////////////////////////////
 // Setup event listeners and configuration - create CM instances only on demand
 function init(cfg: {}) {
-    for (const key in cfg) _config[key] = cfg[key];
+    for (const key in cfg) _config[key] = cfg[key]
     if (!document['mdi_focus_added']) {
         document.addEventListener('focusin', focusin)
         document.addEventListener('focusout', focusout)

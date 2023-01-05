@@ -57,7 +57,6 @@ class IM_dialog(QDialog):
     def __del__(self):
         global _dlgs
         _dlgs.pop(hex(id(self)), None)
-        print("<<<" + str(_dlgs))
 
     ###########################################################################
     # Setup js → python message bridge

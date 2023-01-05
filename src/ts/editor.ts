@@ -88,6 +88,7 @@ function set_selections(cm: MDIEditorView, ranges: readonly SelectionRange[]) {
 }
 
 function init(cfg: object) {
+  console.log(">>>editor_init")
   _config.keymap = []
   cfg['keymap']?.forEach((sc: any) => {
     const tmp = {key: sc['key']}
@@ -95,6 +96,7 @@ function init(cfg: object) {
     if('run' in sc) tmp['run'] = cm_functions[sc.run]
     if('scope' in sc) tmp['scope'] = sc.scope
     if('preventDefault' in sc) tmp['preventDefault'] = sc.preventDefault
+    console.log("> " + JSON.stringify(tmp))
     _config.keymap.push(tmp)
   })
 }
