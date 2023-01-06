@@ -12,7 +12,7 @@ import type { MDIEditorView } from "./editor"
 import { html_to_markdown, markdown_to_html } from "./converter"
 import { SelectionRange } from "@codemirror/state"
 import { ancestor } from "./utils"
-import { CustomInput } from "./custom_input"
+import { CustomInputClass, CustomInputAPI } from "./custom_input"
 
 const FIELD_DEFAULT = 'Default field state'
 const MD = '<!--?xml version="1.0" encoding="UTF-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-md-hollow" width="24" height="24" viewBox="0 0 208 128"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></svg>'
@@ -41,11 +41,16 @@ function plain_edit(field: EditorFieldAPI): PlainTextInputAPI | undefined {
 // Setup event listeners and configuration - create CM instances only on demand
 function init(cfg: {}) {
     for (const key in cfg) _config[key] = cfg[key]
-    _config.MDI = new CustomInput({
+    let tip = "Markdown input"
+    if(_config['Shortcut']) tip += ` (${_config['Shortcut']})`
+
+    let onadd
+    if(_config['Default field state'].toLowerCase() != 'rich text')
+        onadd = () => { this.toggle() }
+
+    _config.MDI = new CustomInputClass({
         class: "markdown-input",
-        title: "Markdown input",
-        shortcut: _config['Shortcut'],
-        default_show: _config['Default field state']?.toLowerCase() != 'rich text',
+        tooltip: tip,
         create_editor: (parent: HTMLDivElement, onchange: (html: string) => void) => {
             return create_editor(
                 parent,
@@ -72,14 +77,12 @@ function init(cfg: {}) {
                 }
             )
         },
-        focus: (editor: any) => { editor.focus() },
-        set_content: (editor: any, html: string) => {
+        focus: () => { this.editor.focus() },
+        update_editor: (html: string) => {
             const [md, ord] = html_to_markdown(html)
-            editor.set_doc(md, ord, 'end')
+            this.editor.set_doc(md, ord, 'end')
         },
-        oncreate: (editor: any) => {
-
-        },
+        onadd: onadd,
         badge: MD
     })
 }
@@ -117,5 +120,5 @@ async function cycle_prev() {
 
 export { init as converter_init } from "./converter"
 export { init as editor_init } from "./editor"
-export type { CustomInput } from "./custom_input"
+export type { CustomInputClass } from "./custom_input"
 export { init, toggle, toggle_rich, update_all, cycle_next, cycle_prev }
