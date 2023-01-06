@@ -30,9 +30,9 @@ interface CustomInputConfig {
     class_name: string
     tooltip: string
     badge: string
-    set: (html: string) => void,
+    set_editor: (html: string) => void,
     focus: () => void,
-    create_editor: (container: HTMLElement) => any,
+    create_editor: (container: HTMLElement, onchange: (html: string) => void) => any,
     onadd?: () => void
 }
 
@@ -52,14 +52,14 @@ class CustomInputAPI {
     readonly container: HTMLElement
     readonly badge: HTMLSpanElement
     readonly focus: () => void
-    #set: (html: string) => void
-    get set() { return this.#set }
+    #set_editor: (html: string) => void
+    get set() { return this.#set_editor }
     #editor: any
     get editor() {
-        if (!this.#editor) this.#editor = this.#create_editor(this.container)
+        if (!this.#editor) this.#editor = this.#create_editor(this.container, this.set)
         return this.#editor
     }
-    readonly #create_editor: (container: HTMLElement) => any
+    readonly #create_editor: (container: HTMLElement, onchange: (html: string) => void) => any
     readonly #onadd: () => void
 
     #unsub: () => void
@@ -109,40 +109,14 @@ class CustomInputAPI {
         gfx.querySelector('span').innerHTML = cfg.badge
 
         badge_container.insertBefore(this.badge, badge_container.firstElementChild)
-        this.#set = cfg.set
+        this.#set_editor = cfg.set_editor
         this.focus = cfg.focus
         this.#create_editor = cfg.create_editor
         if (cfg.onadd) this.#onadd = cfg.onadd
 
         // Handle focus events for subscribing/unsubscribing
-        async focusin(evt: FocusEvent) {
-            const tgt = evt.target as HTMLElement
-            const tgt_fld = ancestor(tgt, '.editor-field') as HTMLElement
-            const ci = tgt_fld?.[this.name] as CustomInputAPI
-            if (!ci) return
-
-            // We focus this custom input, unsubscribe
-            if (ancestor(tgt, `.${this.cfg.class}`)) {
-                if (ci.editor['unsubscribe']) {
-                    ci.editor['unsubscribe']()
-                    ci.editor['unsubscribe'] = null
-                }
-            // We focus something else, subscribe
-            } else {
-                if (!ci.editor['unsubscribe'] && visible(ci.container)) {
-                    for (const fld of this.flds) {
-                        if (await fld.element === tgt_fld) { // await neccessary
-                            const unsub = fld.editingArea.content.subscribe((html: string) => {
-                                this.cfg.set_content.call(ci, html)
-                            })
-                            tgt_fld[this.name].editor['unsubscribe'] = unsub
-                            break
-                        }
-                    }
-                }
-            }
-        }
-
+        element.addEventListener('focusin', (evt: FocusEvent) => this.#focusin)
+        element.addEventListener('focusout', (evt: FocusEvent) => this.#focusout)
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -178,6 +152,18 @@ class CustomInputAPI {
         else
             input.classList.replace('expanded', 'hidden')
     }
+
+    #focusin(evt: Event) {
+        // We focus this custom input, unsubscribe
+        if (ancestor(evt.target as HTMLElement, `.${this.#cfg.class_name}`))
+            this.#unsubscribe()
+        // We focus something else, subscribe
+        else
+            this.#subscribe()
+    }
+    #focusout(evt: Event) {
+        this.#subscribe()
+    }
 }
 
 
@@ -199,21 +185,22 @@ class CustomInputClass {
             refocus: Function
         }
     }[]
-    #name: string
+    readonly #name: string
 
     constructor(config: CustomInputConfig) {
         this.cfg = config
         this.#name = this.cfg.class_name.replace('-', '_')
-        if (!document[this.#name]) {
-            //document.addEventListener('focusin', (evt: FocusEvent) => this.focusin(evt))
-            document[this.#name] = true
-        }
+    }
+
+    async custom_input(field: number | EditorFieldAPI) {
+
+        return
     }
 
     /////////////////////////////////////////////////////////////////////////////
     // Update custom input content in all visible custom inputs, e.g. on note load
     // Add badges to all field as needed
-    public async update_all() {
+    async update_all() {
         this.note_editor = await require('anki/NoteEditor').instances[0]
         this.flds = await this.note_editor.fields
         for (const field of this.flds) {
@@ -232,7 +219,7 @@ class CustomInputClass {
 
     /////////////////////////////////////////////////////////////////////////////
     // Cycle to next field or first if none active
-    public async cycle_next() {
+    async cycle_next() {
         const active = ancestor(document.activeElement as HTMLElement, '.editing-area > div')
         // Check for inputs in current field
         let nxt = older(active)
@@ -257,7 +244,7 @@ class CustomInputClass {
 
     /////////////////////////////////////////////////////////////////////////////
     // Cycle to prev field or first if none active
-    public async cycle_prev() {
+    async cycle_prev() {
         const active = ancestor(document.activeElement as HTMLElement, '.editing-area > div')
         // Check for inputs in current field
         let prev = younger(active)

@@ -61,10 +61,10 @@ def init(cfg):
             [QKeySequence(cfg[FIELD_INPUT][SHORTCUT]),
             lambda _ed=ed: toggle_field(_ed, 'markdown')]
         )
-#        shortcuts.append(
-#            [QKeySequence(cfg[FIELD_INPUT][RICH_SHORTCUT]),
-#            lambda _ed=ed: toggle_field(_ed, 'rich')]
-#        )
+        shortcuts.append(
+            [QKeySequence(cfg[FIELD_INPUT][RICH_SHORTCUT]),
+            lambda _ed=ed: toggle_field(_ed, 'rich')]
+        )
         shortcuts.append(
             [QKeySequence(cfg[FIELD_INPUT][NEXT_SHORTCUT]),
            lambda _ed=ed: ed.web.eval('MarkdownInput.cycle_next()')]

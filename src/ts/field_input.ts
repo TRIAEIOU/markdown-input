@@ -24,20 +24,6 @@ const _config = {
 }
 
 /////////////////////////////////////////////////////////////////////////////
-// Get the rich text input of a field
-function rich_edit(field: EditorFieldAPI): RichTextInputAPI | undefined {
-    return  (get(field.editingArea.editingInputs) as EditingInputAPI[])
-            .find(input => input?.name === "rich-text")
-}
-
-/////////////////////////////////////////////////////////////////////////////
-// Get the plain text input of a field
-function plain_edit(field: EditorFieldAPI): PlainTextInputAPI | undefined {
-    return  (get(field.editingArea.editingInputs) as EditingInputAPI[])
-            .find(input => input?.name === "plain-text")
-}
-
-/////////////////////////////////////////////////////////////////////////////
 // Setup event listeners and configuration - create CM instances only on demand
 function init(cfg: {}) {
     for (const key in cfg) _config[key] = cfg[key]
@@ -49,7 +35,7 @@ function init(cfg: {}) {
         onadd = () => { this.toggle() }
 
     _config.MDI = new CustomInputClass({
-        class: "markdown-input",
+        class_name: "markdown-input",
         tooltip: tip,
         create_editor: (parent: HTMLDivElement, onchange: (html: string) => void) => {
             return create_editor(
@@ -78,7 +64,7 @@ function init(cfg: {}) {
             )
         },
         focus: () => { this.editor.focus() },
-        update_editor: (html: string) => {
+        set_editor: (html: string) => {
             const [md, ord] = html_to_markdown(html)
             this.editor.set_doc(md, ord, 'end')
         },
@@ -115,6 +101,10 @@ async function cycle_next() {
 // Cycle to previous input, changing field PRN
 async function cycle_prev() {
     _config.MDI.cycle_prev()
+}
+
+async function get_mdi(index: number) {
+    _config.MDI.note_editor
 }
 
 
