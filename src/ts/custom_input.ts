@@ -6,8 +6,6 @@ import type { RichTextInputAPI } from "anki/ts/editor/rich-text-input"
 // @ts-ignore FIXME: how to import correctly?
 import type { PlainTextInputAPI } from "anki/ts/editor/plain-text-input"
 import { ancestor } from "./utils"
-import { HTML } from "mdast-util-from-markdown/lib"
-
 
 /////////////////////////////////////////////////////////////////////////////
 // Return wether an input element is hidden by attribute or class
@@ -30,7 +28,7 @@ interface CustomInputConfig {
     class_name: string
     tooltip: string
     badge: string
-    set_editor: (html: string) => void,
+    set_custom_content: (html: string) => void,
     focus: () => void,
     create_editor: (container: HTMLElement, onchange: (html: string) => void) => any,
     onadd?: () => void
@@ -47,122 +45,133 @@ interface CustomInputConfig {
  * @member {function(html: string): void} update call to update editor field content (and set rich and plain text PRN)
  */
 class CustomInputAPI {
-    readonly #cfg: CustomInputConfig
-    readonly field: EditorFieldAPI
-    readonly container: HTMLElement
-    readonly badge: HTMLSpanElement
+    readonly editor_field_api: EditorFieldAPI
+    readonly editor_container: HTMLElement
+    readonly badge_container: HTMLSpanElement
+    readonly class_name: string
     readonly focus: () => void
-    #set_editor: (html: string) => void
-    get set() { return this.#set_editor }
-    #editor: any
     get editor() {
-        if (!this.#editor) this.#editor = this.#create_editor(this.container, this.set)
-        return this.#editor
+        if (!this._editor) this._editor = this._create_editor(
+            this.editor_container.firstElementChild as HTMLElement,
+            this.editor_field_api.editingArea.content.set
+        )
+        return this._editor
     }
-    readonly #create_editor: (container: HTMLElement, onchange: (html: string) => void) => any
-    readonly #onadd: () => void
+    readonly set_custom_content: (html: string) => void
 
-    #unsub: () => void
-    #unsubscribe() {
-        if (this.#unsub) {
-            this.#unsub()
-            this.#unsub = null
+    _editor: any
+    readonly _create_editor: (container: HTMLElement, onchange: (html: string) => void) => any
+    _unsub: () => void
+    _unsubscribe() {
+        if (this._unsub) {
+            this._unsub()
+            this._unsub = null
         }
     }
-    #subscribe() {
-        if (!this.#unsub)
-            this.#unsub = this.field.editingArea.content.subscribe((html: string) => {
-                this.set(html)
-            })
+    _subscribe() {
+        if (this._unsub) return
+        this._unsub = this.editor_field_api.editingArea.content.subscribe((html: string) => {
+            this.set_custom_content(html)
+        })
     }
 
     constructor(
         cfg: CustomInputConfig,
-        field: EditorFieldAPI,
-        element: HTMLElement
+        editor_field_api: EditorFieldAPI,
+        editor_field_el: HTMLElement
     ) {
-        this.#cfg = cfg
-        this.field = field
-        this.container = element
+        this.editor_field_api = editor_field_api
+        this.class_name = cfg.class_name
+        this.set_custom_content = cfg.set_custom_content
+        this.focus = cfg.focus
+        this._create_editor = cfg.create_editor
 
+        // Set up editor container (editor not instansiated until use)
+        const editing_area = editor_field_el.querySelector('.editing-area')
+        const wrapper = editing_area.querySelector('.plain-text-input')
+            .parentElement.cloneNode(false) as HTMLDivElement
+        wrapper.classList.replace('expanded', 'hidden')
+        const inner = document.createElement('div')
+        inner.classList.add(this.class_name)
+        wrapper.appendChild(inner)
+        this.editor_container = editing_area.insertBefore(wrapper, editing_area.firstElementChild)
+
+        // Set up badge
         const badge_container =
-            ancestor(this.container, '.field-container')
+            ancestor(this.editor_container, '.field-container')
             .querySelector('.field-state')
         const plain_badge = badge_container.querySelector('.plain-text-badge')
-        this.badge = plain_badge.cloneNode(true) as HTMLElement
-        this.badge.classList.replace('plain-text-badge', `${this.#cfg.class_name}-badge`)
-        this.badge.onclick = () => this.toggle()
+        this.badge_container = plain_badge.cloneNode(true) as HTMLElement
+        this.badge_container.classList.replace('plain-text-badge', `${this.class_name}-badge`)
+        this.badge_container.onclick = () => this.toggle()
         // Copy `visible` class (hover⇒visible functionality)
-        this.badge['observer'] =
+        this.badge_container['observer'] =
             new MutationObserver((muts: MutationRecord[], obs: MutationObserver) => {
                 muts.forEach(mut => {
                     if ((mut.target as HTMLElement).classList.contains('visible'))
-                        this.badge.classList.add('visible')
+                        this.badge_container.classList.add('visible')
                     else
-                        this.badge.classList.remove('visible')
+                        this.badge_container.classList.remove('visible')
                 })
         })
-        this.badge['observer'].observe(plain_badge, {attributeFilter: ['class']})
-
-        const gfx = this.badge.querySelector('.badge') as HTMLElement
-        gfx.title = `Toggle ${this.#cfg.tooltip}`
+        this.badge_container['observer'].observe(plain_badge, {attributeFilter: ['class']})
+        const gfx = this.badge_container.querySelector('.badge') as HTMLElement
+        gfx.title = cfg.tooltip
         gfx.querySelector('span').innerHTML = cfg.badge
-
-        badge_container.insertBefore(this.badge, badge_container.firstElementChild)
-        this.#set_editor = cfg.set_editor
-        this.focus = cfg.focus
-        this.#create_editor = cfg.create_editor
-        if (cfg.onadd) this.#onadd = cfg.onadd
+        badge_container.insertBefore(this.badge_container, badge_container.firstElementChild)
 
         // Handle focus events for subscribing/unsubscribing
-        element.addEventListener('focusin', (evt: FocusEvent) => this.#focusin)
-        element.addEventListener('focusout', (evt: FocusEvent) => this.#focusout)
+        const field_container = ancestor(editor_field_el, '.field-container')
+        field_container.addEventListener('focusin', (evt: Event) => {
+            // We focus this custom input, unsubscribe
+            if (ancestor(evt.target as HTMLElement, `.${this.class_name}`))
+                    this._unsubscribe()
+            // We focus something else, subscribe
+            else
+                    this._subscribe()
+        })
+        field_container.addEventListener('focusout', (evt: Event) => {
+            this._subscribe()
+        })
+
+        if (cfg.onadd) cfg.onadd()
     }
 
     /////////////////////////////////////////////////////////////////////////////
     // Toggle/show/hide custom input
-    async toggle() {
-        if (!this.#editor || !visible(this.container)) this.show()
+    toggle() {
+        if (!this._editor || !visible(this.editor_container)) this.show()
         else this.hide()
     }
-    async show() {
+
+    show() {
         this.editor // ensure instantiated
-        this.#unsubscribe()
-        this.set(get(await this.field.editingArea.content) as string)
-        this.container.classList.replace('hidden', 'expanded')
-        this.badge.parentElement.parentElement.classList.add('highlighted')
+        this._unsubscribe()
+        const html = get(this.editor_field_api.editingArea.content) as string
+        this.set_custom_content(html)
+        this.editor_container.classList.replace('hidden', 'expanded')
+        this.badge_container.parentElement.parentElement.classList.add('highlighted')
         this.focus()
     }
-    async hide() {
-        this.#unsubscribe()
-        this.container.classList.replace('expanded', 'hidden')
-        this.badge.parentElement.parentElement.classList.remove('highlighted')
-        this.field.editingArea.refocus()
+
+    hide() {
+        this._unsubscribe()
+        this.editor_container.classList.replace('expanded', 'hidden')
+        this.badge_container.parentElement.parentElement.classList.remove('highlighted')
+        this.editor_field_api.editingArea.refocus()
     }
 
     /////////////////////////////////////////////////////////////////////////////
     // Toggle built in editing inputs
-    async toggle_rich() { this.#toggle_builtin('rich') }
-    async toggle_plain() { this.#toggle_builtin('plain') }
-    async #toggle_builtin(type: string) {
-        const el = await this.field.element as HTMLElement
+    toggle_rich() { this._toggle_builtin('rich') }
+    toggle_plain() { this._toggle_builtin('plain') }
+    _toggle_builtin(type: string) {
+        const el = this.editor_container.parentElement
         const input = el.querySelector(`.${type}-text-input`).parentElement
         if (input.classList.contains('hidden'))
             input.classList.replace('hidden', 'expanded')
         else
             input.classList.replace('expanded', 'hidden')
-    }
-
-    #focusin(evt: Event) {
-        // We focus this custom input, unsubscribe
-        if (ancestor(evt.target as HTMLElement, `.${this.#cfg.class_name}`))
-            this.#unsubscribe()
-        // We focus something else, subscribe
-        else
-            this.#subscribe()
-    }
-    #focusout(evt: Event) {
-        this.#subscribe()
     }
 }
 
@@ -177,20 +186,21 @@ class CustomInputAPI {
  */
 class CustomInputClass {
     readonly cfg: CustomInputConfig
-    readonly #name: string
+    readonly _name: string
 
     constructor(config: CustomInputConfig) {
         this.cfg = config
-        this.#name = this.cfg.class_name.replace('-', '_')
+        this._name = this.cfg.class_name.replace('-', '_')
     }
 
     /////////////////////////////////////////////////////////////////////////////
     // Get CustomInputAPI for field by index of EditorFieldAPI
     async get_api(field: number | EditorFieldAPI) {
-        field = typeof (field) === 'number'
-            ? await require('anki/NoteEditor').instances[0].fields[field]
-            : await field
-        return await field.element[this.#name]
+        const el = await (typeof (field) === 'number'
+            ? require('anki/NoteEditor').instances[0].fields[field]
+            : field
+        ).element
+        return await el[this._name]
     }
 
     /////////////////////////////////////////////////////////////////////////////
@@ -201,18 +211,14 @@ class CustomInputClass {
         const flds = await note_editor.fields
         for (const field of flds) {
             const editor_field = await field.element as HTMLElement // await necessary
-            console.log('---' + editor_field.classList)
-            if (!editor_field[this.#name])
-                {console.log('creatingn custominputapi')
-                    editor_field[this.#name] = new CustomInputAPI(this.cfg, field, editor_field.querySelector(''))
-                    console.log((await field.element as HTMLElement)[this.#name])
-                }
-            else if (editor_field.contains(document.activeElement))
-                this.cfg.focus.call(editor_field[this.#name])
+            if (!editor_field[this._name]) {
+                editor_field[this._name] = new CustomInputAPI(this.cfg, await field, await field.element)
+            } else if (editor_field.contains(document.activeElement))
+                this.cfg.focus.call(editor_field[this._name])
 
             // Update custom input contents PRN
-            if (visible(editor_field[this.#name]?._editor))
-                editor_field[this.#name].update(get(field.editingArea.content) as string)
+            if (visible(editor_field[this._name]?._editor))
+                editor_field[this._name].update(get(field.editingArea.content) as string)
         }
 
     }
@@ -226,13 +232,14 @@ class CustomInputClass {
         // No inputs in current field, find first visible in next field
         if (!nxt) {
             let fld_root = ancestor(active, '.fields > div') as HTMLElement
+            console.log(">>>" + fld_root.classList)
             while (fld_root && !nxt) {
                 fld_root = fld_root.nextElementSibling as HTMLElement
                 nxt = fld_root?.querySelector('.editing-area > div:not(.hidden)') as HTMLElement
             }
+            console.log("<<<" + nxt?.classList)
         }
-        if (nxt)
-            ((nxt.querySelector('.editor-field'))[this.#name] as CustomInputAPI).focus()
+        if (nxt) (ancestor(nxt, '.editor-field'))[this._name].focus()
 
         function older(fld: HTMLElement) {
             let nxt = fld?.nextElementSibling as HTMLElement
@@ -257,8 +264,7 @@ class CustomInputClass {
                 if (prevs && prevs.length) prev = prevs[prevs.length - 1] as HTMLElement
             }
         }
-        if (prev)
-            ((prev.querySelector('.editor-field'))[this.#name] as CustomInputAPI).focus()
+        if (prev) (ancestor(prev, '.editor-field'))[this._name].focus()
 
         function younger(fld: HTMLElement) {
             let prev = fld?.previousElementSibling as HTMLElement

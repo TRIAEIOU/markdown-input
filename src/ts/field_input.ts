@@ -7,7 +7,7 @@ import type { EditorFieldAPI, EditingInputAPI } from "anki/ts/editor/EditorField
 import type { RichTextInputAPI } from "anki/ts/editor/rich-text-input"
 // @ts-ignore FIXME: how to import correctly?
 import type { PlainTextInputAPI } from "anki/ts/editor/plain-text-input"
-import { create_editor, get_selections, set_selections } from "./editor"
+import { create_editor as _create_editor, get_selections, set_selections } from "./editor"
 import type { MDIEditorView } from "./editor"
 import { html_to_markdown, markdown_to_html } from "./converter"
 import { SelectionRange } from "@codemirror/state"
@@ -24,10 +24,54 @@ const _config = {
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// Function to instantiate an editor instance, can't be an arrow function
+// (`this` will be used)
+function create_editor(parent: HTMLDivElement, onchange: (html: string) => void) {
+    return _create_editor(
+        parent,
+        (md: string) => {
+            onchange(markdown_to_html(md))
+        },{
+            wheel(evt: WheelEvent) {
+                const fields = ancestor(parent, '.fields')
+                switch(evt.deltaMode){
+                    case 0: //DOM_DELTA_PIXEL
+                        fields.scrollTop += evt.deltaY
+                        fields.scrollLeft += evt.deltaX
+                        break
+                    case 1: //DOM_DELTA_LINE
+                        fields.scrollTop += 15 * evt.deltaY
+                        fields.scrollLeft += 15 * evt.deltaX
+                        break
+                    case 2: //DOM_DELTA_PAGE
+                        fields.scrollTop += 0.03 * evt.deltaY
+                        fields.scrollLeft += 0.03 * evt.deltaX
+                        break
+                }
+            }
+        }
+    )
+}
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Function to focus custom input editor, can't be an arrow function (`this` will be used)
+function focus() {
+    this.editor.focus()
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Function to set content of custom editor, can't be an arrow function (`this` will be used)
+function set_custom_content(html: string) {
+    const [md, ord] = html_to_markdown(html)
+    this.editor.set_doc(md, ord, 'end')
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // Setup event listeners and configuration - create CM instances only on demand
 function init(cfg: {}) {
     for (const key in cfg) _config[key] = cfg[key]
-    let tip = "Markdown input"
+    let tip = "Toggle Markdown input"
     if(_config['Shortcut']) tip += ` (${_config['Shortcut']})`
 
     let onadd
@@ -37,37 +81,9 @@ function init(cfg: {}) {
     _config.MDI = new CustomInputClass({
         class_name: "markdown-input",
         tooltip: tip,
-        create_editor: (parent: HTMLDivElement, onchange: (html: string) => void) => {
-            return create_editor(
-                parent,
-                async (md: string) => {
-                    onchange(markdown_to_html(md))
-                },{
-                    wheel(evt: WheelEvent) {
-                        const fields = ancestor(parent, '.fields')
-                        switch(evt.deltaMode){
-                            case 0: //DOM_DELTA_PIXEL
-                                fields.scrollTop += evt.deltaY
-                                fields.scrollLeft += evt.deltaX
-                                break
-                            case 1: //DOM_DELTA_LINE
-                                fields.scrollTop += 15 * evt.deltaY
-                                fields.scrollLeft += 15 * evt.deltaX
-                                break
-                            case 2: //DOM_DELTA_PAGE
-                                fields.scrollTop += 0.03 * evt.deltaY
-                                fields.scrollLeft += 0.03 * evt.deltaX
-                                break
-                        }
-                    }
-                }
-            )
-        },
-        focus: () => { this.editor.focus() },
-        set_editor: (html: string) => {
-            const [md, ord] = html_to_markdown(html)
-            this.editor.set_doc(md, ord, 'end')
-        },
+        create_editor: create_editor,
+        focus: focus,
+        set_custom_content: set_custom_content,
         onadd: onadd,
         badge: MD
     })
