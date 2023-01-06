@@ -61,10 +61,10 @@ def init(cfg):
             [QKeySequence(cfg[FIELD_INPUT][SHORTCUT]),
             lambda _ed=ed: toggle_field(_ed, 'markdown')]
         )
-        shortcuts.append(
-            [QKeySequence(cfg[FIELD_INPUT][RICH_SHORTCUT]),
-            lambda _ed=ed: toggle_field(_ed, 'rich')]
-        )
+#        shortcuts.append(
+#            [QKeySequence(cfg[FIELD_INPUT][RICH_SHORTCUT]),
+#            lambda _ed=ed: toggle_field(_ed, 'rich')]
+#        )
         shortcuts.append(
             [QKeySequence(cfg[FIELD_INPUT][NEXT_SHORTCUT]),
            lambda _ed=ed: ed.web.eval('MarkdownInput.cycle_next()')]
@@ -78,5 +78,5 @@ def init(cfg):
     _config = cfg
     gui_hooks.webview_will_set_content.append(lambda wc, ctx: add_srcs(wc, ctx))
     gui_hooks.editor_will_load_note.append(lambda _js, _note, _ed: _js + r"MarkdownInput.update_all()")
-#    gui_hooks.editor_did_init_shortcuts.append(append_shortcuts)
+    gui_hooks.editor_did_init_shortcuts.append(append_shortcuts)
     gui_hooks.webview_did_receive_js_message.append(bridge)

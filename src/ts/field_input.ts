@@ -24,6 +24,20 @@ const _config = {
 }
 
 /////////////////////////////////////////////////////////////////////////////
+// Get the rich text input of a field
+function rich_edit(field: EditorFieldAPI): RichTextInputAPI | undefined {
+    return  (get(field.editingArea.editingInputs) as EditingInputAPI[])
+            .find(input => input?.name === "rich-text")
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Get the plain text input of a field
+function plain_edit(field: EditorFieldAPI): PlainTextInputAPI | undefined {
+    return  (get(field.editingArea.editingInputs) as EditingInputAPI[])
+            .find(input => input?.name === "plain-text")
+}
+
+/////////////////////////////////////////////////////////////////////////////
 // Setup event listeners and configuration - create CM instances only on demand
 function init(cfg: {}) {
     for (const key in cfg) _config[key] = cfg[key]
@@ -63,10 +77,9 @@ function init(cfg: {}) {
             const [md, ord] = html_to_markdown(html)
             editor.set_doc(md, ord, 'end')
         },
-        save_selection: null,
-        restore_selection: null,
-        onshow: null,
-        onhide: null,
+        oncreate: (editor: any) => {
+
+        },
         badge: MD
     })
 }
@@ -89,8 +102,20 @@ async function update_all() {
     _config.MDI.update_all()
 }
 
+/////////////////////////////////////////////////////////////////////////////
+// Cycle to next input, changing field PRN
+async function cycle_next() {
+    _config.MDI.cycle_next()
+}
+
+/////////////////////////////////////////////////////////////////////////////
+// Cycle to previous input, changing field PRN
+async function cycle_prev() {
+    _config.MDI.cycle_prev()
+}
+
 
 export { init as converter_init } from "./converter"
 export { init as editor_init } from "./editor"
 export type { CustomInput } from "./custom_input"
-export { init, toggle, toggle_rich, update_all }
+export { init, toggle, toggle_rich, update_all, cycle_next, cycle_prev }
