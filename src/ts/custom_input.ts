@@ -177,14 +177,6 @@ class CustomInputAPI {
  */
 class CustomInputClass {
     readonly cfg: CustomInputConfig
-    protected note_editor: any
-    protected flds: {
-        element: HTMLElement,
-        editingArea: {
-            content: any,
-            refocus: Function
-        }
-    }[]
     readonly #name: string
 
     constructor(config: CustomInputConfig) {
@@ -192,21 +184,29 @@ class CustomInputClass {
         this.#name = this.cfg.class_name.replace('-', '_')
     }
 
-    async custom_input(field: number | EditorFieldAPI) {
-
-        return
+    /////////////////////////////////////////////////////////////////////////////
+    // Get CustomInputAPI for field by index of EditorFieldAPI
+    async get_api(field: number | EditorFieldAPI) {
+        field = typeof (field) === 'number'
+            ? await require('anki/NoteEditor').instances[0].fields[field]
+            : await field
+        return await field.element[this.#name]
     }
 
     /////////////////////////////////////////////////////////////////////////////
     // Update custom input content in all visible custom inputs, e.g. on note load
     // Add badges to all field as needed
     async update_all() {
-        this.note_editor = await require('anki/NoteEditor').instances[0]
-        this.flds = await this.note_editor.fields
-        for (const field of this.flds) {
+        const note_editor = await require('anki/NoteEditor').instances[0]
+        const flds = await note_editor.fields
+        for (const field of flds) {
             const editor_field = await field.element as HTMLElement // await necessary
+            console.log('---' + editor_field.classList)
             if (!editor_field[this.#name])
-                editor_field[this.#name] = new CustomInputAPI(this.cfg, field, editor_field)
+                {console.log('creatingn custominputapi')
+                    editor_field[this.#name] = new CustomInputAPI(this.cfg, field, editor_field.querySelector(''))
+                    console.log((await field.element as HTMLElement)[this.#name])
+                }
             else if (editor_field.contains(document.activeElement))
                 this.cfg.focus.call(editor_field[this.#name])
 

@@ -76,13 +76,15 @@ function init(cfg: {}) {
 /////////////////////////////////////////////////////////////////////////////
 // Toggle md input
 async function toggle(field: number | EditorFieldAPI) {
-    _config.MDI.toggle(field)
+    const api = await _config.MDI.get_api(field)
+    api.toggle()
 }
 
 /////////////////////////////////////////////////////////////////////////////
 // Toggle rich text input
 async function toggle_rich(field: number | EditorFieldAPI) {
-    _config.MDI.toggle_rich(field)
+    const api = await _config.MDI.get_api(field)
+    api.toggle_rich()
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -101,10 +103,6 @@ async function cycle_next() {
 // Cycle to previous input, changing field PRN
 async function cycle_prev() {
     _config.MDI.cycle_prev()
-}
-
-async function get_mdi(index: number) {
-    _config.MDI.note_editor
 }
 
 
