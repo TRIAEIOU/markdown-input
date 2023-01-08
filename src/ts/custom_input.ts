@@ -202,7 +202,11 @@ class CustomInputAPI {
             // We focus something else, subscribe
             else this._subscribe()
         })
-        field_container.addEventListener('focusout', evt => {this._subscribe()})
+        field_container.addEventListener('focusout', evt => {
+            // New focus outside custom input
+            if (!ancestor((evt.relatedTarget as HTMLElement), `.${this.class_name}`))
+                this._subscribe()
+        })
 
         if (cfg.onadd) cfg.onadd()
     }
