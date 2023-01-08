@@ -4,6 +4,10 @@ from aqt.utils import *
 from .constants import *
 from .utils import clip_img_to_md
 
+if tmp := re.match(r"^\s*((\d+\.)+\d+)", version_with_build()):
+    ANKI_VER = tmp.group(1)
+else:
+    ANKI_VER = "2.1.0"
 _config = {}
 tmp_dir = tempfile.TemporaryDirectory()
 
@@ -29,11 +33,19 @@ def add_srcs(web_content: aqt.webview.WebContent, context: object):
         return
     addon = mw.addonManager.addonFromModule(__name__)
     # Defer script to allow bridgeCommand to be defined
-    web_content.head += f"""
-        <script src="/_addons/{addon}/field_input.js"></script>
-        <link rel=stylesheet href="/_addons/{addon}/mdi.css">
-        <style>{_config[FIELD_INPUT][CSS]}</style>
-    """
+    if strvercmp(ANKI_VER, "2.1.55") > 0: # Current version
+        web_content.head += f"""
+            <script src="/_addons/{addon}/field_input.js"></script>
+            <link rel=stylesheet href="/_addons/{addon}/mdi.css">
+            <style>{_config[FIELD_INPUT][CSS]}</style>
+        """
+    else: # Legacy, not updated
+        web_content.head += f"""
+            <script src="/_addons/{addon}/field_input_2.1.55.js"></script>
+            <link rel=stylesheet href="/_addons/{addon}/mdi.css">
+            <style>{_config[FIELD_INPUT][CSS]}</style>
+        """
+
     # Configure Unified and CodeMirror - after script load but before cm instantiation
     web_content.body += f'''
         <script>

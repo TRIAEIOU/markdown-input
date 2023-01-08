@@ -34,5 +34,6 @@ function bundle(input_file, output_file, output_name) {
 
 export default [
   bundle("./src/ts/field_input.ts", "./bin/field_input.js", "MarkdownInput"),
+  bundle("./src/ts/field_input_2.1.55.ts", "./bin/field_input_2.1.55.js", "MarkdownInput"),
   bundle("./src/ts/dialog_input.ts", "./bin/dialog_input.js", "MarkdownInput"),
 ]
