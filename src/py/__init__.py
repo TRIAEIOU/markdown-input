@@ -13,7 +13,7 @@ if ver == "-1":
 
 msgs = []
 if strvercmp(ver, '1.2.0') < 0:
-    msgs.push('The configurations "Restore state on toggle", "Hide plain text on toggle" and "Hide rich text on toggle" for "Field input" have been replaced with "Cycle rich text/Markdown" (making the Markdown shortcut either cycle between rich text and Markdown or simply show/hide the Markdown input).')
+    msgs.append('The configurations "Restore state on toggle", "Hide plain text on toggle" and "Hide rich text on toggle" for "Field input" have been replaced with "Cycle rich text/Markdown" (making the Markdown shortcut either cycle between rich text and Markdown or simply show/hide the Markdown input).')
     msgs.push('"Cloze lists" for "Converter" has been removed.')
     config['Field input'].pop('Restore state on toggle', None)
     config['Field input'].pop('Hide plain text on toggle', None)
@@ -38,8 +38,8 @@ if strvercmp(ver, '1.2.2') < 0:
         config['Field input']['Cycle rich text/Markdown'] = True
 
 if strvercmp(ver, '2.0.0') < 0:
-    msgs.push('The editor DOM and internal functioning which <code>Markdown input</code> depends on changed in Anki version 2.1.56. The current version of <code>Markdown input</code> ships with both 2.1.56+ compatible code as well as the last <a href="https://github.com/TRIAEIOU/Markdown-input/releases/tag/v1.2.5">release</a> targeted at 2.1.55. Going forward no updates/fixes will be made to the legacy code, any development/bug fixes will be in the 2.1.56+ code.')
-    msgs.push('Due to the changes mentioned above you will likely need to update the CSS for the field input (<code>Field input/CSS</code> in the configuration). For reference: the shipped default is now <code>.cm-content { font-family: Consolas, monospace; font-size: 16px; background-color: var(--canvas-elevated); color: var(--fg);} .night-mode .cm-editor .cm-activeLine { background-color: var(--fg-faint); }"</code>')
+    msgs.append('The editor DOM and internal functioning which <code>Markdown input</code> depends on changed in Anki version 2.1.56. The current version of <code>Markdown input</code> ships with both 2.1.56+ compatible code as well as the last <a href="https://github.com/TRIAEIOU/Markdown-input/releases/tag/v1.2.5">release</a> targeted at 2.1.55. Going forward no updates/fixes will be made to the legacy code, any development/bug fixes will be in the 2.1.56+ code.')
+    msgs.append('Due to the changes mentioned above you will likely need to update the CSS for the field input (<code>Field input/CSS</code> in the configuration). For reference: the shipped default is now <code>.cm-content { font-family: Consolas, monospace; font-size: 16px; background-color: var(--canvas-elevated); color: var(--fg);} .night-mode .cm-editor .cm-activeLine { background-color: var(--fg-faint); }"</code>')
 
 if strvercmp(ver, VERSION) < 0:
     config['version'] = VERSION
