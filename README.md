@@ -4,6 +4,10 @@ Anki ([GitHub](https://github.com/ankitects/anki)) addon ([GitHub](https://githu
 
 ![Markdown input](https://github.com/TRIAEIOU/Markdown-input/raw/main/Screenshots/screen.png?raw=true)
 
+## Anki version note (2.1.56+)
+
+The editor DOM and internal functioning which `Markdown input` depends on changed in Anki version 2.1.56. The current version of `Markdown input` ships with both 2.1.56+ compatible code as well as the last [release](https://github.com/TRIAEIOU/Markdown-input/releases/tag/v1.2.5) targeted at 2.1.55. Going forward no updates/fixes will be made to the legacy code, any development/bug fixes will be in the 2.1.56+ code.
+
 ## Warning
 
 - Markdown is not "another way to write HTML", it is a plain text format that has a determined translation to HTML (the format the Anki editor uses). The HTML generated is a subset of all HTML and, amongst other things, makes heavy use of `<p>` tags (which are not used by the Anki editor). Furthermore there is no spec on the conversion from HTML *to* Markdown. This makes conversion tricky and there is risk for loss of information when cycling HTML → Markdown → HTML.
@@ -100,3 +104,4 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - 2022-12-16: Fix multiple badges bug.
 - 2022-12-20: Fix field input mode bug for *nix (tested in VM `Ubuntu 22.04 LTS`) and macOS (tested in a really slow VM `High Sierra`).
 - 2022-12-22: Badge rework and bug fix
+- 2023-01-09: Move to 2.1.56 platform (last 2.1.55 shipped until further notice), fix syntax highlighting.
