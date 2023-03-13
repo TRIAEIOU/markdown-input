@@ -1,20 +1,56 @@
-import type {MDIEditorView} from "./editor"
-import {create_editor} from "./editor"
-import {html_to_markdown, markdown_to_html} from "./converter"
+import { Editor } from "./editor"
+import { Converter } from "anki-md-html"
+import { Configuration, CONVERTER, DIALOG_INPUT, DIALOG_MODE, EDITOR } from "./constants"
 
-let _codemirror: MDIEditorView = undefined
+class DialogEditor {
+  editor: Editor
+  converter: Converter
+  constructor(cfg: Configuration) {
+    Object.assign(this, cfg)
+    this.editor = new Editor({
+      parent: document.body,
+      ...this[EDITOR]
+    })
+    this.converter = new Converter(this[CONVERTER])
+  }
 
-function set_html(html: string) {
-    const [md, ord] = html_to_markdown(html)
-    if (!_codemirror) _codemirror = create_editor(document.body)
-    _codemirror.set_doc(md, ord, 'end')
-    _codemirror.focus()
+  /**
+   * Sets content to the complete doc or just the indexed field depending on config
+   * @param fields Array of tuples of field titles & values
+   * @param i
+   */
+  set_html(fields: [[title: string, content: string]], i: number) {
+    if (this[DIALOG_INPUT]?.[DIALOG_MODE] === 'note') {
+      let html = ''
+      for (const [title, content] of fields)
+        html += `<-- ${title} --><br><br>${content}<br><br>`
+      const [md, ord] = this.converter.html_to_markdown(html)
+      this.editor.set_doc(md, ord, 'start')
+    } else {
+      const [md, ord] = this.converter.html_to_markdown(fields[i][1])
+      this.editor.set_doc(md, ord, 'end')
+    }
+    this.editor.cm.focus()
+  }
+
+  /**
+  * Returns array pair for field title and field content for "note" mode,
+  * string for field/selection only mode
+  */
+  get_html() {
+    if (this[DIALOG_INPUT]?.[DIALOG_MODE] === 'note') {
+      const fields: [title: string, content: string][] = []
+      const md = this.editor.cm.state.doc.toString()
+      for (const match of md.matchAll(/(.*?)^[ \t]*<--[ \t]*(.*?)[ \t]*?-->[ \t]*$/gms)) {
+        if (fields.length)
+          fields[fields.length - 1][1] = this.converter.markdown_to_html(match[1].trim())
+        fields.push([match[2], ''])
+      }
+      return fields
+    }
+    // else
+    return this.converter.markdown_to_html(this.editor.cm.state.doc.toString())
+  }
 }
 
-function get_html(): string {
-    return markdown_to_html(_codemirror.state.doc.toString())
-}
-
-export {init as converter_init} from "./converter"
-export {init as editor_init} from "./editor"
-export {set_html, get_html}
+export { DialogEditor }

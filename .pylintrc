@@ -2,7 +2,7 @@
 persistent = no
 extension-pkg-whitelist=PyQt6
 ignore = forms,hooks_gen.py
-init-hook = 'import sys; sys.path.append("$env:CODEPATH/Anki/anki-src/qt/", "$env:CODEPATH/Anki/anki-src/pylib/")'
+init-hook = 'import sys; sys.path.append("$env:CODEPATH/Anki/anki/qt/", "$env:CODEPATH/Anki/anki/pylib/")'
 
 [TYPECHECK]
 ignored-modules=win32file,pywintypes,socket,win32pipe,winrt,pyaudio

@@ -7,20 +7,19 @@ if qtmajor == 6:
 elif qtmajor == 5:
     from . import dialog_qt5 as dialog
 from .constants import *
-from .utils import clip_img_to_md
+from .utils import clip_img_to_md, get_path
 
 BRIDGECOMMAND_ONACCEPT = "ON_ACCEPT:"
 _config = {}
 _dlgs = {}
 
 ###########################################################################
-# Main dialog to edit markdown
-###########################################################################
 class IM_dialog(QDialog):
-    ###########################################################################
-    # Constructor (populates and shows dialog)
+    """Main dialog to edit markdown in external window"""
+
     ###########################################################################
     def __init__(self, parent: aqt.editor.Editor, note: anki.notes.Note, fid: int):
+        """Constructor: Populates and shows dialog"""
         global _config, _dlgs
         QDialog.__init__(self)
         _dlgs[hex(id(self))] = self
@@ -38,17 +37,16 @@ class IM_dialog(QDialog):
         <head>
             <script src="dialog_input.js"></script>
             <link rel=stylesheet href="mdi.css">
-            <style>{_config[DIALOG_INPUT][CSS]}</style>
+            <link rel=stylesheet href="{get_path('cm.css')}">
         </head>
         <body>
             <script>
-                MarkdownInput.converter_init({json.dumps(_config[CONVERTER])});
-                MarkdownInput.editor_init({json.dumps(_config[EDITOR])});
-                MarkdownInput.set_html({json.dumps(note.fields[fid])});
+                const mdi_editor = new MarkdownInput.DialogEditor({json.dumps(_config)})
+                mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
             </script>
         </body>
         </html>
-        ''', QUrl.fromLocalFile(os.path.join(os.path.dirname(__file__), "")))
+        ''', QUrl.fromLocalFile(os.path.join(ADDON_PATH, "")))
         name = note.items()[0][1] or "[new]"
         if len(name) > 15:
             name = name[:15] + "..."
@@ -59,10 +57,8 @@ class IM_dialog(QDialog):
         _dlgs.pop(hex(id(self)), None)
 
     ###########################################################################
-    # Setup js → python message bridge
-    # Stolen from AnkiWebView
-    ###########################################################################
     def setup_bridge(self, handler):
+        """Setup js → python message bridge. Stolen from AnkiWebView."""
         class Bridge(QObject):
             def __init__(self, handler: Callable[[str], Any]) -> None:
                 super().__init__()
@@ -107,60 +103,63 @@ class IM_dialog(QDialog):
         self.ui.web.page().profile().scripts().insert(script)
 
     ###########################################################################
-    # Bridge message receiver
-    ###########################################################################
     def bridge(self, str = None):
+        """Bridge message receiver"""
         if str == "clipboard_image_to_markdown":
             img = clip_img_to_md()
             return img
+        return
 
 
-    ###########################################################################
-    # Main dialog accept
     ###########################################################################
     def accept(self) -> None:
+        """Main dialog accept"""
         global _config
-        def save_field(html):
+        def save_field(res):
+            if not res:
+                return
             if self.parent.addMode or self.parent.note.id == self.nid:
-                self.parent.note.fields[self.fid] = html
-                self.parent.loadNoteKeepingFocus()
+                note = self.parent.note
+                focus = True
             else:
                 note = aqt.mw.col.get_note(self.nid)
-                note.fields[self.fid] = html
-                aqt.mw.col.update_note(note)
-            #note = aqt.mw.col.get_note(self.nid)
-            #note.fields[self.fid] = html
-            #aqt.mw.col.update_note(note)
+                focus = False
+
+            if type(res) == str: # Partial note
+                note.fields[self.fid] = res
+            else: # Complete note
+                for (title, content) in res: note[title] = content
+
+            if focus: self.parent.loadNoteKeepingFocus()
+            else: aqt.mw.col.update_note(note)
 
         self.ui.web.page().runJavaScript(f'''(function () {{
-            return MarkdownInput.get_html();
+            return mdi_editor.get_html();
         }})();''', save_field)
         _config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         aqt.mw.addonManager.writeConfig(__name__, _config)
         super().accept()
 
     ###########################################################################
-    # Main dialog reject
-    ###########################################################################
     def reject(self):
+        """Main dialog reject"""
         global _config
         _config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         aqt.mw.addonManager.writeConfig(__name__, _config)
         super().reject()
 
 ###########################################################################
-# Open the Markdown dialog
-###########################################################################
 def edit_field(editor: aqt.editor.Editor):
+    """Open the markdown dialog for selected field"""
     global _config
 
     if editor.currentField == None:
         return
     dlg = IM_dialog(editor, editor.note, editor.currentField)
-    if _config[DIALOG_INPUT][SHORTCUT_ACCEPT]:
-        QShortcut(_config[DIALOG_INPUT][SHORTCUT_ACCEPT], dlg).activated.connect(dlg.accept)
-    if _config[DIALOG_INPUT][SHORTCUT_REJECT]:
-        QShortcut(_config[DIALOG_INPUT][SHORTCUT_REJECT], dlg).activated.connect(dlg.reject)
+    if _config[DIALOG_INPUT][SC_ACCEPT]:
+        QShortcut(_config[DIALOG_INPUT][SC_ACCEPT], dlg).activated.connect(dlg.accept)
+    if _config[DIALOG_INPUT][SC_REJECT]:
+        QShortcut(_config[DIALOG_INPUT][SC_REJECT], dlg).activated.connect(dlg.reject)
 
     if _config[DIALOG_INPUT][SIZE_MODE].lower() == 'last':
         dlg.restoreGeometry(base64.b64decode(_config[DIALOG_INPUT][LAST_GEOM]))
@@ -189,16 +188,16 @@ def edit_field(editor: aqt.editor.Editor):
 
 
 ###########################################################################
-# Configure and activate dialog Markdown input
 def init(cfg: object):
+    """Configure and activate markdown input dialog"""
     global _config
     def editor_btn(buttons, editor):
         btn = editor.addButton(
             os.path.join(ADDON_PATH, "gfx", "markdown.png"),
             "md_dlg_btn",
             edit_field,
-            tip=f"Markdown Input ({_config[DIALOG_INPUT][SHORTCUT]})",
-            keys=_config[DIALOG_INPUT][SHORTCUT]
+            tip=f"Markdown Input ({_config[DIALOG_INPUT][SC_OPEN]})",
+            keys=_config[DIALOG_INPUT][SC_OPEN]
             )
         buttons.append(btn)
         return buttons

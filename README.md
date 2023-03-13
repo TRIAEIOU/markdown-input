@@ -28,40 +28,33 @@ Conversion to/from HTML is done through [unified](https://unifiedjs.com/) Markdo
   ```
 
 - Spec `<em>sample</em>` (`*sample*`) and `<strong>sample</strong>` (`**sample**`) are swapped to `<i>` and `<b>` to match the Anki editor.
-- Configurable Markdown inline/span syntax, defaults are:
-  - `~sample~` for subscript
-  - `^sample^` for superscript
-  - `_sample_` for underline (spec Markdown is `<em>`, remove the `underline` entry in `config.json` to revert to spec).
-  - GFM strikethrough (`~~sample~~`) for strikthrough text (In reality GFM also allows single `~` but that has been assigned to subscript, see above).
-- Directive defined for [Inline Media](https://ankiweb.net/shared/info/683715045), e.g. `:audio(im-xyz.ogg){loop auto_front}`/`:video(im-xyz.ogg){loop auto_front height=200}`.
-- [Defintion lists](https://github.com/wataru-chocola/mdast-util-definition-list) (not available in the core Anki editor).
-- Extended table syntax available, `extended`, `gfm` and `none`:
-  - GFM table syntax
+- Markdown syntax extensions (set to `true` or `"some vale"` to enable, `false` to disable):
+  - `Subscript`: `~sample~` for subscript
+  - `Superscript`: `^sample^` for superscript
+  - `Underline`: `_sample_` for underline (spec Markdown is `<em>`, disable to revert to spec).
+  - `Strikethrough`: `~~sample~~` for strikthrough (`"single"` supports single tilde, incompatible with subscript above).
+  - `Inline media`: [Inline Media](https://ankiweb.net/shared/info/683715045) directive, e.g. `:audio(im-xyz.ogg){loop auto_front}`/`:video(im-xyz.ogg){loop auto_front height=200}`.
+  - `Definition lists`: [Defintion lists](https://github.com/wataru-chocola/mdast-util-definition-list) (not available in the core Anki editor).
+  - `Table stle`: Table syntax, `"gfm"`/`"extended"`/`false`:
+    - GFM table syntax
 
-  ``` Markdown
-  | A     |   GFM |
-  | :---- | ----: |
-  | table |     ! |
-  ```
+    ``` Markdown
+    | A     |   GFM |
+    | :---- | ----: |
+    | table |     ! |
+    ```
 
-  - Extended table syntax - GFM style extended to allow headerless tables (no `<thead>` generated):
+    - Extended table syntax - GFM style extended to allow headerless tables (no `<thead>` generated):
 
-  ``` Markdown
-  | :--: | ----: |
-  |  A   | table |
-  | with |  rows |
-  ```
+    ``` Markdown
+    | :--: | ----: |
+    |  A   | table |
+    | with |  rows |
+    ```
 
-  and
-
-  ``` Markdown
-  |  A   | table |
-  | with | rows  |
-  ```
-
-  - Newline characters are not allowed inside Markdown table cells. A configurable option has been added to replace hard line break (`<br>`) inside table cells with a character, trema (`¨`) per default, set to empty string (`""`) to remove behaviour.
-  - Optional [fencing pipes](https://github.github.com/gfm/#tables-extension-) (i.e. at start and end of each row).
-  - Align none, left, right and center as per [GFM format](https://github.github.com/gfm/#tables-extension-).
+    - `Table newline`: Symbol to replace hard line break (`<br>`) inside table cells (newline characters are normally not allowed inside Markdown table cells)
+    - `fences`: Optional [fencing pipes](https://github.github.com/gfm/#tables-extension-) (i.e. at start and end of each row).
+    - Align none, left, right and center as per [GFM format](https://github.github.com/gfm/#tables-extension-).
 
 ## Editor
 
@@ -79,7 +72,7 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - "Dialog input mode"
   - Configurable dialog size (`parent`, `last` or `WidthxHeight`, default `parent`)
   - Open the entire field or only the selection in editor for Markdown input. (default selection only: `false`)
-- Style "field" and "dialog input mode" editors with [CSS](https://codemirror.net/examples/styling/).
+- Customize the editor styling by copying `cm.css` into `user_files` subdirectory and customize. Consider using `--var` to use the Anki colors from the current theme.
 - Insert cloze deletions
   - Cloze without increment: `Ctrl+Alt+Shift+C`
   - Cloze with increment: `Ctrl+Shift+C` (with multiple selections this will cloze each incrementally)
@@ -95,6 +88,14 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - Note that Anki shortcuts grab key sequences before they reach the CodeMirror editor, use [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) or other addon to change the Anki shortcuts as needed. At the time of writing [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) hooks into the Qt/Python for the cloze shortcuts. This means they never reach CodeMirror so unmap (`<nop`>) them in [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) (the new Anki editor grabs the shortcuts on the JavaScript side).
 - To customize the look of the finished HTML apply custom [CSS](https://www.w3schools.com/Css/) styling (for instance of `<h1/2/3/etc>`, `<table>` `<ul/ol>` etc.) to the note template.
 
+## Developers
+
+Functionality split into different classes to facilitate reuse:
+
+- [anki-md-html](https://github.com/TRIAEIOU/anki-md-html): library which converts Anki style HTML ↔ Markdown.
+- [CustomInputClass](https://github.com/TRIAEIOU/Markdown-input/blob/main/src/ts/custom_input.ts) encapsulates adding an editor to the `Note editor` fields.
+- [Editor](https://github.com/TRIAEIOU/Markdown-input/blob/main/src/ts/editor.ts) encapsulates the CodeMirror editor.
+
 ## Changelog
 
 - 2022-08-27: Add image paste support, prevent focus from being stolen on focus in/out, bug fixes.
@@ -105,3 +106,5 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - 2022-12-20: Fix field input mode bug for *nix (tested in VM `Ubuntu 22.04 LTS`) and macOS (tested in a really slow VM `High Sierra`).
 - 2022-12-22: Badge rework and bug fix
 - 2023-01-09: Move to 2.1.56 platform (last 2.1.55 shipped until further notice), fix syntax highlighting.
+- 2023-03-11: Restructuring of code to allow modularity with other projects and easier maintenance.
+- 2023-03-12: Add option to edit complete note in dialog mode, improve CSS styling of editor, now done from separate CSS file.

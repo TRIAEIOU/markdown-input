@@ -2,7 +2,8 @@ import json, tempfile
 from aqt import mw, gui_hooks, QKeySequence
 from aqt.utils import *
 from .constants import *
-from .utils import clip_img_to_md
+from .version import strvercmp
+from .utils import clip_img_to_md, get_path
 
 if tmp := re.match(r"^\s*((\d+\.)+\d+)", version_with_build()):
     ANKI_VER = tmp.group(1)
@@ -12,8 +13,8 @@ _config = {}
 tmp_dir = tempfile.TemporaryDirectory()
 
 ###########################################################################
-# Toggle current field state
 def toggle_field(editor: aqt.editor.Editor, name: str, fld: int = None):
+    """Toggle current field state"""
     if fld == None:
         fld = editor.currentField if editor.currentField != None else editor.last_field_index
     if fld != None:
@@ -24,11 +25,9 @@ def toggle_field(editor: aqt.editor.Editor, name: str, fld: int = None):
 
 
 ###########################################################################
-# Include needed scripts and styles in editor webview header
-# Called once for the editor
 def add_srcs(web_content: aqt.webview.WebContent, context: object):
+    """Include needed scripts and styles in editor webview header. Called once for the editor"""
     global _config
-
     if not isinstance(context, aqt.editor.Editor):
         return
     addon = mw.addonManager.addonFromModule(__name__)
@@ -37,28 +36,25 @@ def add_srcs(web_content: aqt.webview.WebContent, context: object):
         web_content.head += f"""
             <script src="/_addons/{addon}/field_input.js"></script>
             <link rel=stylesheet href="/_addons/{addon}/mdi.css">
-            <style>{_config[FIELD_INPUT][CSS]}</style>
+            <link rel=stylesheet href="/_addons/{addon}/{get_path('cm.css')}">
         """
     else: # Legacy, not updated
         web_content.head += f"""
             <script src="/_addons/{addon}/field_input_2.1.55.js"></script>
             <link rel=stylesheet href="/_addons/{addon}/mdi.css">
-            <style>{_config[FIELD_INPUT][CSS]}</style>
+            <link rel=stylesheet href="/_addons/{addon}/{get_path('cm.css')}">
         """
 
     # Configure Unified and CodeMirror - after script load but before cm instantiation
     web_content.body += f'''
         <script>
-            MarkdownInput.init({json.dumps(_config[FIELD_INPUT])});
-            MarkdownInput.converter_init({json.dumps(_config[CONVERTER])});
-            MarkdownInput.editor_init({json.dumps(_config[EDITOR])});
+            MarkdownInput.init({json.dumps(_config)});
         </script>
     '''
 
 ###########################################################################
-# Bridge to handle image pasting - inserts in media library and
-# returns the MD string
 def bridge(handled: tuple[bool, Any], message: str, context: Any) -> tuple[bool, Any]:
+    """Bridge to handle image pasting - inserts in media library and returns the MD string"""
     if message == 'clipboard_image_to_markdown':
         file = clip_img_to_md()
         return (True, file)
@@ -66,23 +62,23 @@ def bridge(handled: tuple[bool, Any], message: str, context: Any) -> tuple[bool,
     return handled
 
 ###########################################################################
-# Set configuration and hooks
 def init(cfg):
+    """Set configuration and hooks"""
     def append_shortcuts(shortcuts, ed):
         shortcuts.append(
-            [QKeySequence(cfg[FIELD_INPUT][SHORTCUT]),
+            [QKeySequence(cfg[FIELD_INPUT][SC_TOGGLE]),
             lambda _ed=ed: toggle_field(_ed, 'markdown')]
         )
         shortcuts.append(
-            [QKeySequence(cfg[FIELD_INPUT][RICH_SHORTCUT]),
+            [QKeySequence(cfg[FIELD_INPUT][SC_RICH]),
             lambda _ed=ed: toggle_field(_ed, 'rich')]
         )
         shortcuts.append(
-            [QKeySequence(cfg[FIELD_INPUT][NEXT_SHORTCUT]),
+            [QKeySequence(cfg[FIELD_INPUT][SC_NEXT]),
            lambda _ed=ed: ed.web.eval('MarkdownInput.cycle_next()')]
         )
         shortcuts.append(
-            [QKeySequence(cfg[FIELD_INPUT][PREV_SHORTCUT]),
+            [QKeySequence(cfg[FIELD_INPUT][SC_PREV]),
            lambda _ed=ed: ed.web.eval('MarkdownInput.cycle_prev()')]
         )
 

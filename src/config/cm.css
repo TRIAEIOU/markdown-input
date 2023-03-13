@@ -1,0 +1,72 @@
+.cm-content {
+  font-family: Consolas, monospace;
+  font-size: 16px;
+  background-color: var(--canvas-elevated);
+  color: var(--fg);
+}
+
+.cm-content .cm-activeLine {
+  background-color: #e9edef;
+}
+
+.night-mode .cm-activeLine {
+  background-color: var(--fg-faint);
+}
+
+.cm-content .cm-focused .cm-selectionBackground, .cm-content .cm-selectionBackground, .cm-content ::selection {
+  background-color: red;
+}
+
+.tok-link{
+  text-decoration: underline;
+  color: #201090
+}
+
+.tok-heading {
+  font-weight: bold;
+  color: #b34532;
+}
+
+.tok-emphasis {
+  font-style: italic;
+}
+
+.tok-strong {
+  font-weight: bold;
+}
+
+.tok-keyword {
+  color: #700080;
+}
+
+.tok-atom , .tok-bool, .tok-url, .tok-labelName {
+  color: #201090;
+}
+
+.tok-literal, .tok-inserted {
+  color: #106040;
+}
+
+.tok-string, .tok-deleted {
+  color: #a01010;
+}
+
+.tok-typeName, .tok-namespace {
+  color: #006d5b;
+}
+
+.tok-className {
+  color: #006d5b;
+}
+
+.tok-comment {
+  color: #006d5b;
+}
+
+.tok-meta {
+  color: #b34532
+}
+
+.tok-invalid {
+  color: #ff0000
+}

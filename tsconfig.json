@@ -1,22 +1,39 @@
 {
-    "compilerOptions": { // Credit: https://github.com/kleinerpirat
-        "module": "esnext",
-        "target": "es2018",
+    "compilerOptions": {
+        "module": "ESNext",
+        "target": "ES2018",
         "moduleResolution": "node",
         "isolatedModules": true,
         "skipLibCheck": true,
         "typeRoots": ["node_modules/@types", "anki/ts/typings"],
         "baseUrl": ".",
-        "paths": {
-            "anki/*": ["${env:CODEPATH}/Anki/anki-src/*"], // Only for typing
-        },
         "allowSyntheticDefaultImports": true,
-        "allowJs": false,
+        "allowJs": true,
+        "checkJs": false,
+        "strict": false,
+        "noImplicitAny": false,
+        "strictNullChecks": false,
+        "forceConsistentCasingInFileNames": true,
+        "esModuleInterop": true,
+        "outDir": "./bin",
         "types": ["node"],
 //        "types": ["svelte", "node"],
+        "paths": {
+            "anki/*": ["${env:CODEPATH}/Anki/anki/*"], // Only for typing
+        },
         "plugins": [],
+        "rootDir": "src"
     },
+    "include": [
+        "**/*.ts"
+    ],
     "exclude": [
-      "node_modules"
-    ]
+      //"node_modules"
+    ],
+    "ts-node": {
+        "transpileOnly": true,
+        "files": true,
+        "esm": true,
+        "experimentalSpecifierResolution": "node"
+      }
 }

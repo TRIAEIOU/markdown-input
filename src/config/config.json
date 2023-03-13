@@ -5,16 +5,15 @@
 		"Next field": "Ctrl+PgDown",
 		"Previous field": "Ctrl+PgUp",
 		"Default field state": "rich text",
-		"Cycle rich text/Markdown": true,
-		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; background-color: var(--canvas-elevated); color: var(--fg);} .night-mode .cm-editor .cm-activeLine { background-color: var(--fg-faint); }"
+		"Cycle rich text/Markdown": true
 	},
 	"Dialog input": {
+		"Mode": "note",
 		"Shortcut": "Ctrl+Alt+M",
 		"Shortcut accept": "Ctrl+Return",
 		"Shortcut reject": "Shift+Escape",
 		"Size mode": "parent",
 		"Selection only": false,
-		"CSS": ".cm-content { font-family: Consolas, monospace; font-size: 16px; }",
 		"Last geometry": ""
 	},
 	"Converter": {
@@ -23,30 +22,19 @@
 			"listItemIndent": "one",
 			"ruleRepetition": 10,
 			"tightDefinitions": true,
-			"fences": true
+			"fences": true,
+			"hardBreak": "spaces"
 		},
-		"Definition lists": true,
-		"Inline media": true,
-		"Table style": "extended",
-		"Table newline": "¨",
-		"Hard break": "spaces",
-		"Inlines": [{
-				"markdownSymbol": "_",
-				"mdastNode": "underline",
-				"htmlNode": "u"
-			},{
-				"markdownSymbol": "^",
-				"mdastNode": "superscript",
-				"htmlNode": "sup"
-			},{
-				"markdownSymbol": "~",
-				"mdastNode": "subscript",
-				"htmlNode": "sub"
-			},{
-				"markdownSymbol": "~~",
-				"mdastNode": "strikethrough",
-				"htmlNode": "del"
-		}]
+		"Markdown extensions": {
+			"Definition lists": true,
+			"Inline media": true,
+			"Table style": "extended",
+			"Table newline": "¨",
+			"Underline": true,
+			"Superscript": true,
+			"Subscript": true,
+			"Strikethrough": "double"
+		}
 	},
 	"CodeMirror": {
 		"keymap": [{
@@ -87,7 +75,5 @@
 				"preventDefault": true
 			}
 		]
-	},
-	"version": "-1"
-
+	}
 }
