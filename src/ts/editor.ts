@@ -6,9 +6,7 @@ import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
 import {highlightSelectionMatches, search} from "@codemirror/search"
 import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
 import {markdown, markdownLanguage } from "@codemirror/lang-markdown"
-import {ankiCloze, ankiClozeKeymap} from "./CodeMirror.extensions/ankiCloze"
 import {ankiImagePaste } from "./CodeMirror.extensions/ankiImagePaste"
-import {joinLines, joinLinesKeymap} from "./CodeMirror.extensions/joinLines"
 import {classHighlighter} from '@lezer/highlight'
 
 import { to_function } from "./commands"
@@ -62,18 +60,15 @@ class Editor {
       // @ts-ignore FIXME: what is correct TS for below?
       keymap.of([
         ...km,
-        ...ankiClozeKeymap,
         ...closeBracketsKeymap,
         ...defaultKeymap,
         indentWithTab,
         ...historyKeymap,
-        ...completionKeymap,
-        ...joinLinesKeymap
+        ...completionKeymap
       ]),
       EditorView.lineWrapping,
       markdown({ base: markdownLanguage }),
-      ankiImagePaste(),
-      joinLines()
+      ankiImagePaste()
     ]
     if (cfg.events) this.extensions.push(EditorView.domEventHandlers(cfg.events))
 
@@ -96,7 +91,7 @@ class Editor {
   set_doc(doc: string, ord: number, pos: 'start'|'end') {
     this.cm.setState(EditorState.create({
       doc: doc,
-      extensions: this.extensions.concat([ankiCloze({ordinal: ord})]),
+      extensions: this.extensions,
       selection: {anchor: pos === 'start' ? 0 : doc.length}
     }))
   }

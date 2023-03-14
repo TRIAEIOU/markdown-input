@@ -64,20 +64,26 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - Undo history.
 - Multiple drawable selections.
 - Search and replace, `Ctrl+F`, note: the Anki editor eats `Ctrl+F`, set to other shortcut in config or remap the Anki editor shortcuts with [Customize Keyboard Shortcuts](https://ankiweb.net/shared/info/24411424) or similar.
-- "Field input mode"
-  - Configurable default state for editor fields (`rich text` or `markdown`, default `rich text`).
-  - Configurable behaviour of "field input mode" shortcut, cycle between rich text and Markdown or just toggle Markdown input. (default cycle: `true`)
-  - Configurable shortcut to toggle rich text input. (default `Ctrl+Alt+X`)
-  - Configurable shortcuts to move to next/previous input (since tab is a valid Markdown character it will not work to "tab out" of a markdown input). (default `Ctrl+PgDown` and `Ctrl+PgUp`)
-- "Dialog input mode"
-  - Configurable dialog size (`parent`, `last` or `WidthxHeight`, default `parent`)
-  - Open the entire field or only the selection in editor for Markdown input. (default selection only: `false`)
-- Customize the editor styling by copying `cm.css` into `user_files` subdirectory and customize. Consider using `--var` to use the Anki colors from the current theme.
 - Insert cloze deletions
   - Cloze without increment: `Ctrl+Alt+Shift+C`
   - Cloze with increment: `Ctrl+Shift+C` (with multiple selections this will cloze each incrementally)
   - If you feel the cloze deletion tags end up in the wrong place please make sure you understand how Markdown is converted to HTML (notably line breaks and empty lines).
 - Allows image pasting in the same way the "rich text input" does.
+- Customize the editor styling by copying `cm.css` into `user_files` subdirectory and customize. Consider using `--var(xyz)` to use the Anki colors from the current theme (i.e. follows light/dark mode).
+- Customize Markdown input editor shortcuts (i.e. *inside* the field/dialog, not the core Anki editor) in `json.config`, see `config.json` and [CodeMirror documentation](https://codemirror.net/docs/ref/#view.KeyBinding) for further information. Available functions to map are all in [@codemirror/commands](https://github.com/codemirror/commands/blob/main/src/commands.ts), [@codemirror/search](https://github.com/codemirror/search/blob/main/src/search.ts) and custom commands `clozeNext`, `clozeCurrent`, `joinLines`.
+
+### Field input mode
+
+- Configurable default state for editor fields (`rich text` or `markdown`, default `rich text`).
+- Configurable behaviour of "field input mode" shortcut, cycle between rich text and Markdown or just toggle Markdown input. (default cycle: `true`)
+- Configurable shortcut to toggle rich text input. (default `Ctrl+Alt+X`)
+- Configurable shortcuts to move to next/previous input (since tab is a valid Markdown character it will not work to "tab out" of a markdown input). (default `Ctrl+PgDown` and `Ctrl+PgUp`)
+
+### Dialog input mode
+
+- Configurable dialog size (`parent`, `last` or `WidthxHeight`, default `parent`)
+- Configurable note editing mode, either the entire note (i.e. all fields), current field or only the selection. (`note`, `field` or `selection`, default `field`)
+
 
 ## Configuration
 

@@ -1,35 +1,36 @@
-import {EditorView} from "@codemirror/view"
-declare function bridgeCommand(msg: string): void
+import { EditorView } from "@codemirror/view"
+
 declare function bridgeCommand(msg: string, cb: (txt: string) => void): string
 
-function paste_string(view: EditorView, str: string) {
-    const selection = view.state.selection
-    const trs = []
-    selection.ranges.forEach((rng, n) => {
-        trs.push({
-            changes: {
+/**
+ * Extension to handle pasting images into editor, adding it to Anki and
+ * inserting markdown link
+ */
+export function ankiImagePaste(options = {}): any {
+  return EditorView.domEventHandlers({
+    paste(event, view) {
+      bridgeCommand("clipboard_image_to_markdown", (txt) => {
+        if (txt) {
+          const selection = view.state.selection
+          const trs = []
+          selection.ranges.forEach((rng, n) => {
+            trs.push({
+              changes: {
                 from: rng.from, to: rng.to,
-                insert: str
-            }
-        })
-    })
-    view.dispatch(...trs)
-    view.dispatch({
-        selection: {
-            anchor: view.state.selection.main.from + 2
-        }
-    })
-    return true
-}
-
-function ankiImagePaste(options = {}): any {
-    return EditorView.domEventHandlers({
-        paste(event, view) {
-            bridgeCommand("clipboard_image_to_markdown", (txt) => {
-                if (txt) paste_string(view, txt)
+                insert: txt
+              }
             })
-            return false
+          })
+          view.dispatch(...trs)
+          view.dispatch({
+            selection: {
+              anchor: view.state.selection.main.from + 2
+            }
+          })
+          return true
         }
-    })
+      })
+      return false
+    }
+  })
 }
-export {ankiImagePaste}

@@ -1,16 +1,17 @@
+/* Light/day theme */
+body.mdi-dialog { /* only relevant for dialog input */
+  background-color: var(--canvas-elevated);
+}
+
 .cm-content {
   font-family: Consolas, monospace;
   font-size: 16px;
-  background-color: var(--canvas-elevated);
   color: var(--fg);
+  background-color: var(--canvas-elevated);
 }
 
 .cm-content .cm-activeLine {
-  background-color: #e9edef;
-}
-
-.night-mode .cm-activeLine {
-  background-color: var(--fg-faint);
+  background-color: red; /*#e9edef;*/
 }
 
 .cm-content .cm-focused .cm-selectionBackground, .cm-content .cm-selectionBackground, .cm-content ::selection {
@@ -68,5 +69,79 @@
 }
 
 .tok-invalid {
+  color: #ff0000
+}
+
+/* Dark/night theme */
+body.mdi-dialog.night-mode { /* only relevant for dialog input */
+  background-color: yellow;
+}
+
+.nightmode .cm-content {
+  font-family: Consolas, monospace;
+  font-size: 16px;
+  color: var(--fg);
+  background-color: var(--canvas-elevated);
+}
+
+.night-mode .cm-activeLine {
+  background-color: green; /*var(--fg-faint);*/
+}
+
+.night-mode .cm-content .cm-focused .cm-selectionBackground, .cm-content .cm-selectionBackground, .cm-content ::selection {
+  background-color: red;
+}
+
+.night-mode .tok-link{
+  text-decoration: underline;
+  color: #201090
+}
+
+.night-mode .tok-heading {
+  font-weight: bold;
+  color: #b34532;
+}
+
+.night-mode .tok-emphasis {
+  font-style: italic;
+}
+
+.night-mode .tok-strong {
+  font-weight: bold;
+}
+
+.night-mode .tok-keyword {
+  color: #700080;
+}
+
+.night-mode .tok-atom , .tok-bool, .tok-url, .tok-labelName {
+  color: #201090;
+}
+
+.night-mode .tok-literal, .tok-inserted {
+  color: #106040;
+}
+
+.night-mode .tok-string, .tok-deleted {
+  color: #a01010;
+}
+
+.night-mode .tok-typeName, .tok-namespace {
+  color: #006d5b;
+}
+
+.night-mode .tok-className {
+  color: #006d5b;
+}
+
+.night-mode .tok-comment {
+  color: #006d5b;
+}
+
+.night-mode .tok-meta {
+  color: #b34532
+}
+
+.night-mode .tok-invalid {
   color: #ff0000
 }

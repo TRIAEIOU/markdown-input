@@ -1,7 +1,7 @@
 import anki
 import aqt, os, json, base64, re
 from aqt.utils import *
-from aqt.qt import QDialog, QWidget, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
+from aqt.qt import QDialog, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
 if qtmajor == 6:
     from . import dialog_qt6 as dialog
 elif qtmajor == 5:
@@ -32,21 +32,42 @@ class IM_dialog(QDialog):
         self.fid = fid
 
         self.setup_bridge(self.bridge)
+        self.ui.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
+
+        #self.ui.web.page().setBackgroundColor(Qt.GlobalColor.transparent)
+        classes = aqt.theme.theme_manager.body_class().split(' ')
+        classes.append('mdi-dialog')
+        if not set(classes).isdisjoint(('nightMode', 'night_mode')):
+            classes.append('night-mode')
+        print(f'href="{aqt.mw.serverURL()}_anki/css/note_creator.css"')
+        print(f'class="{" ".join(classes)}"')
+
         self.ui.web.setHtml(f'''
         <html>
         <head>
+            <style>
+                {parent.web.standard_css()}
+            </style>
+            <link rel="stylesheet" type="text/css" href="_anki/css/note_creator.css">
             <script src="dialog_input.js"></script>
             <link rel=stylesheet href="mdi.css">
             <link rel=stylesheet href="{get_path('cm.css')}">
         </head>
-        <body>
+        <body class="{' '.join(classes)}">
             <script>
                 const mdi_editor = new MarkdownInput.DialogEditor({json.dumps(_config)})
                 mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
+
+                alert('loading ' + '{aqt.mw.serverURL()}_anki/css/note_creator.css')
+                var req = new XMLHttpRequest();
+                req.open('GET', '{aqt.mw.serverURL()}_anki/css/note_creator.css', false);
+                req.send(null);
+                alert(req.responseText)
+                document.body.innerText = req.responseText
             </script>
         </body>
         </html>
-        ''', QUrl.fromLocalFile(os.path.join(ADDON_PATH, "")))
+        ''', QUrl(aqt.mw.serverURL())) #QUrl.fromLocalFile(os.path.join(ADDON_PATH, "")))
         name = note.items()[0][1] or "[new]"
         if len(name) > 15:
             name = name[:15] + "..."
