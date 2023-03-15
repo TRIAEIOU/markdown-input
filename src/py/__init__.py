@@ -1,7 +1,7 @@
 from aqt import mw, QPushButton, QMessageBox
 
 from aqt.utils import *
-from . import field_input, dialog_input
+from . import field_input, window_input
 from .constants import *
 from .version import *
 
@@ -54,6 +54,6 @@ if len(msgs) > 0:
 if config.get(FIELD_INPUT) or config.get(CONVERTER):
     field_input.init(config)
 
-if config.get(DIALOG_INPUT) or config.get(CONVERTER):
-    dialog_input.init(config)
+if config.get(WINDOW_INPUT) or config.get(CONVERTER):
+    window_input.init(config)
 

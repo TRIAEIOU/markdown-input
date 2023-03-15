@@ -7,7 +7,7 @@
 		"Default field state": "rich text",
 		"Cycle rich text/Markdown": true
 	},
-	"Dialog input": {
+	"Window input": {
 		"Mode": "note",
 		"Shortcut": "Ctrl+Alt+M",
 		"Shortcut accept": "Ctrl+Return",

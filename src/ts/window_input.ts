@@ -1,8 +1,8 @@
 import { Editor } from "./editor"
 import { Converter } from "anki-md-html"
-import { Configuration, CONVERTER, DIALOG_INPUT, DIALOG_MODE, EDITOR } from "./constants"
+import { Configuration, CONVERTER, WINDOW_INPUT, WINDOW_MODE, EDITOR } from "./constants"
 
-class DialogEditor {
+class WindowEditor {
   editor: Editor
   converter: Converter
   constructor(cfg: Configuration) {
@@ -20,7 +20,7 @@ class DialogEditor {
    * @param i
    */
   set_html(fields: [[title: string, content: string]], i: number) {
-    if (this[DIALOG_INPUT]?.[DIALOG_MODE] === 'note') {
+    if (this[WINDOW_INPUT]?.[WINDOW_MODE] === 'note') {
       let html = ''
       for (const [title, content] of fields)
         html += `<-- ${title} --><br><br>${content}<br><br>`
@@ -38,7 +38,7 @@ class DialogEditor {
   * string for field/selection only mode
   */
   get_html() {
-    if (this[DIALOG_INPUT]?.[DIALOG_MODE] === 'note') {
+    if (this[WINDOW_INPUT]?.[WINDOW_MODE] === 'note') {
       const fields: [title: string, content: string][] = []
       const md = this.editor.cm.state.doc.toString()
       for (const match of md.matchAll(/(.*?)^[ \t]*<--[ \t]*(.*?)[ \t]*?-->[ \t]*$/gms)) {
@@ -53,4 +53,4 @@ class DialogEditor {
   }
 }
 
-export { DialogEditor }
+export { WindowEditor }

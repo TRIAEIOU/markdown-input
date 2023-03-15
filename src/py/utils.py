@@ -29,7 +29,7 @@ def clip_img_to_md() -> str:
 
 ###########################################################################
 def get_path(file_name: str):
-    """Get path to user defined file or default, note: not prefixed with addon path"""
+    """Get path to user defined file or default, note: does not include addon directory."""
     if os.path.exists(os.path.join(ADDON_PATH, f'user_files/{file_name}')):
         return f'user_files/{file_name}'
     return file_name

@@ -1,6 +1,6 @@
 # Markdown input
 
-Anki ([GitHub](https://github.com/ankitects/anki)) addon ([GitHub](https://github.com/TRIAEIOU/Markdown-input)) that allows adding and editing notes in extended [CommonMark](https://spec.commonmark.org/) [Markdown](https://daringfireball.net/projects/markdown/), either directly in the editor fields ("field input mode", similar to the core rich and plain text edit interface) or by opening a separate window to edit a specific field ("dialog input mode").
+Anki ([GitHub](https://github.com/ankitects/anki)) addon ([GitHub](https://github.com/TRIAEIOU/Markdown-input)) that allows adding and editing notes in extended [CommonMark](https://spec.commonmark.org/) [Markdown](https://daringfireball.net/projects/markdown/), either directly in the editor fields ("field input mode", similar to the core rich and plain text edit interface) or by opening a separate window to edit a specific field ("window input mode").
 
 ![Markdown input](https://github.com/TRIAEIOU/Markdown-input/raw/main/Screenshots/screen.png?raw=true)
 
@@ -12,7 +12,7 @@ The editor DOM and internal functioning which `Markdown input` depends on change
 
 - Markdown is not "another way to write HTML", it is a plain text format that has a determined translation to HTML (the format the Anki editor uses). The HTML generated is a subset of all HTML and, amongst other things, makes heavy use of `<p>` tags (which are not used by the Anki editor). Furthermore there is no spec on the conversion from HTML *to* Markdown. This makes conversion tricky and there is risk for loss of information when cycling HTML → Markdown → HTML.
 - Editing a field in Markdown will result in the original field HTML being converted to Markdown and then back to HTML - the end result may differ from the original (especially in case of complex HTML). For instance, the representation of tables does not allow for nested tables in Markdown. So if the original HTML has nested tables these will be lost on cycling. If you are not familiar with Markdown consider duplicating your deck and play around with a copy so that you are sure you know what you are doing.
-- Note however, that if you do not make any changes in the "field input mode" or cancel the "dialog input mode" the orginal Anki HTML will remain untouched when you toggle back. Also note that in field input mode making a change and then undoing will still count as "making a change" (changes update the HTML continuously).
+- Note however, that if you do not make any changes in the "field input mode" or cancel the "window input mode" the orginal Anki HTML will remain untouched when you toggle back. Also note that in field input mode making a change and then undoing will still count as "making a change" (changes update the HTML continuously).
 - If you are not familiar with Markdown look it up where it [began](https://daringfireball.net/projects/markdown/basics) or [here](https://commonmark.org/help/tutorial/) or [here](https://commonmark.org/help/) for instance, to determine if it is for you.
 
 ## HTML ↔ Markdown
@@ -70,7 +70,7 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
   - If you feel the cloze deletion tags end up in the wrong place please make sure you understand how Markdown is converted to HTML (notably line breaks and empty lines).
 - Allows image pasting in the same way the "rich text input" does.
 - Customize the editor styling by copying `cm.css` into `user_files` subdirectory and customize. Consider using `--var(xyz)` to use the Anki colors from the current theme (i.e. follows light/dark mode).
-- Customize Markdown input editor shortcuts (i.e. *inside* the field/dialog, not the core Anki editor) in `json.config`, see `config.json` and [CodeMirror documentation](https://codemirror.net/docs/ref/#view.KeyBinding) for further information. Available functions to map are all in [@codemirror/commands](https://github.com/codemirror/commands/blob/main/src/commands.ts), [@codemirror/search](https://github.com/codemirror/search/blob/main/src/search.ts) and custom commands `clozeNext`, `clozeCurrent`, `joinLines`.
+- Customize Markdown input editor shortcuts (i.e. *inside* the field/window, not the core Anki editor) in `json.config`, see `config.json` and [CodeMirror documentation](https://codemirror.net/docs/ref/#view.KeyBinding) for further information. Available functions to map are all in [@codemirror/commands](https://github.com/codemirror/commands/blob/main/src/commands.ts), [@codemirror/search](https://github.com/codemirror/search/blob/main/src/search.ts) and custom commands `clozeNext`, `clozeCurrent`, `joinLines`.
 
 ### Field input mode
 
@@ -79,16 +79,15 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - Configurable shortcut to toggle rich text input. (default `Ctrl+Alt+X`)
 - Configurable shortcuts to move to next/previous input (since tab is a valid Markdown character it will not work to "tab out" of a markdown input). (default `Ctrl+PgDown` and `Ctrl+PgUp`)
 
-### Dialog input mode
+### Window input mode
 
-- Configurable dialog size (`parent`, `last` or `WidthxHeight`, default `parent`)
+- Configurable window size (`parent`, `last` or `WidthxHeight`, default `parent`)
 - Configurable note editing mode, either the entire note (i.e. all fields), current field or only the selection. (`note`, `field` or `selection`, default `field`)
-
 
 ## Configuration
 
 - "Field input mode" can be configured under `Field input`, note that the default shortcut, `Ctrl+M` conflicts with Mathjax shortcuts, remap one of them.
-- "Dialog input mode" can be configured under `Dialog input`.
+- "Window input mode" can be configured under `Window input`.
 - HTML ↔ Markdown conversion configurable under `Converter`. See [mdastToMarkdown](https://github.com/syntax-tree/mdast-util-to-markdown#tomarkdowntree-options) for `Markdown format` options.
 - Editor configurable under `CodeMirror`. See [CodeMirror documentation](https://codemirror.net/docs/) and [editor.ts](https://github.com/TRIAEIOU/Markdown-input/blob/ab59e006a8d32edc1c6b731d021a2bd0d2a8613b/src/ts/editor.ts)/cm_functions for available functions and how to configure.
 - Note that Anki shortcuts grab key sequences before they reach the CodeMirror editor, use [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) or other addon to change the Anki shortcuts as needed. At the time of writing [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) hooks into the Qt/Python for the cloze shortcuts. This means they never reach CodeMirror so unmap (`<nop`>) them in [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) (the new Anki editor grabs the shortcuts on the JavaScript side).
@@ -105,7 +104,7 @@ Functionality split into different classes to facilitate reuse:
 ## Changelog
 
 - 2022-08-27: Add image paste support, prevent focus from being stolen on focus in/out, bug fixes.
-- 2022-10-16: Make dialog mode non-modal (and allow multiple dialogs open), add `Ctrl-Shift-j` to join lines, make inline Markdown syntax configurable, make several options configurable, bug fixes.
+- 2022-10-16: Make window mode non-modal (and allow multiple windows open), add `Ctrl-Shift-j` to join lines, make inline Markdown syntax configurable, make several options configurable, bug fixes.
 - 2022-11-20: Make rich and plain text input editable while Markdown input is visible and adjust `config.json` appropriately, add buttons/badges, restructure configuration.
 - 2022-12-13: Correct update `json.config` bug.
 - 2022-12-16: Fix multiple badges bug.
@@ -113,4 +112,4 @@ Functionality split into different classes to facilitate reuse:
 - 2022-12-22: Badge rework and bug fix
 - 2023-01-09: Move to 2.1.56 platform (last 2.1.55 shipped until further notice), fix syntax highlighting.
 - 2023-03-11: Restructuring of code to allow modularity with other projects and easier maintenance.
-- 2023-03-12: Add option to edit complete note in dialog mode, improve CSS styling of editor, now done from separate CSS file.
+- 2023-03-12: Change "dialog mode" to "window mode" and inherit QMainWindow rather than QDialog. Add option to edit complete note in window mode, improve CSS styling of editor, now done from separate CSS file.

@@ -11,9 +11,9 @@ SC_PREV = "Previous field"
 FIELD_DEFAULT = 'Default field state'
 CYCLE_RICH_MD = "Cycle rich text/Markdown"
 
-# Dialog input
-DIALOG_INPUT = "Dialog input"
-DIALOG_MODE = "Mode"
+# Window input
+WINDOW_INPUT = "Window input"
+WINDOW_MODE = "Mode"
 SC_OPEN = 'Shortcut'
 SC_ACCEPT = "Shortcut accept"
 SC_REJECT = "Shortcut reject"
@@ -35,4 +35,5 @@ SYNTAX = "Syntax highlighting"
 
 # General
 ADDON_PATH = os.path.dirname(__file__)
+ADDON_RELURL = os.path.join('_addons', os.path.split(ADDON_PATH)[1])
 MDI = "MDI"

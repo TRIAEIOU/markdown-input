@@ -41,9 +41,9 @@ class Editor {
     }
 
     this.extensions = [
-      highlightSpecialChars(),
+      /*highlightSpecialChars(),*/
       history(),
-      drawSelection(),
+      /*drawSelection(),*/
       dropCursor(),
       EditorState.allowMultipleSelections.of(true),
       indentOnInput(),

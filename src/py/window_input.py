@@ -1,11 +1,11 @@
 import anki
 import aqt, os, json, base64, re
 from aqt.utils import *
-from aqt.qt import QDialog, QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl
+from aqt.qt import QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl, QMainWindow
 if qtmajor == 6:
-    from . import dialog_qt6 as dialog
+    from . import window_qt6 as window
 elif qtmajor == 5:
-    from . import dialog_qt5 as dialog
+    from . import window_qt5 as window
 from .constants import *
 from .utils import clip_img_to_md, get_path
 
@@ -14,16 +14,16 @@ _config = {}
 _dlgs = {}
 
 ###########################################################################
-class IM_dialog(QDialog):
-    """Main dialog to edit markdown in external window"""
+class IM_window(QMainWindow):
+    """Main window to edit markdown in external window"""
 
     ###########################################################################
     def __init__(self, parent: aqt.editor.Editor, note: anki.notes.Note, fid: int):
-        """Constructor: Populates and shows dialog"""
+        """Constructor: Populates and shows window"""
         global _config, _dlgs
-        QDialog.__init__(self)
+        super().__init__(None, Qt.WindowType.Window)
         _dlgs[hex(id(self))] = self
-        self.ui = dialog.Ui_dialog()
+        self.ui = window.Ui_window()
         self.ui.setupUi(self)
         self.ui.btns.accepted.connect(self.accept)
         self.ui.btns.rejected.connect(self.reject)
@@ -32,38 +32,24 @@ class IM_dialog(QDialog):
         self.fid = fid
 
         self.setup_bridge(self.bridge)
+        # We set background color to avoid flickering while CSS renders
         self.ui.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
 
-        #self.ui.web.page().setBackgroundColor(Qt.GlobalColor.transparent)
-        classes = aqt.theme.theme_manager.body_class().split(' ')
-        classes.append('mdi-dialog')
-        if not set(classes).isdisjoint(('nightMode', 'night_mode')):
-            classes.append('night-mode')
-        print(f'href="{aqt.mw.serverURL()}_anki/css/note_creator.css"')
-        print(f'class="{" ".join(classes)}"')
-
         self.ui.web.setHtml(f'''
-        <html>
+        <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}">
         <head>
             <style>
                 {parent.web.standard_css()}
             </style>
             <link rel="stylesheet" type="text/css" href="_anki/css/note_creator.css">
-            <script src="dialog_input.js"></script>
-            <link rel=stylesheet href="mdi.css">
-            <link rel=stylesheet href="{get_path('cm.css')}">
+            <script src="{os.path.join(ADDON_RELURL, 'window_input.js')}"></script>
+            <link rel=stylesheet href="{os.path.join(ADDON_RELURL, 'mdi.css')}">
+            <link rel=stylesheet href="{os.path.join(ADDON_RELURL, get_path('cm.css'))}">
         </head>
-        <body class="{' '.join(classes)}">
+        <body class="{aqt.theme.theme_manager.body_class()} mdi-window">
             <script>
-                const mdi_editor = new MarkdownInput.DialogEditor({json.dumps(_config)})
+                const mdi_editor = new MarkdownInput.WindowEditor({json.dumps(_config)})
                 mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
-
-                alert('loading ' + '{aqt.mw.serverURL()}_anki/css/note_creator.css')
-                var req = new XMLHttpRequest();
-                req.open('GET', '{aqt.mw.serverURL()}_anki/css/note_creator.css', false);
-                req.send(null);
-                alert(req.responseText)
-                document.body.innerText = req.responseText
             </script>
         </body>
         </html>
@@ -134,7 +120,7 @@ class IM_dialog(QDialog):
 
     ###########################################################################
     def accept(self) -> None:
-        """Main dialog accept"""
+        """Main window accept"""
         global _config
         def save_field(res):
             if not res:
@@ -157,34 +143,34 @@ class IM_dialog(QDialog):
         self.ui.web.page().runJavaScript(f'''(function () {{
             return mdi_editor.get_html();
         }})();''', save_field)
-        _config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
+        _config[WINDOW_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         aqt.mw.addonManager.writeConfig(__name__, _config)
-        super().accept()
+        super().close()
 
     ###########################################################################
     def reject(self):
-        """Main dialog reject"""
+        """Main window reject"""
         global _config
-        _config[DIALOG_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
+        _config[WINDOW_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
         aqt.mw.addonManager.writeConfig(__name__, _config)
-        super().reject()
+        super().close()
 
 ###########################################################################
 def edit_field(editor: aqt.editor.Editor):
-    """Open the markdown dialog for selected field"""
+    """Open the markdown window for selected field"""
     global _config
 
     if editor.currentField == None:
         return
-    dlg = IM_dialog(editor, editor.note, editor.currentField)
-    if _config[DIALOG_INPUT][SC_ACCEPT]:
-        QShortcut(_config[DIALOG_INPUT][SC_ACCEPT], dlg).activated.connect(dlg.accept)
-    if _config[DIALOG_INPUT][SC_REJECT]:
-        QShortcut(_config[DIALOG_INPUT][SC_REJECT], dlg).activated.connect(dlg.reject)
+    dlg = IM_window(editor, editor.note, editor.currentField)
+    if _config[WINDOW_INPUT][SC_ACCEPT]:
+        QShortcut(_config[WINDOW_INPUT][SC_ACCEPT], dlg).activated.connect(dlg.accept)
+    if _config[WINDOW_INPUT][SC_REJECT]:
+        QShortcut(_config[WINDOW_INPUT][SC_REJECT], dlg).activated.connect(dlg.reject)
 
-    if _config[DIALOG_INPUT][SIZE_MODE].lower() == 'last':
-        dlg.restoreGeometry(base64.b64decode(_config[DIALOG_INPUT][LAST_GEOM]))
-    elif match:= re.match(r'^(\d+)x(\d+)', _config[DIALOG_INPUT][SIZE_MODE]):
+    if _config[WINDOW_INPUT][SIZE_MODE].lower() == 'last':
+        dlg.restoreGeometry(base64.b64decode(_config[WINDOW_INPUT][LAST_GEOM]))
+    elif match:= re.match(r'^(\d+)x(\d+)', _config[WINDOW_INPUT][SIZE_MODE]):
         par_geom = editor.parentWindow.geometry()
         geom = QRect(par_geom)
         scr_geom = aqt.mw.app.primaryScreen().geometry()
@@ -210,15 +196,15 @@ def edit_field(editor: aqt.editor.Editor):
 
 ###########################################################################
 def init(cfg: object):
-    """Configure and activate markdown input dialog"""
+    """Configure and activate markdown input window"""
     global _config
     def editor_btn(buttons, editor):
         btn = editor.addButton(
             os.path.join(ADDON_PATH, "gfx", "markdown.png"),
             "md_dlg_btn",
             edit_field,
-            tip=f"Markdown Input ({_config[DIALOG_INPUT][SC_OPEN]})",
-            keys=_config[DIALOG_INPUT][SC_OPEN]
+            tip=f"Markdown Input ({_config[WINDOW_INPUT][SC_OPEN]})",
+            keys=_config[WINDOW_INPUT][SC_OPEN]
             )
         buttons.append(btn)
         return buttons

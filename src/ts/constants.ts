@@ -9,9 +9,9 @@ export const SC_PREV = "Previous field"
 export const FIELD_DEFAULT = 'Default field state'
 export const CYCLE_RICH_MD = "Cycle rich text/Markdown"
 
-// Dialog input
-export const DIALOG_INPUT = "Dialog input"
-export const DIALOG_MODE = "Mode"
+// Window input
+export const WINDOW_INPUT = "Window input"
+export const WINDOW_MODE = "Mode"
 export const SC_OPEN = 'Shortcut'
 export const SC_ACCEPT = "Shortcut accept"
 export const SC_REJECT = "Shortcut reject"

@@ -6,7 +6,7 @@ import terser from "@rollup/plugin-terser"
 
 export default [
   {
-    input: "src/ts/dialog_input.ts",
+    input: "src/ts/window_input.ts",
     plugins: [
       typescript(),
       commonjs(),

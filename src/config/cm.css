@@ -1,147 +1,178 @@
-/* Light/day theme */
-body.mdi-dialog { /* only relevant for dialog input */
-  background-color: var(--canvas-elevated);
-}
-
-.cm-content {
-  font-family: Consolas, monospace;
-  font-size: 16px;
+/* Day/light and night/dark theme */
+.cm-editor .cm-panels
+{
+  background-color: var(--canvas);
+  border-color: var(--border-subtle);
   color: var(--fg);
+}
+
+.cm-editor .cm-panel input {
   background-color: var(--canvas-elevated);
+  font-size: 16px;
 }
 
-.cm-content .cm-activeLine {
-  background-color: red; /*#e9edef;*/
+.cm-editor .cm-panel .cm-button {
+  background-color: var(--canvas-elevated);
+  background-image: none;
 }
 
-.cm-content .cm-focused .cm-selectionBackground, .cm-content .cm-selectionBackground, .cm-content ::selection {
-  background-color: red;
+.cm-editor .cm-panel label {
+  background-color: transparent;
 }
 
-.tok-link{
-  text-decoration: underline;
-  color: #201090
+body.mdi-window, /* only relevant for window input */
+.cm-editor .cm-content
+{
+  background-color: var(--canvas-elevated);
+  color: var(--fg);
 }
 
-.tok-heading {
+.cm-editor .cm-content {
+  font-family: Consolas, monospace;
+  font-size: 18px;
+  caret-color: var(--fg);
+}
+
+.cm-editor .tok-heading,
+.cm-editor .tok-strong,
+.cm-editor .tok-meta
+{
   font-weight: bold;
-  color: #b34532;
 }
 
-.tok-emphasis {
+.cm-editor .tok-emphasis {
   font-style: italic;
 }
 
-.tok-strong {
-  font-weight: bold;
+.cm-editor .tok-link {
+  text-decoration: underline;
 }
 
-.tok-keyword {
-  color: #700080;
+.cm-editor .cm-cursor,
+.cm-editor .cm-dropCursor
+{
+  border-left: 2px solid var(--fg);
 }
 
-.tok-atom , .tok-bool, .tok-url, .tok-labelName {
-  color: #201090;
+/****************************************************************/
+/* Light/day theme */
+.cm-editor .cm-activeLine {
+  background-color: #f8f8f8;
 }
 
-.tok-literal, .tok-inserted {
-  color: #106040;
+.cm-editor .tok-url,
+.cm-editor .tok-link
+{
+  color: var(--fg)
 }
 
-.tok-string, .tok-deleted {
-  color: #a01010;
+.cm-editor .tok-literal,
+.cm-editor .tok-inserted,
+.cm-editor .tok-string,
+.cm-editor .tok-deleted
+{
+  color: #264f7d;
 }
 
-.tok-typeName, .tok-namespace {
-  color: #006d5b;
+.cm-editor .tok-comment {
+  color: #3d5b56;
 }
 
-.tok-className {
-  color: #006d5b;
+.cm-editor .tok-heading,
+.cm-editor .tok-keyword,
+.cm-editor .tok-atom,
+.cm-editor .tok-bool,
+.cm-editor .tok-labelName,
+.cm-editor .tok-typeName,
+.cm-editor .tok-namespace,
+.cm-editor .tok-className,
+.cm-editor .tok-meta
+{
+  color: #800000;
 }
 
-.tok-comment {
-  color: #006d5b;
+.cm-editor .cm-selectionMatch,
+.cm-editor .cm-searchMatch
+{
+  background-color: transparent;
+  outline: 2px solid #264f7d;
 }
 
-.tok-meta {
-  color: #b34532
+.cm-editor ::selection,
+.cm-editor .cm-selectionBackground,
+.cm-editor .cm-searchMatch-selected,
+.cm-editor .cm-line .cm-matchingBracket
+{
+  background-color: #264f7d;
+  color: var(--canvas-elevated);
 }
 
-.tok-invalid {
+
+.cm-focused .cm-line .cm-nonmatchingBracket,
+.cm-editor .tok-invalid {
+  background-color: transparent;
   color: #ff0000
 }
 
+/****************************************************************/
 /* Dark/night theme */
-body.mdi-dialog.night-mode { /* only relevant for dialog input */
-  background-color: yellow;
+.night-mode .cm-editor .cm-activeLine {
+  background-color: transparent;
+  outline: 2px solid var(--fg-faint);
 }
 
-.nightmode .cm-content {
-  font-family: Consolas, monospace;
-  font-size: 16px;
+.night-mode .cm-editor .tok-url,
+.night-mode .cm-editor .tok-link
+{
+  color: var(--fg)
+}
+
+.night-mode .cm-editor .tok-literal,
+.night-mode .cm-editor .tok-inserted,
+.night-mode .cm-editor .tok-string,
+.night-mode .cm-editor .tok-deleted
+{
+  color: #597da5;
+}
+
+.night-mode .cm-editor .tok-comment {
+  color: #3d5b56;
+}
+
+.night-mode .cm-editor .tok-heading,
+.night-mode .cm-editor .tok-keyword,
+.night-mode .cm-editor .tok-atom,
+.night-mode .cm-editor .tok-bool,
+.night-mode .cm-editor .tok-labelName,
+.night-mode .cm-editor .tok-typeName,
+.night-mode .cm-editor .tok-namespace,
+.night-mode .cm-editor .tok-className,
+.night-mode .cm-editor .tok-meta
+{
+  color: #569cd6;
+}
+
+
+.night-mode .cm-editor .cm-selectionMatch,
+.night-mode .cm-editor .cm-searchMatch
+{
+  background-color: transparent;
+  outline: 2px solid #264f7d;
+}
+
+.night-mode .cm-editor ::selection,
+.night-mode .cm-editor .cm-selectionBackground,
+.night-mode .cm-editor .cm-searchMatch-selected,
+.night-mode .cm-editor .cm-line .cm-matchingBracket,
+.night-mode .cm-editor .cm-line .cm-matchingBracket .tok-meta
+{
+  background-color: #264f7d;
   color: var(--fg);
-  background-color: var(--canvas-elevated);
 }
 
-.night-mode .cm-activeLine {
-  background-color: green; /*var(--fg-faint);*/
-}
-
-.night-mode .cm-content .cm-focused .cm-selectionBackground, .cm-content .cm-selectionBackground, .cm-content ::selection {
-  background-color: red;
-}
-
-.night-mode .tok-link{
-  text-decoration: underline;
-  color: #201090
-}
-
-.night-mode .tok-heading {
-  font-weight: bold;
-  color: #b34532;
-}
-
-.night-mode .tok-emphasis {
-  font-style: italic;
-}
-
-.night-mode .tok-strong {
-  font-weight: bold;
-}
-
-.night-mode .tok-keyword {
-  color: #700080;
-}
-
-.night-mode .tok-atom , .tok-bool, .tok-url, .tok-labelName {
-  color: #201090;
-}
-
-.night-mode .tok-literal, .tok-inserted {
-  color: #106040;
-}
-
-.night-mode .tok-string, .tok-deleted {
-  color: #a01010;
-}
-
-.night-mode .tok-typeName, .tok-namespace {
-  color: #006d5b;
-}
-
-.night-mode .tok-className {
-  color: #006d5b;
-}
-
-.night-mode .tok-comment {
-  color: #006d5b;
-}
-
-.night-mode .tok-meta {
-  color: #b34532
-}
-
-.night-mode .tok-invalid {
+.night-mode .cm-focused .cm-line .cm-nonmatchingBracket,
+.night-mode .cm-editor .tok-invalid
+{
+  background-color: transparent;
   color: #ff0000
 }
