@@ -110,12 +110,17 @@ class IM_window(QMainWindow):
         self.ui.web.page().profile().scripts().insert(script)
 
     ###########################################################################
-    def bridge(self, str = None):
+    def bridge(self, str):
         """Bridge message receiver"""
+        print("bridge: " + str if str else '->None')
         if str == "clipboard_image_to_markdown":
             img = clip_img_to_md()
             return img
-        return
+        elif str == 'domDone':
+            import time
+            print('here')
+            time.sleep(5)
+        return True
 
 
     ###########################################################################
