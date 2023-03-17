@@ -1,5 +1,6 @@
 import { EditorView } from "@codemirror/view"
 
+declare function bridgeCommand(msg: string): void
 declare function bridgeCommand(msg: string, cb: (txt: string) => void): string
 
 /**

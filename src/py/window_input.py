@@ -1,15 +1,16 @@
 import anki
 import aqt, os, json, base64, re
+from aqt import webview
 from aqt.utils import *
 from aqt.qt import QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl, QMainWindow
+
 if qtmajor == 6:
-    from . import window_qt6 as window
+    from PyQt6 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 elif qtmajor == 5:
-    from . import window_qt5 as window
+    from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from .constants import *
 from .utils import clip_img_to_md, get_path
 
-BRIDGECOMMAND_ONACCEPT = "ON_ACCEPT:"
 _config = {}
 _dlgs = {}
 
@@ -17,111 +18,108 @@ _dlgs = {}
 class IM_window(QMainWindow):
     """Main window to edit markdown in external window"""
 
+    class Bridge(QObject):
+        """Class to handle js bridge - stolen from https://stackoverflow.com/questions/58210400/how-to-receive-data-from-python-to-js-using-qwebchannel"""
+        @pyqtSlot(str, result=str)
+        def wtf(self, msg):
+            print("wtf: ", msg)
+            if msg == "clipboard_image_to_markdown":
+                return clip_img_to_md()
+            return ""
+
     ###########################################################################
     def __init__(self, parent: aqt.editor.Editor, note: anki.notes.Note, fid: int):
         """Constructor: Populates and shows window"""
         global _config, _dlgs
         super().__init__(None, Qt.WindowType.Window)
-        _dlgs[hex(id(self))] = self
-        self.ui = window.Ui_window()
-        self.ui.setupUi(self)
-        self.ui.btns.accepted.connect(self.accept)
-        self.ui.btns.rejected.connect(self.reject)
+        _dlgs[hex(id(self))] = self # Save ref to prevent garbage collection
+
+        # Note and field to edit
         self.parent = parent
         self.nid = note.id
         self.fid = fid
 
-        self.setup_bridge(self.bridge)
-        # We set background color to avoid flickering while CSS renders
-        self.ui.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
+        # Setup page, workaround because reloading window spawns "Qt is undefined"
+        self.page = QWebEnginePage()
+        self.page.setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
 
-        self.ui.web.setHtml(f'''
-        <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}">
+        # Create UI
+        cwidget = QWidget(self)
+        self.setCentralWidget(cwidget)
+        vlayout = QVBoxLayout(cwidget)
+        self.web = QWebEngineView(self)
+        vlayout.addWidget(self.web)
+        btns = QDialogButtonBox(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok, self)
+        vlayout.addWidget(btns)
+        btns.accepted.connect(self.accept)
+        btns.rejected.connect(self.reject)
+        self.resize(600, 800)
+        self.web.setPage(self.page)
+
+        webview_id = id(self)
+        html = f'''
+        <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}>
         <head>
             <style>
                 {parent.web.standard_css()}
             </style>
+            <!-- Stolen from https://stackoverflow.com/questions/58210400/how-to-receive-data-from-python-to-js-using-qwebchannel -->
+            <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+            <script type="text/javascript">
+                    new QWebChannel(qt.webChannelTransport, function(channel) {{
+                        window.bridgeCommand = function (arg, cb = undefined) {{
+                            window.bridgeCommandCb = function (res) {{if (cb) cb(res)}}
+                            channel.objects.bridge.wtf(arg, window.bridgeCommandCb)
+                            return false
+                        }}
+                        bridgeCommand('fucking hell')
+                        //window.bridge = channel.objects.bridge
+                        //window.bridgeCommand = bridge.frack
+                        //alert('bridge: ' + typeof(bridge))
+                        //alert('bridgeCommaaand: ' + typeof(bridgeCommand))
+                    }})
+            </script>
             <link rel="stylesheet" type="text/css" href="_anki/css/note_creator.css">
-            <script src="{os.path.join(ADDON_RELURL, 'window_input.js')}"></script>
             <link rel=stylesheet href="{os.path.join(ADDON_RELURL, 'mdi.css')}">
             <link rel=stylesheet href="{os.path.join(ADDON_RELURL, get_path('cm.css'))}">
+            <script src="{os.path.join(ADDON_RELURL, 'window_input.js')}"></script>
         </head>
         <body class="{aqt.theme.theme_manager.body_class()} mdi-window">
-            <script>
+            <script type="text/javascript">
                 const mdi_editor = new MarkdownInput.WindowEditor({json.dumps(_config)})
                 mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
+                //document.body.innerText = new XMLSerializer().serializeToString(document)
+                //alert("bridge in body: " + window.bridge)
+                //alert('bridgeCommand outside: ' + typeof(bridgeCommand))
             </script>
         </body>
         </html>
-        ''', QUrl(aqt.mw.serverURL())) #QUrl.fromLocalFile(os.path.join(ADDON_PATH, "")))
+        '''
+        print("\n\n" +html + "\n\n")
+
+        #html = '''<html><head><script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script></head><body>hello</body></html>'''
+        aqt.mw.mediaServer.set_page_html(webview_id, html)
+        self.web.load(QUrl(f"{aqt.mw.serverURL()}_anki/legacyPageData?id={webview_id}"))
+
+        # Stolen from https://stackoverflow.com/questions/58210400/how-to-receive-data-from-python-to-js-using-qwebchannel
+        #self.bridge = self.Bridge()
+        #self.channel = QWebChannel()
+        #self.web.page().setWebChannel(self.channel)
+        #self.channel.registerObject("bridge", self.bridge)
+
+        # We set background color to avoid flickering while CSS renders
+        #self.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
+        #self.web.setUrl(QUrl('_blank'))
+        #self.web.setHtml(f'''<html><head></head><body></body></html>''')
+
         name = note.items()[0][1] or "[new]"
         if len(name) > 15:
             name = name[:15] + "..."
-        self.setWindowTitle(name + ": " + note.items()[fid][0])
+        #self.setWindowTitle(name + ": " + note.items()[fid][0])
 
     def __del__(self):
         global _dlgs
         _dlgs.pop(hex(id(self)), None)
-
-    ###########################################################################
-    def setup_bridge(self, handler):
-        """Setup js → python message bridge. Stolen from AnkiWebView."""
-        class Bridge(QObject):
-            def __init__(self, handler: Callable[[str], Any]) -> None:
-                super().__init__()
-                self._handler = handler
-            @pyqtSlot(str, result=str)  # type: ignore
-            def cmd(self, str: str) -> Any:
-                return json.dumps(self._handler(str))
-
-        self._bridge = Bridge(handler)
-        self._channel = QWebChannel(self.ui.web)
-        self._channel.registerObject("py", self._bridge)
-        self.ui.web.page().setWebChannel(self._channel)
-        qwebchannel = ":/qtwebchannel/qwebchannel.js"
-        jsfile = QFile(qwebchannel)
-        if not jsfile.open(QIODevice.OpenModeFlag.ReadOnly):
-            print(f"Error opening '{qwebchannel}': {jsfile.error()}", file=sys.stderr)
-        jstext = bytes(jsfile.readAll()).decode("utf-8")
-        jsfile.close()
-        script = QWebEngineScript()
-        script.setSourceCode(
-            jstext
-            + """
-            var pycmd, bridgeCommand;
-            new QWebChannel(qt.webChannelTransport, function(channel) {
-                bridgeCommand = pycmd = function (arg, cb) {
-                    var resultCB = function (res) {
-                        // pass result back to user-provided callback
-                        if (cb) {
-                            cb(JSON.parse(res));
-                        }
-                    }
-
-                    channel.objects.py.cmd(arg, resultCB);
-                    return false;
-                }
-                pycmd("domDone");
-            });
-        """)
-        script.setWorldId(QWebEngineScript.ScriptWorldId.MainWorld)
-        script.setInjectionPoint(QWebEngineScript.InjectionPoint.DocumentReady)
-        script.setRunsOnSubFrames(False)
-        self.ui.web.page().profile().scripts().insert(script)
-
-    ###########################################################################
-    def bridge(self, str):
-        """Bridge message receiver"""
-        print("bridge: " + str if str else '->None')
-        if str == "clipboard_image_to_markdown":
-            img = clip_img_to_md()
-            return img
-        elif str == 'domDone':
-            import time
-            print('here')
-            time.sleep(5)
-        return True
-
 
     ###########################################################################
     def accept(self) -> None:
@@ -145,7 +143,7 @@ class IM_window(QMainWindow):
             if focus: self.parent.loadNoteKeepingFocus()
             else: aqt.mw.col.update_note(note)
 
-        self.ui.web.page().runJavaScript(f'''(function () {{
+        self.web.page().runJavaScript(f'''(function () {{
             return mdi_editor.get_html();
         }})();''', save_field)
         _config[WINDOW_INPUT][LAST_GEOM] = base64.b64encode(self.saveGeometry()).decode('utf-8')
@@ -215,6 +213,7 @@ def init(cfg: object):
         return buttons
 
     _config = cfg
+    aqt.mw.addonManager.setWebExports(__name__, r"user_files/.*\.css")
+    aqt.mw.addonManager.setWebExports(__name__, r".*\.css")
     aqt.gui_hooks.editor_did_init_buttons.append(editor_btn)
-    #gui_hooks.webview_will_set_content.append(add_srcs)
 
