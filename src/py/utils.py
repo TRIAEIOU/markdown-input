@@ -1,5 +1,5 @@
-import os, datetime, codecs
-from aqt import QImage, mw, QApplication, QClipboard
+import os, datetime
+from aqt import QImage, mw, QApplication, QClipboard, colors
 from anki.utils import namedtmp
 from anki.collection import Config
 from .constants import ADDON_PATH
@@ -33,6 +33,16 @@ def get_path(file_name: str):
     if os.path.exists(os.path.join(ADDON_PATH, f'user_files/{file_name}')):
         return f'user_files/{file_name}'
     return file_name
+
+###########################################################################
+def get_colors(dark):
+    """Get CSS string with Anki colors"""
+    css = ":root {\n"
+    for key, val in colors.__dict__.items():
+        if type(val) is dict and (val_ := val.get('dark') if dark else val.get('light')):
+            css += f'''   --{key.lower().replace('_', '-')}: {val_};\n'''
+    css += '}'
+    return css
 
 ###########################################################################
 def tracefunc(frame, event, arg, indent=[0]):
