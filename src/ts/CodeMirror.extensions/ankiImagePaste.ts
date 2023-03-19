@@ -13,7 +13,7 @@ export function ankiImagePaste(options = {}): any {
       bridgeCommand("clipboard_image_to_markdown", (txt) => {
         if (txt) {
           const selection = view.state.selection
-          const trs = []
+          const trs: {}[] = []
           selection.ranges.forEach((rng, n) => {
             trs.push({
               changes: {

@@ -12,7 +12,7 @@ export default [
       commonjs(),
       nodeResolve({ preferBuiltins: false, browser: true }),
       svelte({ include: 'src/**/*.svelte' }),
-      //terser({format: {comments: false}})
+      terser({format: {comments: false}})
     ],
     output: {
       dir: "bin",
@@ -28,7 +28,7 @@ export default [
       commonjs(),
       nodeResolve({ preferBuiltins: false, browser: true }),
       svelte({ include: 'src/**/*.svelte' }),
-      //terser({format: {comments: false}})
+      terser({format: {comments: false}})
     ],
     output: {
       dir: "bin",
@@ -44,7 +44,7 @@ export default [
       commonjs(),
       nodeResolve({ preferBuiltins: false, browser: true }),
       svelte({ include: 'src/**/*.svelte' }),
-      //terser({format: {comments: false}})
+      terser({format: {comments: false}})
     ],
     output: {
       dir: "bin",
