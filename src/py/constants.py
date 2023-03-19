@@ -35,5 +35,5 @@ SYNTAX = "Syntax highlighting"
 
 # General
 ADDON_PATH = os.path.dirname(__file__)
-ADDON_RELURL = os.path.join('_addons', os.path.split(ADDON_PATH)[1])
+ADDON_RELURL = "/".join(('_addons', os.path.split(ADDON_PATH)[1]))
 MDI = "MDI"

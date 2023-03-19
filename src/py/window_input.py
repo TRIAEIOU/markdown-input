@@ -62,23 +62,24 @@ class IM_window(QMainWindow):
         html = f'''
         <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}>
         <head>
-            <style>
-                {parent.web.standard_css()}
-            </style>
             <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
             <script type="text/javascript">
-                let py
-                channel = new QWebChannel(qt.webChannelTransport, function(channel) {{
-                    py = channel.objects.py
+                var pycmd, bridgeCommand
+                new QWebChannel(qt.webChannelTransport, function(channel) {{
+                    pycmd = bridgeCommand = function (cmd, cb) {{
+                        const cbwrap = function (result) {{
+                            if(cb) cb(result)
+                        }}
+                        channel.objects.py.cmd(arg, cbwrap)
+                        return false
+                    }}
                 }})
-                py.cmd('really?')
-                var pycmd = py.cmd, bridgeCommand = py.cmd
-                pycmd('and now?')
-            </script>
-            <link rel="stylesheet" type="text/css" href="_anki/css/note_creator.css">
-            <link rel=stylesheet href="{ADDON_RELURL, 'mdi.css')}">
-            <link rel=stylesheet href="{os.path.join(ADDON_RELURL, get_path('cm.css'))}">
-            <script src="{os.path.join(ADDON_RELURL, 'window_input.js')}"></script>
+                pycmd('called pycmd on load')
+,            </script>
+            <link rel="stylesheet" type="text/css" href="{aqt.mw.serverURL()}_anki/css/note_creator.css">
+            <link rel=stylesheet href="{aqt.mw.serverURL()}{ADDON_RELURL}/mdi.css">
+            <link rel=stylesheet href="{aqt.mw.serverURL()}{ADDON_RELURL}/{get_path('cm.css')}">
+            <script src="{aqt.mw.serverURL()}{ADDON_RELURL}/window_input.js"></script>
         </head>
         <body class="{aqt.theme.theme_manager.body_class()} mdi-window">
             <script type="text/javascript">
@@ -88,7 +89,7 @@ class IM_window(QMainWindow):
         </body>
         </html>
         '''
-        print("\n\n" +html + "\n\n")
+        #print("\n\n" +html + "\n\n")
 
         self.web.setHtml(html, )
 
