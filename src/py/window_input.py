@@ -1,15 +1,14 @@
 import anki
 import aqt, os, json, base64, re
-from aqt import webview
 from aqt.utils import *
-from aqt.qt import QObject, QIODevice, QWebEngineScript, QShortcut, QRect, QFile, QUrl, QMainWindow
+from aqt.qt import QObject, QShortcut, QRect, QMainWindow
 
 if qtmajor == 6:
     from PyQt6 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 elif qtmajor == 5:
     from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from .constants import *
-from .utils import clip_img_to_md, get_path
+from .utils import clip_img_to_md, get_path, get_colors
 
 _config = {}
 _dlgs = {}
@@ -19,24 +18,22 @@ class Bridge(QObject):
     """Class to handle js bridge"""
     @pyqtSlot(str, result=str)
     def cmd(self, cmd):
-        print("py.cmd: ", cmd)
         if cmd == "clipboard_image_to_markdown":
-            return clip_img_to_md()
-        return ""
+            return json.dumps(clip_img_to_md())
 
 ###########################################################################
 class IM_window(QMainWindow):
     """Main window to edit markdown in external window"""
 
     ###########################################################################
-    def __init__(self, parent: aqt.editor.Editor, note: anki.notes.Note, fid: int):
+    def __init__(self, editor: aqt.editor.Editor, note: anki.notes.Note, fid: int):
         """Constructor: Populates and shows window"""
         global _config, _dlgs
         super().__init__(None, Qt.WindowType.Window)
         _dlgs[hex(id(self))] = self # Save ref to prevent garbage collection
 
         # Note and field to edit
-        self.parent = parent
+        self.editor = editor
         self.nid = note.id
         self.fid = fid
 
@@ -62,24 +59,22 @@ class IM_window(QMainWindow):
         html = f'''
         <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}>
         <head>
+            <style>
+            {get_colors(aqt.theme.theme_manager.get_night_mode())}
+            </style>
             <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
             <script type="text/javascript">
                 var pycmd, bridgeCommand
                 new QWebChannel(qt.webChannelTransport, function(channel) {{
-                    pycmd = bridgeCommand = function (cmd, cb) {{
-                        const cbwrap = function (result) {{
-                            if(cb) cb(result)
-                        }}
-                        channel.objects.py.cmd(arg, cbwrap)
+                    pycmd = bridgeCommand = function (cmd, cb = Function.prototype) {{
+                        channel.objects.py.cmd(cmd, (res) => cb(JSON.parse(res)))
                         return false
                     }}
                 }})
-                pycmd('called pycmd on load')
-,            </script>
-            <link rel="stylesheet" type="text/css" href="{aqt.mw.serverURL()}_anki/css/note_creator.css">
-            <link rel=stylesheet href="{aqt.mw.serverURL()}{ADDON_RELURL}/mdi.css">
-            <link rel=stylesheet href="{aqt.mw.serverURL()}{ADDON_RELURL}/{get_path('cm.css')}">
-            <script src="{aqt.mw.serverURL()}{ADDON_RELURL}/window_input.js"></script>
+            </script>
+            <link rel=stylesheet href="{ADDON_RELURL}/mdi.css">
+            <link rel=stylesheet href="{ADDON_RELURL}/{get_path('cm.css')}">
+            <script src="{ADDON_RELURL}/window_input.js"></script>
         </head>
         <body class="{aqt.theme.theme_manager.body_class()} mdi-window">
             <script type="text/javascript">
@@ -89,9 +84,7 @@ class IM_window(QMainWindow):
         </body>
         </html>
         '''
-        #print("\n\n" +html + "\n\n")
-
-        self.web.setHtml(html, )
+        self.web.setHtml(html, QUrl(aqt.mw.serverURL()))
 
         name = note.items()[0][1] or "[new]"
         if len(name) > 15:
@@ -108,8 +101,8 @@ class IM_window(QMainWindow):
         def save_field(res):
             if not res:
                 return
-            if self.parent.addMode or self.parent.note.id == self.nid:
-                note = self.parent.note
+            if self.editor.addMode or self.editor.note.id == self.nid:
+                note = self.editor.note
                 focus = True
             else:
                 note = aqt.mw.col.get_note(self.nid)
@@ -120,7 +113,7 @@ class IM_window(QMainWindow):
             else: # Complete note
                 for (title, content) in res: note[title] = content
 
-            if focus: self.parent.loadNoteKeepingFocus()
+            if focus: self.editor.loadNoteKeepingFocus()
             else: aqt.mw.col.update_note(note)
 
         self.web.page().runJavaScript(f'''(function () {{
