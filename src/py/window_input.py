@@ -59,7 +59,6 @@ class IM_window(QMainWindow):
         btns.rejected.connect(self.reject)
         self.resize(600, 800)
 
-        webview_id = id(self)
         html = f'''
         <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}>
         <head>
@@ -77,7 +76,7 @@ class IM_window(QMainWindow):
                 pycmd('and now?')
             </script>
             <link rel="stylesheet" type="text/css" href="_anki/css/note_creator.css">
-            <link rel=stylesheet href="{os.path.join(ADDON_RELURL, 'mdi.css')}">
+            <link rel=stylesheet href="{ADDON_RELURL, 'mdi.css')}">
             <link rel=stylesheet href="{os.path.join(ADDON_RELURL, get_path('cm.css'))}">
             <script src="{os.path.join(ADDON_RELURL, 'window_input.js')}"></script>
         </head>
@@ -91,25 +90,11 @@ class IM_window(QMainWindow):
         '''
         print("\n\n" +html + "\n\n")
 
-        #html = '''<html><head><script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script></head><body>hello</body></html>'''
-        aqt.mw.mediaServer.set_page_html(webview_id, html)
-        self.web.load(QUrl(f"{aqt.mw.serverURL()}_anki/legacyPageData?id={webview_id}"))
-
-        # Stolen from https://stackoverflow.com/questions/58210400/how-to-receive-data-from-python-to-js-using-qwebchannel
-        #self.bridge = self.Bridge()
-        #self.channel = QWebChannel()
-        #self.web.page().setWebChannel(self.channel)
-        #self.channel.registerObject("bridge", self.bridge)
-
-        # We set background color to avoid flickering while CSS renders
-        #self.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
-        #self.web.setUrl(QUrl('_blank'))
-        #self.web.setHtml(f'''<html><head></head><body></body></html>''')
+        self.web.setHtml(html, )
 
         name = note.items()[0][1] or "[new]"
         if len(name) > 15:
             name = name[:15] + "..."
-        #self.setWindowTitle(name + ": " + note.items()[fid][0])
 
     def __del__(self):
         global _dlgs
@@ -207,7 +192,5 @@ def init(cfg: object):
         return buttons
 
     _config = cfg
-    aqt.mw.addonManager.setWebExports(__name__, r"user_files/.*\.css")
-    aqt.mw.addonManager.setWebExports(__name__, r".*\.css")
     aqt.gui_hooks.editor_did_init_buttons.append(editor_btn)
 
