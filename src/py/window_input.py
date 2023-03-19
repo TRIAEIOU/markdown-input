@@ -15,17 +15,18 @@ _config = {}
 _dlgs = {}
 
 ###########################################################################
+class Bridge(QObject):
+    """Class to handle js bridge"""
+    @pyqtSlot(str, result=str)
+    def cmd(self, cmd):
+        print("py.cmd: ", cmd)
+        if cmd == "clipboard_image_to_markdown":
+            return clip_img_to_md()
+        return ""
+
+###########################################################################
 class IM_window(QMainWindow):
     """Main window to edit markdown in external window"""
-
-    class Bridge(QObject):
-        """Class to handle js bridge - stolen from https://stackoverflow.com/questions/58210400/how-to-receive-data-from-python-to-js-using-qwebchannel"""
-        @pyqtSlot(str, result=str)
-        def wtf(self, msg):
-            print("wtf: ", msg)
-            if msg == "clipboard_image_to_markdown":
-                return clip_img_to_md()
-            return ""
 
     ###########################################################################
     def __init__(self, parent: aqt.editor.Editor, note: anki.notes.Note, fid: int):
@@ -39,22 +40,24 @@ class IM_window(QMainWindow):
         self.nid = note.id
         self.fid = fid
 
-        # Setup page, workaround because reloading window spawns "Qt is undefined"
-        self.page = QWebEnginePage()
-        self.page.setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
-
         # Create UI
         cwidget = QWidget(self)
         self.setCentralWidget(cwidget)
         vlayout = QVBoxLayout(cwidget)
+
         self.web = QWebEngineView(self)
+        self.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
+        channel = QWebChannel(self.web)
+        py = Bridge(self)
+        channel.registerObject("py", py)
+        self.web.page().setWebChannel(channel)
+
         vlayout.addWidget(self.web)
         btns = QDialogButtonBox(QDialogButtonBox.StandardButton.Cancel|QDialogButtonBox.StandardButton.Ok, self)
         vlayout.addWidget(btns)
         btns.accepted.connect(self.accept)
         btns.rejected.connect(self.reject)
         self.resize(600, 800)
-        self.web.setPage(self.page)
 
         webview_id = id(self)
         html = f'''
@@ -63,21 +66,15 @@ class IM_window(QMainWindow):
             <style>
                 {parent.web.standard_css()}
             </style>
-            <!-- Stolen from https://stackoverflow.com/questions/58210400/how-to-receive-data-from-python-to-js-using-qwebchannel -->
             <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
             <script type="text/javascript">
-                    new QWebChannel(qt.webChannelTransport, function(channel) {{
-                        window.bridgeCommand = function (arg, cb = undefined) {{
-                            window.bridgeCommandCb = function (res) {{if (cb) cb(res)}}
-                            channel.objects.bridge.wtf(arg, window.bridgeCommandCb)
-                            return false
-                        }}
-                        bridgeCommand('fucking hell')
-                        //window.bridge = channel.objects.bridge
-                        //window.bridgeCommand = bridge.frack
-                        //alert('bridge: ' + typeof(bridge))
-                        //alert('bridgeCommaaand: ' + typeof(bridgeCommand))
-                    }})
+                let py
+                channel = new QWebChannel(qt.webChannelTransport, function(channel) {{
+                    py = channel.objects.py
+                }})
+                py.cmd('really?')
+                var pycmd = py.cmd, bridgeCommand = py.cmd
+                pycmd('and now?')
             </script>
             <link rel="stylesheet" type="text/css" href="_anki/css/note_creator.css">
             <link rel=stylesheet href="{os.path.join(ADDON_RELURL, 'mdi.css')}">
@@ -88,9 +85,6 @@ class IM_window(QMainWindow):
             <script type="text/javascript">
                 const mdi_editor = new MarkdownInput.WindowEditor({json.dumps(_config)})
                 mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
-                //document.body.innerText = new XMLSerializer().serializeToString(document)
-                //alert("bridge in body: " + window.bridge)
-                //alert('bridgeCommand outside: ' + typeof(bridgeCommand))
             </script>
         </body>
         </html>
