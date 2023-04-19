@@ -13,12 +13,11 @@ CYCLE_RICH_MD = "Cycle rich text/Markdown"
 
 # Window input
 WINDOW_INPUT = "Window input"
-WINDOW_MODE = "Mode"
+WINDOW_MODE = "Mode" # "field", "note"
 SC_OPEN = 'Shortcut'
 SC_ACCEPT = "Shortcut accept"
 SC_REJECT = "Shortcut reject"
 SIZE_MODE = "Size mode" # "parent", "last", WIDTHxHEIGHT (e.g "1280x1024")
-SELECTION = "Selection only"
 CSS = "CSS"
 LAST_GEOM = "Last geometry"
 

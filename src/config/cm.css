@@ -1,178 +1,419 @@
-/* Day/light and night/dark theme */
-.cm-editor .cm-panels
-{
+/* General editor styling */
+.cm-editor .cm-content {
+	padding: 5px;
+}
+
+/* Light mode VS Code style colors */
+.cm-editor {
+	--fg: #3b3b3b;
+	--fg-subtle: #5d5d5d;
+	--canvas: #ffffff;
+	--canvas-elevated: #ffffff;
+	--border: #CECECE;
+	--border-subtle: #CECECE;
+	--selected-bg: #ADD6FF80;
+	--comment: #008000;
+	--keyword: #00f;
+	--type: #007acc;
+	--heading: #a31515;
+	--url: #00b0e8;
+	--search-match: #bb800966;
+	--invalid: #f44747;
+	--selection-match: #6199ff2f;
+}
+
+/* Dark mode VS Code style colors */
+.night_mode .cm-editor {
+	--fg: #d4d4d4;
+	--fg-subtle: #858585;
+	--canvas: #1e1e1e;
+	--canvas-elevated: #1e1e1e;
+	--border: #474747;
+	--border-subtle: #282828;
+	--selected-bg: #2489db82;
+	--caret: #c6c6c6;
+	--heading: #569CD6;
+	--url: #569CD6;
+	--type: #4EC9B0;
+	--class-name: #B8D7A3;
+	--string: #D69D85;
+	--comment: #57A64A;
+	--inserted: rgb(155, 185, 85);
+	--inserted-bg: rgba(155, 185, 85, 0.2);
+	--deleted: rgb(255, 0, 0);
+	--deleted-bg: rgba(255, 0, 0, 0.2);
+}
+
+/* Window styling based on Anki colors */
+.cm-editor {
+	background-color: var(--canvas-elevated);
+}
+
+.cm-editor .cm-panels {
   background-color: var(--canvas);
-  border-color: var(--border-subtle);
-  color: var(--fg);
+  color: var(--fg-subtle);
+  border-color: var(--border);
 }
 
 .cm-editor .cm-panel input {
   background-color: var(--canvas-elevated);
+  color: var(--fg);
+	border-color: var(--border);
   font-size: 16px;
+	outline: none;
 }
 
 .cm-editor .cm-panel .cm-button {
   background-color: var(--canvas-elevated);
+	border-color: var(--border);
   background-image: none;
+}
+
+.cm-editor .cm-panel input:focus,
+.cm-editor .cm-panel .cm-button:focus {
+	outline: 1px solid var(--selected-bg);
 }
 
 .cm-editor .cm-panel label {
   background-color: transparent;
 }
 
-body.mdi-window, /* only relevant for window input */
-.cm-editor .cm-content
-{
+.cm-editor .cm-content {
   background-color: var(--canvas-elevated);
   color: var(--fg);
 }
 
 .cm-editor .cm-content {
-  font-family: Consolas, monospace;
+  font-family: Menlo, Monaco, Consolas, "Andale Mono", "Ubuntu Mono", "Courier New", monospace;
   font-size: 18px;
-  caret-color: var(--fg);
 }
 
-.cm-editor .tok-heading,
-.cm-editor .tok-strong,
-.cm-editor .tok-meta
-{
-  font-weight: bold;
-}
-
-.cm-editor .tok-emphasis {
-  font-style: italic;
-}
-
-.cm-editor .tok-link {
-  text-decoration: underline;
-}
-
+/*
 .cm-editor .cm-cursor,
 .cm-editor .cm-dropCursor
 {
   border-left: 2px solid var(--fg);
 }
+*/
 
-/****************************************************************/
-/* Light/day theme */
+.cm-editor .cm-line {
+	padding: 1px 0 1px 1px; /* top right bottom left */
+}
+
 .cm-editor .cm-activeLine {
-  background-color: #f8f8f8;
-}
-
-.cm-editor .tok-url,
-.cm-editor .tok-link
-{
-  color: var(--fg)
-}
-
-.cm-editor .tok-literal,
-.cm-editor .tok-inserted,
-.cm-editor .tok-string,
-.cm-editor .tok-deleted
-{
-  color: #264f7d;
-}
-
-.cm-editor .tok-comment {
-  color: #3d5b56;
-}
-
-.cm-editor .tok-heading,
-.cm-editor .tok-keyword,
-.cm-editor .tok-atom,
-.cm-editor .tok-bool,
-.cm-editor .tok-labelName,
-.cm-editor .tok-typeName,
-.cm-editor .tok-namespace,
-.cm-editor .tok-className,
-.cm-editor .tok-meta
-{
-  color: #800000;
-}
-
-.cm-editor .cm-selectionMatch,
-.cm-editor .cm-searchMatch
-{
   background-color: transparent;
-  outline: 2px solid #264f7d;
+  border: none;
+	padding: 1px 0 1px 1px; /* top right bottom left */
+}
+
+.cm-editor.cm-focused .cm-activeLine {
+  background-color: transparent;
+  border: 1px solid var(--border-subtle);
+  border-right: none;
+	padding: 0;
 }
 
 .cm-editor ::selection,
-.cm-editor .cm-selectionBackground,
-.cm-editor .cm-searchMatch-selected,
-.cm-editor .cm-line .cm-matchingBracket
+.cm-editor .cm-selectionBackground {
+  background-color: var(--selected-bg);
+}
+
+.cm-editor .cm-selectionMatch
 {
-  background-color: #264f7d;
-  color: var(--canvas-elevated);
+  background-color: var(--selection-match);
 }
 
+/*
+.cm-editor .cm-selectionMatch.cm-searchMatch-selected {
+  background-color: var(#72a1ff59);
+}
+*/
 
-.cm-focused .cm-line .cm-nonmatchingBracket,
-.cm-editor .tok-invalid {
-  background-color: transparent;
-  color: #ff0000
+.cm-editor .cm-searchMatch {
+  background-color: var(--search-match);
 }
 
-/****************************************************************/
-/* Dark/night theme */
-.night-mode .cm-editor .cm-activeLine {
-  background-color: transparent;
-  outline: 2px solid var(--fg-faint);
+.cm-editor.cm-focused .cm-line .cm-matchingBracket,
+.cm-editor.cm-focused .cm-line .cm-matchingBracket .tok-meta {
+  outline: 1px solid var(--border);
 }
 
-.night-mode .cm-editor .tok-url,
-.night-mode .cm-editor .tok-link
+.cm-editor.cm-focused .cm-line .cm-nonmatchingBracket,
+.cm-editor .tok-invalid
 {
-  color: var(--fg)
-}
-
-.night-mode .cm-editor .tok-literal,
-.night-mode .cm-editor .tok-inserted,
-.night-mode .cm-editor .tok-string,
-.night-mode .cm-editor .tok-deleted
-{
-  color: #597da5;
-}
-
-.night-mode .cm-editor .tok-comment {
-  color: #3d5b56;
-}
-
-.night-mode .cm-editor .tok-heading,
-.night-mode .cm-editor .tok-keyword,
-.night-mode .cm-editor .tok-atom,
-.night-mode .cm-editor .tok-bool,
-.night-mode .cm-editor .tok-labelName,
-.night-mode .cm-editor .tok-typeName,
-.night-mode .cm-editor .tok-namespace,
-.night-mode .cm-editor .tok-className,
-.night-mode .cm-editor .tok-meta
-{
-  color: #569cd6;
+  color: var(--invalid);
 }
 
 
-.night-mode .cm-editor .cm-selectionMatch,
-.night-mode .cm-editor .cm-searchMatch
-{
-  background-color: transparent;
-  outline: 2px solid #264f7d;
+/* Syntax highlighting based on VS Code */
+
+/*
+https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs2015.css
+*/
+/*
+ * Visual Studio 2015 dark style
+ * Author: Nicolas LLOBERA <nllobera@gmail.com>
+ */
+
+.cm-editor.night_mode .cm-content {
+  caret-color: var(--caret);
 }
 
-.night-mode .cm-editor ::selection,
-.night-mode .cm-editor .cm-selectionBackground,
-.night-mode .cm-editor .cm-searchMatch-selected,
-.night-mode .cm-editor .cm-line .cm-matchingBracket,
-.night-mode .cm-editor .cm-line .cm-matchingBracket .tok-meta
-{
-  background-color: #264f7d;
-  color: var(--fg);
+
+/*.hljs-keyword,
+.hljs-literal,
+.hljs-symbol,
+.hljs-name */
+.night_mode .cm-editor .tok-meta,
+.night_mode .cm-editor .tok-keyword .tok-meta,
+.night_mode .cm-editor .tok-keyword,
+.night_mode .cm-editor .tok-literal,
+.night_mode .cm-editor .tok-heading,
+.night_mode .cm-editor .tok-keyword,
+.night_mode .cm-editor .tok-atom,
+.night_mode .cm-editor .tok-bool,
+.night_mode .cm-editor .tok-labelName,
+.night_mode .cm-editor .tok-namespace {
+	color: var(--heading)
 }
 
-.night-mode .cm-focused .cm-line .cm-nonmatchingBracket,
-.night-mode .cm-editor .tok-invalid
-{
-  background-color: transparent;
-  color: #ff0000
+.night_mode .cm-editor .tok-meta,
+.night_mode .cm-editor .tok-heading {
+	font-weight: bold;
+}
+
+
+/* .hljs-link */
+.night_mode .cm-editor .tok-url,
+.night_mode .cm-editor .tok-link {
+	color: var(--url);
+	text-decoration: underline;
+}
+
+/* .hljs-built_in,
+.hljs-type */
+.night_mode .cm-editor .tok-bool,
+.night_mode .cm-editor .tok-typeName {
+	color: var(--type);
+}
+
+/* .hljs-number,
+.hljs-class */
+.night_mode .cm-editor .tok-className  {
+	color: var(--class-name);
+}
+
+/* .hljs-string,
+.hljs-meta-string */
+.night_mode .cm-editor .tok-string {
+	color: var(--string);
+}
+
+/*
+.hljs-regexp,
+.hljs-template-tag {
+	color: #9A5334;
+}
+ */
+
+ /*
+.hljs-subst,
+.hljs-function,
+.hljs-title,
+.hljs-params,
+.hljs-formula {
+	color: #DCDCDC;
+}
+*/
+
+/* .hljs-comment,
+.hljs-quote */
+.night_mode .cm-editor .tok-comment {
+	color: var(--comment);
+	font-style: italic;
+}
+
+/*
+.hljs-doctag {
+	color: #608B4E;
+}
+ */
+
+ /* .hljs-meta,
+.hljs-meta-keyword,
+.hljs-tag {
+	color: #9B9B9B;
+}
+*/
+
+/*
+.hljs-variable,
+.hljs-template-variable {
+	color: #BD63C5;
+}
+*/
+
+/*
+.hljs-attr,
+.hljs-attribute,
+.hljs-builtin-name {
+	color: #9CDCFE;
+}
+*/
+
+/*
+.hljs-section {
+	color: gold;
+}
+*/
+
+/* .hljs-emphasis */
+.night_mode .cm-editor .tok-emphasis {
+	font-style: italic;
+}
+
+/* .hljs-strong */
+.night_mode .cm-editor .tok-strong {
+	font-weight: bold;
+}
+
+/*.hljs-code {
+	font-family:'Monospace';
+}*/
+
+/*
+.hljs-bullet,
+.hljs-selector-tag,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+	color: #D7BA7D;
+}
+*/
+
+/* .hljs-addition */
+.night_mode .cm-editor .tok-inserted {
+	background-color: var(--inserted-bg);
+	color: var(--inserted);
+	display: inline-block;
+	width: 100%;
+}
+
+/* .hljs-deletion */
+.night_mode .cm-editor .tok-deleted {
+	background: var(--deleted-bg);
+	color: var(--deleted);
+	display: inline-block;
+	width: 100%;
+}
+
+/*
+From https://raw.githubusercontent.com/isagalaev/highlight.js/master/src/styles/vs.css
+*/
+/*
+
+Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
+
+*/
+
+.cm-editor .cm-content {
+  caret-color: var(--fg);
+}
+
+
+/*
+.vscode-light .hljs-function,
+.vscode-light .hljs-params,
+.vscode-light .hljs-number,
+.vscode-light .hljs-class  {
+	color: inherit;
+}
+*/
+
+/* .vscode-light .hljs-comment,
+.vscode-light .hljs-quote,
+.vscode-light .hljs-number,
+.vscode-light .hljs-class,
+.vscode-light .hljs-variable */
+.cm-editor .tok-comment,
+.cm-editor .tok-className {
+	color: var(--comment);
+}
+
+/* .vscode-light .hljs-keyword,
+.vscode-light .hljs-selector-tag,
+.vscode-light .hljs-name,
+.vscode-light .hljs-tag */
+.cm-editor .tok-keyword {
+	color: var(--keyword);
+}
+
+/* .vscode-light .hljs-built_in,
+.vscode-light .hljs-builtin-name */
+.cm-editor .tok-bool {
+	color: var(--type);
+}
+
+/* .vscode-light .hljs-string,
+.vscode-light .hljs-section,
+.vscode-light .hljs-attribute,
+.vscode-light .hljs-literal,
+.vscode-light .hljs-template-tag,
+.vscode-light .hljs-template-variable,
+.vscode-light .hljs-type */
+.cm-editor .tok-heading,
+.cm-editor .tok-meta,
+.cm-editor .tok-keyword .tok-meta,
+.cm-editor .tok-string,
+.cm-editor .tok-literal,
+.cm-editor .tok-typeName {
+	color: var(--heading);
+}
+
+.cm-editor .tok-heading,
+.cm-editor .tok-heading.tok-meta {
+	font-weight: bold;
+}
+
+/*
+.vscode-light .hljs-selector-attr,
+.vscode-light .hljs-selector-pseudo,
+.vscode-light .hljs-meta,
+.vscode-light .hljs-meta-keyword {
+	color: #2b91af;
+}
+ */
+
+/*
+.vscode-light .hljs-title,
+.vscode-light .hljs-doctag {
+	color: #808080;
+}
+ */
+
+/*
+.vscode-light .hljs-attr {
+	color: #f00;
+}
+*/
+
+ /* .vscode-light .hljs-symbol,
+.vscode-light .hljs-bullet,
+.vscode-light .hljs-link */
+.cm-editor .tok-url,
+.cm-editor .tok-link {
+	color: var(--url);
+	text-decoration: underline;
+}
+
+
+/* .vscode-light .hljs-emphasis  */
+.cm-editor .tok-emphasis {
+	font-style: italic;
+}
+
+/* .vscode-light .hljs-strong */
+.cm-editor .tok-strong {
+	font-weight: bold;
 }

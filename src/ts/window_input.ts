@@ -5,10 +5,11 @@ import { Configuration, CONVERTER, WINDOW_INPUT, WINDOW_MODE, EDITOR } from "./c
 class WindowEditor {
   editor: Editor
   converter: Converter
-  constructor(cfg: Configuration) {
+
+  constructor(parent: HTMLElement, cfg: Configuration) {
     Object.assign(this, cfg)
     this.editor = new Editor({
-      parent: document.body,
+      parent: parent,
       ...this[EDITOR]
     })
     this.converter = new Converter(this[CONVERTER])
@@ -23,7 +24,7 @@ class WindowEditor {
     if (this[WINDOW_INPUT]?.[WINDOW_MODE] === 'note') {
       let html = ''
       for (const [title, content] of fields)
-        html += `<-- ${title} --><br><br>${content}<br><br>`
+        html += `<!-- ${title} --><br><br>${content}<br><br>`
       const [md, ord] = this.converter.html_to_markdown(html)
       this.editor.set_doc(md, ord, 'start')
     } else {
@@ -41,7 +42,7 @@ class WindowEditor {
     if (this[WINDOW_INPUT]?.[WINDOW_MODE] === 'note') {
       const fields: [title: string, content: string][] = []
       const md = this.editor.cm.state.doc.toString()
-      for (const match of md.matchAll(/(.*?)^[ \t]*<--[ \t]*(.*?)[ \t]*?-->[ \t]*$/gms)) {
+      for (const match of md.matchAll(/(.*?)^[ \t]*<!--[ \t]*(.*?)[ \t]*?-->[ \t]*$/gms)) {
         if (fields.length)
           fields[fields.length - 1][1] = this.converter.markdown_to_html(match[1].trim())
         fields.push([match[2], ''])

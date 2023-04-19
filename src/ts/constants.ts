@@ -8,6 +8,7 @@ export const SC_NEXT = "Next field"
 export const SC_PREV = "Previous field"
 export const FIELD_DEFAULT = 'Default field state'
 export const CYCLE_RICH_MD = "Cycle rich text/Markdown"
+export const HIDE_TOOL = "Autohide toolbar"
 
 // Window input
 export const WINDOW_INPUT = "Window input"
@@ -16,7 +17,6 @@ export const SC_OPEN = 'Shortcut'
 export const SC_ACCEPT = "Shortcut accept"
 export const SC_REJECT = "Shortcut reject"
 export const SIZE_MODE = "Size mode" // "parent", "last", WIDTHxHEIGHT (e.g "1280x1024")
-export const SELECTION = "Selection only"
 export const CSS = "CSS"
 export const LAST_GEOM = "Last geometry"
 

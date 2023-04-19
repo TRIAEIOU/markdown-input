@@ -5,7 +5,8 @@
 		"Next field": "Ctrl+PgDown",
 		"Previous field": "Ctrl+PgUp",
 		"Default field state": "rich text",
-		"Cycle rich text/Markdown": true
+		"Cycle rich text/Markdown": true,
+		"Autohide toolbar": true
 	},
 	"Window input": {
 		"Mode": "note",
@@ -13,7 +14,6 @@
 		"Shortcut accept": "Ctrl+Return",
 		"Shortcut reject": "Shift+Escape",
 		"Size mode": "parent",
-		"Selection only": false,
 		"Last geometry": ""
 	},
 	"Converter": {
@@ -66,12 +66,17 @@
 				"scope": "editor search-panel",
 				"preventDefault": true
 			},{
-				"key": "Mod-Alt-Shift-c",
+				"key": "Mod-Shift-z",
 				"run": "clozeCurrent",
 				"preventDefault": true
 			},{
 				"key": "Mod-Shift-c",
 				"run": "clozeNext",
+				"preventDefault": true
+			},
+			{
+				"key": "Mod-Shift-j",
+				"run": "joinLines",
 				"preventDefault": true
 			}
 		]

@@ -199,7 +199,7 @@ class CustomInputAPI {
   editor_: any
   /** custom input editor (created on read) */
   get editor() {
-    if (!this.editor_) this.editor_ = this.custom_input_class.create_editor(
+    if (!this.editor_) this.editor_ = this.custom_input_class.create_editor.call(this,
       this.editor_container.firstElementChild as HTMLElement,
       this.anki_editor_field_api.editingArea.content.set
     )

@@ -4,7 +4,8 @@ import { Editor } from "./editor"
 import { Converter } from "anki-md-html"
 import { ancestor } from "./utils"
 import { CustomInputClass } from "./custom_input"
-import { CONVERTER, CYCLE_RICH_MD, EDITOR, FIELD_DEFAULT, FIELD_INPUT, SC_TOGGLE, MDI, Configuration } from "./constants"
+import { CONVERTER, CYCLE_RICH_MD, EDITOR, FIELD_DEFAULT, FIELD_INPUT,
+  SC_TOGGLE, HIDE_TOOL, MDI, Configuration } from "./constants"
 
 const MD = '<!--?xml version="1.0" encoding="UTF-8"?--><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="mdi-md-hollow" width="24" height="24" viewBox="0 0 208 128"><path clip-rule="evenodd" d="m15 10c-2.7614 0-5 2.2386-5 5v98c0 2.761 2.2386 5 5 5h178c2.761 0 5-2.239 5-5v-98c0-2.7614-2.239-5-5-5zm-15 5c0-8.28427 6.71573-15 15-15h178c8.284 0 15 6.71573 15 15v98c0 8.284-6.716 15-15 15h-178c-8.28427 0-15-6.716-15-15z" fill-rule="evenodd"/><path d="m30 98v-68h20l20 25 20-25h20v68h-20v-39l-20 25-20-25v39zm125 0-30-33h20v-35h20v35h20z"/></svg>'
 
@@ -14,30 +15,52 @@ let _converter
 /////////////////////////////////////////////////////////////////////////////
 // Non-arrow function (for `this` use) to instantiate an editor instance
 function create_editor(parent: HTMLDivElement, onchange: (html: string) => void) {
+  const events = {
+    wheel(evt: WheelEvent) {
+      const fields = ancestor(parent, '.fields')
+      switch (evt.deltaMode) {
+        case 0: //DOM_DELTA_PIXEL
+          fields.scrollTop += evt.deltaY
+          fields.scrollLeft += evt.deltaX
+          break
+        case 1: //DOM_DELTA_LINE
+          fields.scrollTop += 15 * evt.deltaY
+          fields.scrollLeft += 15 * evt.deltaX
+          break
+        case 2: //DOM_DELTA_PAGE
+          fields.scrollTop += 0.03 * evt.deltaY
+          fields.scrollLeft += 0.03 * evt.deltaX
+          break
+      }
+    }
+  }
+  if (_config[FIELD_INPUT]?.[HIDE_TOOL]) {
+    events['focusout'] = function (evt) {
+      if (
+        ancestor((evt.relatedTarget as HTMLElement), `.note-editor`) &&
+        !ancestor((evt.relatedTarget as HTMLElement), `.${parent.className}`)
+      ) {
+        (document.querySelector('.editor-toolbar') as HTMLElement).hidden = false
+      }
+    }
+    events['focusin'] = function (evt) {
+      if (ancestor((evt.target as HTMLElement), `.${parent.className}`))
+        (document.querySelector('.editor-toolbar') as HTMLElement).hidden = true
+    }
+  }
+
   return new Editor({
     parent: parent,
     oninput: (md: string) => {
-      onchange(_converter.markdown_to_html(md))
-    },
-    events: {
-      wheel(evt: WheelEvent) {
-        const fields = ancestor(parent, '.fields')
-        switch (evt.deltaMode) {
-          case 0: //DOM_DELTA_PIXEL
-            fields.scrollTop += evt.deltaY
-            fields.scrollLeft += evt.deltaX
-            break
-          case 1: //DOM_DELTA_LINE
-            fields.scrollTop += 15 * evt.deltaY
-            fields.scrollLeft += 15 * evt.deltaX
-            break
-          case 2: //DOM_DELTA_PAGE
-            fields.scrollTop += 0.03 * evt.deltaY
-            fields.scrollLeft += 0.03 * evt.deltaX
-            break
-        }
+      // Store the current html equivalent to avoid updating to identical content
+      const html = _converter.markdown_to_html(md)
+      // console.log(` oninput new html →${html}← vs last →${this.html}←`)
+      if (html !== this.html) {
+        this.html = html
+        onchange(this.html)
       }
     },
+    events: events,
     highlight: {},
     theme: {},
     ..._config[EDITOR]
@@ -54,8 +77,13 @@ function focus() {
 /////////////////////////////////////////////////////////////////////////////
 // Non-arrow function (for `this` use) to set content of custom editor
 function set_content(html: string) {
-  const [md, ord] = _converter.html_to_markdown(html)
-  this.editor.set_doc(md, ord, 'end')
+    // Store the current html equivalent to avoid updating to identical content
+    // console.log(` set_content new html →${html}← vs last →${this.html}←`)
+    if(html !== this.html) {
+    this.html = html
+    const [md, ord] = _converter.html_to_markdown(html)
+    this.editor.set_doc(md, ord, 'end')
+  }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -73,7 +101,7 @@ function init(cfg: Configuration) {
   _config = cfg
   _converter = new Converter(_config[CONVERTER])
   let tip = "Toggle Markdown input"
-  if (_config[FIELD_INPUT][SC_TOGGLE]) tip += ` (${_config[FIELD_INPUT][SC_TOGGLE]})`
+  if (_config[FIELD_INPUT]?.[SC_TOGGLE]) tip += ` (${_config[FIELD_INPUT][SC_TOGGLE]})`
   _config[MDI] = new CustomInputClass({
     class_name: "markdown-input",
     tooltip: tip,

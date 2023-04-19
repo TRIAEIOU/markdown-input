@@ -41,6 +41,7 @@ class IM_window(QMainWindow):
         cwidget = QWidget(self)
         self.setCentralWidget(cwidget)
         vlayout = QVBoxLayout(cwidget)
+        vlayout.setContentsMargins(0, 0, 0, 0)
 
         self.web = QWebEngineView(self)
         self.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
@@ -54,31 +55,33 @@ class IM_window(QMainWindow):
         vlayout.addWidget(btns)
         btns.accepted.connect(self.accept)
         btns.rejected.connect(self.reject)
+        btns.setContentsMargins(5, 0, 5, 5)
         self.resize(600, 800)
-
         html = f'''
         <html{' class="night-mode"' if aqt.theme.theme_manager.get_night_mode() else ''}>
         <head>
-            <style>
-            {get_colors(aqt.theme.theme_manager.get_night_mode())}
-            </style>
+            <link rel=stylesheet href="_anki/css/webview.css">
+            <link rel=stylesheet href="{ADDON_RELURL}/mdi.css">
+            <link rel=stylesheet href="{ADDON_RELURL}/{get_path('cm.css')}">
+            <script src="{ADDON_RELURL}/window_input.js"></script>
             <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
             <script type="text/javascript">
                 var pycmd, bridgeCommand
                 new QWebChannel(qt.webChannelTransport, function(channel) {{
-                    pycmd = bridgeCommand = function (cmd, cb = Function.prototype) {{
+                    pycmd = bridgeCommand = function (cmd, cb = (() => {{}})) {{
                         channel.objects.py.cmd(cmd, (res) => cb(JSON.parse(res)))
                         return false
                     }}
                 }})
             </script>
-            <link rel=stylesheet href="{ADDON_RELURL}/mdi.css">
-            <link rel=stylesheet href="{ADDON_RELURL}/{get_path('cm.css')}">
-            <script src="{ADDON_RELURL}/window_input.js"></script>
         </head>
         <body class="{aqt.theme.theme_manager.body_class()} mdi-window">
+            <div id="cm-container"></div>
             <script type="text/javascript">
-                const mdi_editor = new MarkdownInput.WindowEditor({json.dumps(_config)})
+                const mdi_editor = new MarkdownInput.WindowEditor(
+                    document.getElementById('cm-container'),
+                    {json.dumps(_config)}
+                )
                 mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
             </script>
         </body>

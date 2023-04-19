@@ -1,5 +1,5 @@
 import {EditorView, keymap, highlightSpecialChars, drawSelection, rectangularSelection, crosshairCursor, highlightActiveLine, dropCursor} from "@codemirror/view"
-import {EditorState, Transaction, EditorSelection, SelectionRange} from "@codemirror/state"
+import {EditorState, Transaction, EditorSelection, SelectionRange, Prec} from "@codemirror/state"
 import {indentOnInput, bracketMatching, indentUnit, syntaxHighlighting} from "@codemirror/language"
 import {defaultKeymap, historyKeymap, indentWithTab, history} from "@codemirror/commands"
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
@@ -8,8 +8,10 @@ import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
 import {markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import {ankiImagePaste } from "./CodeMirror.extensions/ankiImagePaste"
 import {classHighlighter} from '@lezer/highlight'
+import {Subscript, Superscript, Strikethrough, Table} from "@lezer/markdown"
 
-import { to_function } from "./commands"
+import {to_function} from "./commands"
+import {Underline} from "./CodeMirror.extensions/markdown_extensions"
 
 /** CodeMirror instance configuration */
 interface Shortcut {
@@ -25,6 +27,15 @@ interface Configuration {
   oninput?: (doc: string) => void
   events?: {}
 }
+
+const lezer_exts = [
+  Subscript,
+  Superscript,
+  Strikethrough,
+  Table,
+  Underline
+]
+
 class Editor {
   cm: EditorView
   extensions: any[]
@@ -58,16 +69,18 @@ class Editor {
       syntaxHighlighting(classHighlighter, {fallback: false}),
       indentUnit.of("    "),
       // @ts-ignore FIXME: what is correct TS for below?
-      keymap.of([
-        ...km,
-        ...closeBracketsKeymap,
-        ...defaultKeymap,
-        indentWithTab,
-        ...historyKeymap,
-        ...completionKeymap
-      ]),
+      Prec.highest(
+        keymap.of([
+          ...km,
+          ...closeBracketsKeymap,
+          ...defaultKeymap,
+          indentWithTab,
+          ...historyKeymap,
+          ...completionKeymap
+        ])
+      ),
       EditorView.lineWrapping,
-      markdown({ base: markdownLanguage }),
+      markdown({ base: markdownLanguage, extensions: lezer_exts }),
       ankiImagePaste()
     ]
     if (cfg.events) this.extensions.push(EditorView.domEventHandlers(cfg.events))
