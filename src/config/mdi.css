@@ -12,6 +12,15 @@ div.markdown-input:not([hidden]) ~ div.rich-text-input {
     border-top: 1px double var(--border);
 }
 
+.cm-editor .cm-panels-top {
+    border: 1px solid var(--border);
+    position: fixed;
+    z-index: 100;
+    top: 30px !important;
+    right: 20px;
+    left: unset;
+}
+
 /* Only relevant for window input */
 body.mdi-window {
     margin: 0;
@@ -25,3 +34,4 @@ body.mdi-window {
     margin: 0px;
     height: 100%;
 }
+

@@ -1,5 +1,5 @@
 import * as commands from "@codemirror/commands"
-import * as search from "@codemirror/search"
+import * as search from "search"
 import * as mdi_commands from "./CodeMirror.extensions/mdi_commands"
 
 const _fns: any[] = []

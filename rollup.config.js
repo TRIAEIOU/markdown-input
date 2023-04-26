@@ -6,7 +6,7 @@ import terser from "@rollup/plugin-terser"
 
 export default [
   {
-    input: "src/ts/window_input.ts",
+    input: "src/ts/field_input.ts",
     plugins: [
       typescript(),
       commonjs(),
@@ -22,7 +22,7 @@ export default [
     }
   },
   {
-    input: "src/ts/field_input.ts",
+    input: "src/ts/window_input.ts",
     plugins: [
       typescript(),
       commonjs(),

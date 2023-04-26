@@ -201,17 +201,29 @@ class CustomInputAPI {
   get editor() {
     if (!this.editor_) this.editor_ = this.custom_input_class.create_editor.call(this,
       this.editor_container.firstElementChild as HTMLElement,
-      this.anki_editor_field_api.editingArea.content.set
+      (html:string) => {
+        this.anki_editor_field_api.editingArea.content.set(html)
+        // Store resulting HTML to avoid uneccessary updates
+        this._html = get(this.anki_editor_field_api.editingArea.content)
+      }
     )
     return this.editor_
   }
+
+  // Temporary store for resulting Anki HTML after each update
+  _html: string
 
 
   ///////////////////////////////////////////////////////////////////
   // Public methods
 
   /** Set custom input editor content */
-  set_content(html: string) {return this.custom_input_class.set_content.call(this, html)}
+  set_content(html: string) {
+    // Avoid uneccessary updates (as it will mess with whitespace etc)
+    if (html === this._html) return
+    this._html = html
+    this.custom_input_class.set_content.call(this, html)
+  }
 
   /** User supplied callback to focus custom input */
   focus() {return this.custom_input_class.focus.call(this)}
@@ -273,6 +285,8 @@ class CustomInputAPI {
   constructor(input_class: CustomInputClass, anki_editor_field_api: EditorFieldAPI, editor_field_el: HTMLElement) {
     this.custom_input_class = input_class
     this.anki_editor_field_api = anki_editor_field_api
+    // Store current core Anki HTML so we can avoid updating custom input when no change is made
+    this._html = ''
 
     const class_name = input_class.class_name
     const editing_area = editor_field_el.querySelector('.editing-area') as HTMLElement
@@ -345,7 +359,7 @@ class CustomInputAPI {
   _subscribe() {
     if (this._do_unsubscribe) return
     this._do_unsubscribe = this.anki_editor_field_api.editingArea.content.subscribe((html: string) => {
-      this.set_content(html)
+        this.set_content(html)
     })
   }
 

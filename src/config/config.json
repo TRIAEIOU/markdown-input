@@ -79,6 +79,11 @@
 				"run": "joinLines",
 				"preventDefault": true
 			}
-		]
+		],
+		"search": {
+			"caseSensitive": false,
+			"regexp": true,
+			"wholeWord": false
+		}
 	}
 }

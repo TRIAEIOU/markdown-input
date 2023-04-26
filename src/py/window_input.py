@@ -44,6 +44,7 @@ class IM_window(QMainWindow):
         vlayout.setContentsMargins(0, 0, 0, 0)
 
         self.web = QWebEngineView(self)
+        self.web.settings().setAttribute(QWebEngineSettings.WebAttribute.FocusOnNavigationEnabled, True)
         self.web.page().setBackgroundColor(theme_manager.qcolor(aqt.colors.CANVAS))
         channel = QWebChannel(self.web)
         py = Bridge(self)
@@ -83,6 +84,7 @@ class IM_window(QMainWindow):
                     {json.dumps(_config)}
                 )
                 mdi_editor.set_html({json.dumps(note.items())}, {self.fid})
+                mdi_editor.editor.cm.focus()
             </script>
         </body>
         </html>
@@ -171,7 +173,6 @@ def edit_field(editor: aqt.editor.Editor):
         dlg.setGeometry(editor.parentWindow.geometry())
 
     dlg.show()
-
 
 ###########################################################################
 def init(cfg: object):

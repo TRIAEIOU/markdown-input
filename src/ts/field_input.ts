@@ -51,15 +51,7 @@ function create_editor(parent: HTMLDivElement, onchange: (html: string) => void)
 
   return new Editor({
     parent: parent,
-    oninput: (md: string) => {
-      // Store the current html equivalent to avoid updating to identical content
-      const html = _converter.markdown_to_html(md)
-      // console.log(` oninput new html →${html}← vs last →${this.html}←`)
-      if (html !== this.html) {
-        this.html = html
-        onchange(this.html)
-      }
-    },
+    oninput: (md: string) => onchange(_converter.markdown_to_html(md)),
     events: events,
     highlight: {},
     theme: {},
@@ -77,13 +69,8 @@ function focus() {
 /////////////////////////////////////////////////////////////////////////////
 // Non-arrow function (for `this` use) to set content of custom editor
 function set_content(html: string) {
-    // Store the current html equivalent to avoid updating to identical content
-    // console.log(` set_content new html →${html}← vs last →${this.html}←`)
-    if(html !== this.html) {
-    this.html = html
-    const [md, ord] = _converter.html_to_markdown(html)
-    this.editor.set_doc(md, ord, 'end')
-  }
+  const [md, ord] = _converter.html_to_markdown(html)
+  this.editor.set_doc(md, ord, 'end')
 }
 
 /////////////////////////////////////////////////////////////////////////////

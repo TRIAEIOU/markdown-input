@@ -3,7 +3,7 @@ import {EditorState, Transaction, EditorSelection, SelectionRange, Prec} from "@
 import {indentOnInput, bracketMatching, indentUnit, syntaxHighlighting} from "@codemirror/language"
 import {defaultKeymap, historyKeymap, indentWithTab, history} from "@codemirror/commands"
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
-import {highlightSelectionMatches, search} from "@codemirror/search"
+import {highlightSelectionMatches, search} from "search"
 import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
 import {markdown, markdownLanguage } from "@codemirror/lang-markdown"
 import {ankiImagePaste } from "./CodeMirror.extensions/ankiImagePaste"
@@ -26,6 +26,11 @@ interface Configuration {
   keymap?: [Shortcut]
   oninput?: (doc: string) => void
   events?: {}
+  "search"?: {
+    caseSensitive?: boolean
+    regexp?: boolean
+    wholeWord?: boolean
+  }
 }
 
 const lezer_exts = [
@@ -50,7 +55,6 @@ class Editor {
       if('preventDefault' in sc) tmp.preventDefault = sc.preventDefault
       km.push(tmp)
     }
-
     this.extensions = [
       /*highlightSpecialChars(),*/
       history(),
@@ -62,7 +66,7 @@ class Editor {
       closeBrackets(),
       autocompletion(),
       rectangularSelection(),
-      search(),
+      search({top: true, ...cfg["search"]}),
       crosshairCursor(),
       highlightActiveLine(),
       highlightSelectionMatches(),
