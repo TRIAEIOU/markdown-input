@@ -71,6 +71,7 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - Allows image pasting in the same way the "rich text input" does.
 - Customize the editor styling by copying `cm.css` into `user_files` subdirectory and customize. Consider using `--var(xyz)` to use the Anki colors from the current theme (i.e. follows light/dark mode).
 - Customize Markdown input editor shortcuts (i.e. *inside* the field/window, not the core Anki editor) in `config.json`, see `config.json` and [CodeMirror documentation](https://codemirror.net/docs/ref/#view.KeyBinding) for further information. Available functions to map are all in [@codemirror/commands](https://github.com/codemirror/commands/blob/main/src/commands.ts), [@codemirror/search](https://github.com/codemirror/search/blob/main/src/search.ts) and custom commands `clozeNext`, `clozeCurrent`, `joinLines`.
+- Configurable search/replace default options (`caseSensitive`, `regexp`, `wholeWord`).
 
 ### Field input mode
 
@@ -179,3 +180,4 @@ Functionality split into different classes to facilitate reuse:
 - 2023-01-09: Move to 2.1.56 platform (last 2.1.55 shipped until further notice), fix syntax highlighting.
 - 2023-03-11: Restructuring of code to allow modularity with other projects and easier maintenance.
 - 2023-03-12: Change "dialog mode" to "window mode" and inherit QMainWindow rather than QDialog. Add option to edit complete note in window mode, improve CSS styling of editor, now done from separate CSS file. Modify default styling (based on VS Code styles) to suit both light and dark mode. Fix anyoing eating of trailing spaces when focusing to another window. Add option to hide editor toolbar when focusing a Markdown field.
+- 2023-04-26: Improve logic to fix anoying eating of trailing spaces, change search/replace dialog placement so that it is visible without having to scroll.
