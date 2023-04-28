@@ -7,7 +7,6 @@
     "@codemirror/language": "^6.6.0",
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.9.2",
-    "search": "github:TRIAEIOU/search#input-box",
     "@lezer/highlight": "^1.1.3",
     "@lezer/markdown": "^1.0.2",
     "@rollup/plugin-commonjs": "^24.0.1",
@@ -15,23 +14,24 @@
     "@rollup/plugin-terser": "^0.4.0",
     "@rollup/plugin-typescript": "^11.0.0",
     "anki-md-html": "github:TRIAEIOU/anki-md-html",
-    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
-    "rimraf": "^4.4.0",
     "rollup": "^3.18.0",
     "rollup-plugin-svelte": "^7.1.4",
+    "search": "github:TRIAEIOU/search#input-box",
+    "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
     "zip-build": "^1.8.0"
   },
   "scripts": {
-    "build-clean": "rimraf --glob ./lib/* ./bin/*",
+    "build-clean": "shx rm -rf ./dist/* ./lib/* ./bin/*",
     "build-ts": "rollup -c",
-    "build-py": "copyfiles -f \"./src/py/*.py\" \"./bin\"",
-    "build-gfx": "copyfiles -f \"./src/gfx/*\" \"./bin/gfx\"",
-    "build-cfg": "copyfiles -f \"./src/config/*\" \"./bin\"",
-    "build-doc": "copyfiles -f LICENSE README.md \"./bin\"",
+    "build-py": "shx cp ./src/py/*.py ./bin",
+    "build-gfx": "shx cp ./src/gfx/* ./bin/gfx",
+    "build-cfg": "shx cp ./src/config/* ./bin",
+    "build-doc": "shx cp LICENSE README.md ./bin",
     "build": "npm run build-clean && npm run build-ts && npm run build-py && npm run build-gfx && npm run build-cfg && npm run build-doc",
-    "pack": "zip-build \"./bin\" \"./dist\" -o -t \"update.zip\" && cross-env-shell pandoc -t $CODEPATH/pandoc/anki-addon.lua --abbreviations=$CODEPATH/pandoc/empty ./README.md -o ./dist/update.txt"
+    "prepack": "shx cp -r ./bin ./dist/ && rm -rf ./dist/bin/meta.json ./dist/bin/__pycache__",
+    "pack": "npm run prepack && zip-build \"./dist/bin\" \"./dist\" -o -t \"update.zip\" && cross-env-shell pandoc -t $CODEPATH/pandoc/anki-addon.lua --abbreviations=$CODEPATH/pandoc/empty ./README.md -o ./dist/update.txt"
   }
 }
