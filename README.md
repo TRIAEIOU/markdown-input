@@ -75,7 +75,7 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 
 ### Field input mode
 
-- Configurable default state for editor fields (`rich text` or `markdown`, default `rich text`).
+- Configurable default state for editor fields (`rich text`, `markdown` or `rich text/markdown`, default `rich text`).
 - Configurable behaviour of "field input mode" shortcut, cycle between rich text and Markdown (`true`) or just toggle Markdown input (`false`). (default `true`)
 - Configurable shortcut to toggle rich text input. (default `Ctrl+Alt+X`)
 - Configurable shortcuts to move to next/previous input (since tab is a valid Markdown character it will not work to "tab out" of a markdown input). (default `Ctrl+PgDown` and `Ctrl+PgUp`)
@@ -181,3 +181,4 @@ Functionality split into different classes to facilitate reuse:
 - 2023-03-11: Restructuring of code to allow modularity with other projects and easier maintenance.
 - 2023-03-12: Change "dialog mode" to "window mode" and inherit QMainWindow rather than QDialog. Add option to edit complete note in window mode, improve CSS styling of editor, now done from separate CSS file. Modify default styling (based on VS Code styles) to suit both light and dark mode. Fix anyoing eating of trailing spaces when focusing to another window. Add option to hide editor toolbar when focusing a Markdown field.
 - 2023-04-26: Improve logic to fix anoying eating of trailing spaces, change search/replace dialog placement so that it is visible without having to scroll.
+- 2023-05-04: Add `rich text/markdown` field default configuration option, add list continuation thanks to [David C.](https://github.com/d-k-bo).

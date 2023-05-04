@@ -11,6 +11,7 @@ const MD = '<!--?xml version="1.0" encoding="UTF-8"?--><svg xmlns="http://www.w3
 
 let _config
 let _converter
+let _editor_count
 
 /////////////////////////////////////////////////////////////////////////////
 // Non-arrow function (for `this` use) to instantiate an editor instance
@@ -79,7 +80,20 @@ function onadd() {
   if (_config[FIELD_INPUT]?.[FIELD_DEFAULT]?.toLowerCase() === 'markdown') {
     this.toggle()
     this.toggle_rich()
+  } else if (_config[FIELD_INPUT]?.[FIELD_DEFAULT]?.toLowerCase() === 'rich text/markdown') {
+    this.toggle()
+    // Ugly temporary hack to focus first Markdown input initially
+    if(!_editor_count) {
+      window.requestAnimationFrame(() =>
+        window.requestAnimationFrame(() =>
+          window.requestAnimationFrame(() =>
+            this.editor.cm.focus()
+          )
+        )
+      )
+    }
   }
+  _editor_count++
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -98,6 +112,7 @@ function init(cfg: Configuration) {
     onadd: onadd,
     badge: MD
   })
+  _editor_count = 0
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -5,8 +5,8 @@ import {defaultKeymap, historyKeymap, indentWithTab, history} from "@codemirror/
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
 import {highlightSelectionMatches, search} from "search"
 import {autocompletion, completionKeymap} from "@codemirror/autocomplete"
-import {markdown, markdownKeymap, markdownLanguage } from "@codemirror/lang-markdown"
-import {ankiImagePaste } from "./CodeMirror.extensions/ankiImagePaste"
+import {markdown, markdownKeymap, markdownLanguage} from "@codemirror/lang-markdown"
+import {ankiImagePaste} from "./CodeMirror.extensions/ankiImagePaste"
 import {classHighlighter} from '@lezer/highlight'
 import {Subscript, Superscript, Strikethrough, Table} from "@lezer/markdown"
 
