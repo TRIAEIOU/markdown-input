@@ -1,6 +1,7 @@
 import {EditorView, keymap, highlightSpecialChars, drawSelection, rectangularSelection, crosshairCursor, highlightActiveLine, dropCursor} from "@codemirror/view"
 import {EditorState, Transaction, EditorSelection, SelectionRange, Prec} from "@codemirror/state"
 import {indentOnInput, bracketMatching, indentUnit, syntaxHighlighting} from "@codemirror/language"
+import {languages} from "@codemirror/language-data"
 import {defaultKeymap, historyKeymap, indentWithTab, history} from "@codemirror/commands"
 import {closeBrackets, closeBracketsKeymap} from "@codemirror/autocomplete"
 import {highlightSelectionMatches, search} from "search"
@@ -12,6 +13,7 @@ import {Subscript, Superscript, Strikethrough, Table} from "@lezer/markdown"
 
 import {to_function} from "./commands"
 import {Underline} from "./CodeMirror.extensions/markdown_extensions"
+import { cloze_decorator } from "./CodeMirror.extensions/cloze_decorator"
 
 /** CodeMirror instance configuration */
 interface Shortcut {
@@ -71,6 +73,7 @@ class Editor {
       highlightActiveLine(),
       highlightSelectionMatches(),
       syntaxHighlighting(classHighlighter, {fallback: false}),
+      cloze_decorator,
       indentUnit.of("    "),
       // @ts-ignore FIXME: what is correct TS for below?
       Prec.highest(
@@ -85,10 +88,18 @@ class Editor {
         ])
       ),
       EditorView.lineWrapping,
-      markdown({ base: markdownLanguage, extensions: lezer_exts }),
+      markdown({ base: markdownLanguage, extensions: lezer_exts, codeLanguages: languages }),
       ankiImagePaste()
     ]
     if (cfg.events) this.extensions.push(EditorView.domEventHandlers(cfg.events))
+
+    let view = new EditorView({
+      state: EditorState.create({
+        doc: '',
+        extensions: [
+        ]
+      })
+    });
 
     const editor_view = {
       state: EditorState.create({extensions: this.extensions}),

@@ -180,7 +180,7 @@ def init(cfg: object):
     global _config
     def editor_btn(buttons, editor):
         btn = editor.addButton(
-            os.path.join(ADDON_PATH, "gfx", "markdown.png"),
+            os.path.join(ADDON_PATH, "markdown.png"),
             "md_dlg_btn",
             edit_field,
             tip=f"Markdown Input ({_config[WINDOW_INPUT][SC_OPEN]})",

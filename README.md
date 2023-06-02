@@ -4,6 +4,8 @@ Anki ([GitHub](https://github.com/ankitects/anki)) addon ([GitHub](https://githu
 
 ![Markdown input](https://github.com/TRIAEIOU/Markdown-input/raw/main/Screenshots/screenshots.png?raw=true)
 
+![First use](https://github.com/TRIAEIOU/Markdown-input/raw/main/Screenshots/first-use.gif?raw=true)
+
 ## Anki version note (2.1.56+)
 
 The editor DOM and internal functioning which `Markdown input` depends on changed in Anki version 2.1.56. The current version of `Markdown input` ships with both 2.1.56+ compatible code as well as the last [release](https://github.com/TRIAEIOU/Markdown-input/releases/tag/v1.2.5) targeted at 2.1.55. Going forward no updates/fixes will be made to the legacy code, any development/bug fixes will be in the 2.1.56+ code.
@@ -35,7 +37,7 @@ Conversion to/from HTML is done through [unified](https://unifiedjs.com/) Markdo
   - `Strikethrough`: `"double"` for `~~sample~~` strikthrough (`"single"` supports single tilde, incompatible with subscript above).
   - `Inline media`: `true`for [Inline Media](https://ankiweb.net/shared/info/683715045) directive, e.g. `:audio(im-xyz.ogg){loop auto_front}`/`:video(im-xyz.ogg){loop auto_front height=200}`.
   - `Definition lists`: `true` for [Defintion lists](https://github.com/wataru-chocola/mdast-util-definition-list) (not available in the core Anki editor).
-  - `Table stle`: Table syntax, `"gfm"`/`"extended"`/`false`:
+  - `Table stle`: Table syntax, `"gfm"`/`"extended"`:
     - GFM table syntax
 
     ``` Markdown
@@ -92,6 +94,7 @@ The editor used is [CodeMirror 6](https://codemirror.net/) with the following co
 - "Window input mode" can be configured under `Window input`.
 - HTML ↔ Markdown conversion configurable under `Converter`. See [mdastToMarkdown](https://github.com/syntax-tree/mdast-util-to-markdown#tomarkdowntree-options) for `Markdown format` options.
 - Editor configurable under `CodeMirror`. See [CodeMirror documentation](https://codemirror.net/docs/) how to configure.
+- Default Anki behaviour is to use the entire sort field text in the Browser table, `Browser sort field` option (default `true`) instead uses content of first level 1 heading (if existing).
 - Note that Anki shortcuts grab key sequences before they reach the CodeMirror editor, use [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) or other addon to change the Anki shortcuts as needed. At the time of writing [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) hooks into the Qt/Python for the cloze shortcuts. This means they never reach CodeMirror so unmap (`<nop`>) them in [Customize Keyboard Shortcut](https://ankiweb.net/shared/info/24411424) (the new Anki editor grabs the shortcuts on the JavaScript side).
 - To customize the look of the finished HTML apply custom [CSS](https://www.w3schools.com/Css/) styling (for instance of `<h1/2/3/etc>`, `<table>` `<ul/ol>` etc.) to the note template.
 - To customize the look and feel of the editor, make a copy of `cm.css` (styling of CodeMirror and syntax highlighting) into a `user_files` subdirectory in the addon directory and modify that file (it will be given precedence and not be overwritten on addon update).
@@ -182,3 +185,4 @@ Functionality split into different classes to facilitate reuse:
 - 2023-03-12: Change "dialog mode" to "window mode" and inherit QMainWindow rather than QDialog. Add option to edit complete note in window mode, improve CSS styling of editor, now done from separate CSS file. Modify default styling (based on VS Code styles) to suit both light and dark mode. Fix anyoing eating of trailing spaces when focusing to another window. Add option to hide editor toolbar when focusing a Markdown field.
 - 2023-04-26: Improve logic to fix anoying eating of trailing spaces, change search/replace dialog placement so that it is visible without having to scroll.
 - 2023-05-04: Add `rich text/markdown` field default configuration option, add list continuation thanks to [David C.](https://github.com/d-k-bo).
+- 2023-06-01: Table bug fix (tables now non-optional), rename config option from `Table style` to `Tables`, add code block syntax highlighting, add `Browser sort field` option, add styling of cloze tags in the Markdown editor.

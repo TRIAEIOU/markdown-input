@@ -28,7 +28,7 @@
 		"Markdown extensions": {
 			"Definition lists": true,
 			"Inline media": true,
-			"Table style": "extended",
+			"Tables": "extended",
 			"Table newline": "¨",
 			"Underline": true,
 			"Superscript": true,
@@ -85,5 +85,8 @@
 			"regexp": true,
 			"wholeWord": false
 		}
+	},
+	"General": {
+		"Browser sort field": true
 	}
 }

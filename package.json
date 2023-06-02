@@ -5,6 +5,7 @@
     "@codemirror/commands": "^6.2.1",
     "@codemirror/lang-markdown": "^6.1.0",
     "@codemirror/language": "^6.6.0",
+    "@codemirror/language-data": "^6.3.1",
     "@codemirror/state": "^6.2.0",
     "@codemirror/view": "^6.9.2",
     "@lezer/highlight": "^1.1.3",
@@ -21,17 +22,18 @@
     "shx": "^0.3.4",
     "ts-node": "^10.9.1",
     "tslib": "^2.5.0",
+    "typescript": "^5.0.0",
     "zip-build": "^1.8.0"
   },
   "scripts": {
     "build-clean": "shx rm -rf ./dist/* ./lib/* ./bin/*",
     "build-ts": "rollup -c",
     "build-py": "shx cp ./src/py/*.py ./bin",
-    "build-gfx": "shx cp ./src/gfx/* ./bin/gfx",
+    "build-gfx": "shx cp ./src/gfx/* ./bin",
     "build-cfg": "shx cp ./src/config/* ./bin",
     "build-doc": "shx cp LICENSE README.md ./bin",
     "build": "npm run build-clean && npm run build-ts && npm run build-py && npm run build-gfx && npm run build-cfg && npm run build-doc",
     "prepack": "shx cp -r ./bin ./dist/ && rm -rf ./dist/bin/meta.json ./dist/bin/__pycache__",
-    "pack": "npm run prepack && zip-build \"./dist/bin\" \"./dist\" -o -t \"update.zip\" && cross-env-shell pandoc -t $CODEPATH/pandoc/anki-addon.lua --abbreviations=$CODEPATH/pandoc/empty ./README.md -o ./dist/update.txt"
+    "pack": "npm run prepack && zip-build \"./dist/bin\" \"./dist\" -o -t \"update.zip\" && cross-env-shell pandoc -t $CODEPATH/Anki/addons/pandoc-anki-addon-writer/anki-addon.lua --abbreviations=$CODEPATH/pandoc/empty ./README.md -o ./dist/update.txt"
   }
 }

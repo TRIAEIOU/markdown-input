@@ -88,6 +88,11 @@
   font-size: 18px;
 }
 
+.cm-cloze {
+	font-size: 10px;
+	color: var(--fg-subtle);
+}
+
 /*
 .cm-editor .cm-cursor,
 .cm-editor .cm-dropCursor

@@ -1,7 +1,7 @@
-from aqt import mw, QPushButton, QMessageBox
+from aqt import mw, QPushButton, QMessageBox, gui_hooks
 
 from aqt.utils import *
-from . import field_input, window_input
+from . import field_input, window_input, browser_sort_field
 from .constants import *
 from .version import *
 
@@ -9,9 +9,16 @@ mw.addonManager.setWebExports(__name__, r"(.*(css|js|map))")
 config = mw.addonManager.getConfig(__name__)
 
 CVER = get_version()
-NVER = "2.2.2"
+NVER = "2.2.3"
 
 msgs = []
+
+if strvercmp(CVER, '2.2.3') < 0:
+    msgs.append('Option "Browser sort field" has been added. When enabled (default `true`) it will use first `&lt;h1&gt;` tag in note (if it exists) in the "Sort field" column in the browser table (default Anki is unaware of heading tags).')
+    if ts := config[CONVERTER].get('Table style'):
+        config[CONVERTER].pop('Table style', None)
+        config[CONVERTER][TABLES] = ts
+
 if strvercmp(CVER, '2.2.0') < 0:
     config['Window input'].pop('Selection only', None)
 
@@ -60,3 +67,6 @@ if config.get(FIELD_INPUT) or config.get(CONVERTER):
 if config.get(WINDOW_INPUT) or config.get(CONVERTER):
     window_input.init(config)
 
+if config.get(GENERAL) and config[GENERAL].get(SORT_FIELD):
+    gui_hooks.browser_did_change_row.append(browser_sort_field.clear_cache)
+    gui_hooks.browser_did_fetch_row.append(browser_sort_field.truncate)

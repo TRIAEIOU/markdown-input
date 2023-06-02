@@ -25,6 +25,7 @@ LAST_GEOM = "Last geometry"
 CONVERTER = "Converter"
 MD_FORMAT = "Markdown format"
 MD_EXTENSIONS = "Markdown extensions"
+TABLES = "Tables"
 
 # Editor
 EDITOR = "CodeMirror"
@@ -33,6 +34,8 @@ THEME = "Theme"
 SYNTAX = "Syntax highlighting"
 
 # General
+GENERAL = "General"
+SORT_FIELD = "Browser sort field"
 ADDON_PATH = os.path.dirname(__file__)
 ADDON_RELURL = "/".join(('_addons', os.path.split(ADDON_PATH)[1]))
 MDI = "MDI"

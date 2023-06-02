@@ -370,10 +370,14 @@ class CustomInputAPI {
   _toggle_builtin(class_name: string) {
     const el = this.editor_container.parentElement
     const input = el.querySelector(`.${class_name}`).parentElement
-    if (input.classList.contains('hidden'))
-      input.classList.replace('hidden', 'expanded')
-    else if (this._visible_siblings(class_name))
-      input.classList.replace('expanded', 'hidden')
+    if (input.classList.contains('hidden')) {
+      input.classList.replace('hidden', 'expanded') || // <2.1.63
+      input.classList.replace('hidden', 'measuring')   // 2.1.63+
+    }
+    else if (this._visible_siblings(class_name)) {
+      input.classList.replace('expanded', 'hidden') ||
+      input.classList.replace('measuring', 'hidden')
+    }
   }
 
   /**

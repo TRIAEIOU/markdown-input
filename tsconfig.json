@@ -22,7 +22,7 @@
             "anki/*": ["${env:CODEPATH}/Anki/anki/*"], // Only for typing
         },
         "plugins": [],
-        "rootDir": "src",
+        //"rootDir": "src",
         "removeComments": true
     },
     "include": [
