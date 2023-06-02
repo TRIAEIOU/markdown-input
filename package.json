@@ -33,7 +33,7 @@
     "build-cfg": "shx cp ./src/config/* ./bin",
     "build-doc": "shx cp LICENSE README.md ./bin",
     "build": "npm run build-clean && npm run build-ts && npm run build-py && npm run build-gfx && npm run build-cfg && npm run build-doc",
-    "prepack": "shx cp -r ./bin ./dist/ && rm -rf ./dist/bin/meta.json ./dist/bin/__pycache__",
-    "pack": "npm run prepack && zip-build \"./dist/bin\" \"./dist\" -o -t \"update.zip\" && cross-env-shell pandoc -t $CODEPATH/Anki/addons/pandoc-anki-addon-writer/anki-addon.lua --abbreviations=$CODEPATH/pandoc/empty ./README.md -o ./dist/update.txt"
+    "prepack": "shx rm -rf ./dist/* && shx cp -r ./bin ./dist/ && shx rm -rf ./dist/bin/meta.json ./dist/bin/__pycache__",
+    "pack": "npm run prepack && zip-build \"./dist/bin\" \"./dist\" -o -t \"update.zip\" && cross-env-shell pandoc -t $CODEPATH/Anki/addons/pandoc-anki-addon-writer/anki-addon.lua ./README.md -o ./dist/update.txt"
   }
 }
