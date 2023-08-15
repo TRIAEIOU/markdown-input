@@ -2,13 +2,8 @@ import anki
 import aqt, os, json, base64, re
 from aqt.utils import *
 from aqt.qt import QObject, QShortcut, QRect, QMainWindow
-
-if qtmajor == 6:
-    from PyQt6 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
-elif qtmajor == 5:
-    from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from .constants import *
-from .utils import clip_img_to_md, get_path, get_colors
+from .utils import clip_img_to_md, get_path
 
 _config = {}
 _dlgs = {}
