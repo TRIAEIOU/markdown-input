@@ -41,11 +41,9 @@ class WindowEditor {
   get_html() {
     if (this[WINDOW_INPUT]?.[WINDOW_MODE] === 'note') {
       const fields: [title: string, content: string][] = []
-      const md = this.editor.cm.state.doc.toString()
-      for (const match of md.matchAll(/(.*?)^[ \t]*<!--[ \t]*(.*?)[ \t]*?-->[ \t]*$/gms)) {
-        if (fields.length)
-          fields[fields.length - 1][1] = this.converter.markdown_to_html(match[1].trim())
-        fields.push([match[2], ''])
+      const md = this.editor.cm.state.doc.toString() + "<!-- -->"
+      for (const match of md.matchAll(/<!--(.*?)-->(.*?)(?=<!--.*?-->)/gms)) {
+        fields.push([match[1].trim(), match[2].trim()])
       }
       return fields
     }
